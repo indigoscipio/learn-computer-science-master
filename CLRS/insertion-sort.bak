@@ -1,0 +1,12 @@
+#lang racket
+
+(define (insert))
+
+(define (insertion-sort list)
+  ; step through array starting from 2nd index
+  ; pick the current element
+  ; compare with previous element
+  ; shift element bigger to the right, smaller to the left
+  ()
+
+  )
