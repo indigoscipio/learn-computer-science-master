@@ -251,3 +251,15 @@ output: array C representing the sum in binary
 each element A,B,C is either 0 or 1
 C = sum of A + B
 
+
+let carry = 0
+let C = []
+let i = array A's length
+while i >= 0
+    let sum  = A[i] + B[i] + carry
+    let current bit = sum % 2
+    push current bit to C
+    carry = sum // 2
+    i = i - 1
+push carry to C
+return C Reversed
