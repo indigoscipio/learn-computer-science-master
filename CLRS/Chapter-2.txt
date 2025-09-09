@@ -43,11 +43,39 @@ second, find second smallest element of A -> exchange it with A[2]
 continue until n-1 input
 
 loop invariant: what needs to be true before, during and at the end?
-the smallest should already be sorted 
+the subarray a[1,...i-1] is sorted and contains i-1 smallest element of the original array. the remaining subarray is unsorted
 
-why it needs to rn only for the first n-1 element
-    becase the smallest one is already sorted
+initialization: before selection sort starts, the sorted array is empty, trivially contains 0 smallest element
+Maintenance: if the first i-1 position contain i-1 smallest elment, then after swapping next smallest into a[i], now the first i position contain smallest i element
+Termination: when i = n, the first n-1 position holds the smallest n-1 elements in sorted order. the last element is already sorted.
+
+
+why it needs to rn only for the first n-1 element?
+let see, first we need to find smallest element of the input
+if the input is {1,9,4,5}
+first we pick 1, put it into the first position
+then 4, put it at 2nd,
+then 5, put it in 3rd
+finally 9 at the end - the 9 is already sorted by now
+this is why we only need n-1
 
 
 pseudocode:
+let arr = [arr inputs]
+let i = 1
+let i_smallest = indexOf(min(arr))
 
+while(i < n)
+    //find the smalest element
+    if arr[i] = arr[i_smallest] 
+        //swap it and increment counter
+        arr[i] = arr[i_smallest]
+        i = i + 1
+    // else keep finding
+    else i = i + 1
+    
+
+
+
+Best case: ...
+Worst case: ...
