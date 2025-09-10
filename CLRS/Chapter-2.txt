@@ -136,3 +136,13 @@ divide an conquer approach
 1. divide problem into a number of subproblem, smlaler instances of the same problem
 
 Merge sort example:
+divide: divide n-element sequence to be sorted into two subsequences of n/2
+conquer: sort the two subsequences recursively using merge sort
+combine: merge the two sorted subsequence to produce the sorted answer
+
+base case: trivally length is 1 (already sorted)
+
+
+Loop invariant:
+The portion of A we’ve filled so far already has the smallest elements in sorted order.
+L[i] and R[j] are the next candidates to be placed.
