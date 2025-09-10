@@ -27,6 +27,8 @@ as the input grows larger, n^3 is the most dominant change
 
 big O notation = On(n^3)
 
+===========================================================
+
 Exercise 2.2-1
 Consider sorting n numbers stored in array A by first finding the smallest element
 of A and exchanging it with the element in A[1]. Then find the second smallest
@@ -126,3 +128,11 @@ the check should test if the input satisfies a condition that allows for a trivi
 
 for sorting algorithm, best case input if it's already sorted, so add that check
 for searching, check if arr[0] already contains the thing you're looking for
+
+===========================================================
+
+2.3
+divide an conquer approach
+1. divide problem into a number of subproblem, smlaler instances of the same problem
+
+Merge sort example:
