@@ -59,23 +59,70 @@ then 5, put it in 3rd
 finally 9 at the end - the 9 is already sorted by now
 this is why we only need n-1
 
-
 pseudocode:
 let arr = [arr inputs]
+let n = arr.length
 let i = 1
-let i_smallest = indexOf(min(arr))
+while(i < n)
+    let j = i+1
+    let minIndex = i
+    while(j < n)
+        if arr[j] < arr[minIndex]
+            minIndex = j
+        j = j + 1
+    end while
+    swap arr[i] with arr[minIndex]
+    i = i + 1
+end while
+    
+Best case: the list is already sorted
+
 
 while(i < n)
-    //find the smalest element
-    if arr[i] = arr[i_smallest] 
-        //swap it and increment counter
-        arr[i] = arr[i_smallest]
+outer loop: runs n-1 times
+
+while(j < n)
+inner loop: runs n times
+
+
+outer loop still iterates through n-1 times
+inner loop still copmares all remainig elements ot find the minimum
+big O notation: O(n^2)
+
+Worst case: the list is sorted in reverse
+outer loop still tierates through n-1 times
+inner looop also still runs
+big O notation: O(n^2)
+
+Exercise 2.2-3
+Consider linear search again (see Exercise 2.1-3). How many elements of the in
+put sequence need to be checked on the average, assuming that the element being
+searched for is equally likely to be any element in the array? How about in the
+worst case? What are the average-case and worst-case running times of linear
+search in big O notation? Justify your answers.
+
+answer:
+from exercise 2.1-3
+let i = 1
+ while i <= n
+     if a[i] = v
+        return i,
         i = i + 1
-    // else keep finding
-    else i = i + 1
-    
+return nil
+
+how many elements of the input seq needs to be checked on average?
+if the input length is n then we need to check all of them until the item is found
+
+best case item is at the start of the array, check 1 times => O(1)
+worst case item is at the end of the array  => O(n)
+average case item is in the middle of the array,  check 1+2+3+...+n/n times times => O(n)
 
 
+2.2-4
+How can we modify almost any algorithm to have a good best-case running time?
+answer: by performing less computation
+by adding a preliminary check at the begininng of the algorithm
+the check should test if the input satisfies a condition that allows for a trivially fast answer
 
-Best case: ...
-Worst case: ...
+for sorting algorithm, best case input if it's already sorted, so add that check
+for searching, check if arr[0] already contains the thing you're looking for
