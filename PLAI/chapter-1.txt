@@ -1,0 +1,49 @@
+Interpreter
+consumes a program -> simulates execution
+interpreter :: program -> Value
+
+Compiler
+consumes a proram -> produces another program
+compiler :: program -> Program
+
+JIT (just in time compilation)
+eval starts as interpreter
+
+==========================================
+
+Remember
+
+- language does not dictate implementations
+- 2 types of implementation: interpretation and compilation
+- these tyeps of implemenentation may offer interactive or non-interactive interface
+
+(define (f x) (+ x 1))
+(f 2)
+
+(define (f x)) <- x is the formal parameter
+(f 2) <- actual parameter
+
+==========================================
+
+Eager vs lazy evaluation
+Eager (Applicative order evaluation)
+(f (+ 5 4)) - evaluate arguments first
+(f 9)
+(+ 9 1)
+10
+
+Lazy (Normal Order)
+Substitute first
+(f (+ 5 4))
+(+ x 1)
+(+ (+ 5 4) 1)
+(+ 9 1)
+
+infinite data structure: possible with lazy
+
+==========================================
+
+- find a way to represent the program source
+- look for the next expression to eval
+- perform substitution to obtain new program
+- continue evaluating until there's nothing left but value
