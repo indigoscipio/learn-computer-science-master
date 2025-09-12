@@ -146,3 +146,102 @@ base case: trivally length is 1 (already sorted)
 Loop invariant:
 The portion of A we’ve filled so far already has the smallest elements in sorted order.
 L[i] and R[j] are the next candidates to be placed.
+
+===========================================================
+
+Recurrence Relation
+T(1) = c
+T(n) = 2T(n/2) + cn for n > 1
+
+Exercise 2.3-1
+Using figure 2.4 as a model, illustrate the operation of merge sort on the array
+A = {3,41,52,9}
+initial sequence = {3,41,52, 26, 38, 57, 9, 49}
+divide  -> {3,41,52, 26}, {38, 57, 9, 49}
+{3,41} {52,26} {38,57} {9,49}
+{3} {41} {52} {26} {38} {57} {9} {49}
+conquer & merge -> {3,41} {26, 52}, {38, 57}, {9, 49}
+{3, 26, 41, 52} {9,38,49,57}
+{3, 9, 26, 38, 41, 49, 52, 57}
+
+2.3-2
+Rewrite the MERGE procedure so that it does not use sentinels, instead stopping
+once either array L or R has had all its elements copied back to A and then copying
+the remainder of the other array back into A.
+
+Original pseudocode with sentinel:
+
+where A= arr, p = 1st index, q = mid index, r = last index of the array
+left half = A[p...q]
+right half = A[q+1...r]
+
+MERGE(A,p,q,r)
+n1 = q - p + 1 ; length of left half
+n2 = r - q  ;length of right half
+let L[1...n1+1] and R[1...n2+1] be new arrys ;temporary array
+
+for i = 1 to n1 ;loop from 1 to length of the left half + sentinel
+    L[i] = A[p + i - 1] ; copy the content
+for j = 1 to n2 ; loop from 1 to length of the right half + sentinel
+    R[j] = A[q + j] ;copy the content
+L[n1 + 1] = ∞ ;replace last item in left array with sentinel
+R[n2 + 1] = ∞ ;replace last item in right array with sentinel
+
+i = 1 ;index for left array, initialize to 1
+j = 1 ;index for right arary, initialize to 1
+
+for k = p to r ; loop from p to r (loop through the length of the original array)
+    if L[i] <= R[j] ; compare curr item of L & R array at curr index, if left item is less than or equal to right item 
+        A[k] = L[i] ; mutate the original array - replace its ocntent with left item
+        i = i + 1 ; increase counter of the left array
+    else A[k] = R[j] ; otherwise mutate original array's content with right item
+        j = j + 1 ; increase counter of the right array
+
+
+==================================================
+
+Pseudocode without sentinel:
+
+where A= arr, p = 1st index, q = mid index, r = last index of the array
+left half = A[p...q]
+right half = A[q+1...r]
+
+MERGE(A,p,q,r)
+n1 = q - p + 1 ; length of left half
+n2 = r - q  ;length of right half
+let L[1...n1] and R[1...n2] be new arrys ;temporary array
+
+for i = 1 to n1 ;loop from 1 to length of the left half
+    L[i] = A[p + i - 1] ; copy the content
+for j = 1 to n2 ; loop from 1 to length of the right half
+    R[j] = A[q + j] ;copy the content
+
+k = p ;pointer for original array, start at p
+i = 1 ;index for left array, initialize to 1
+j = 1 ;index for right arary, initialize to 1
+
+while i <= n1 and j <= n2 (loop while left & right arr is not empty)
+    if L[i] <= R[j] ; pick smaller, advance index
+        A[k] = L[i]
+        i = i + 1
+    else
+        A[k] = R[j]
+        j = j + 1
+    k = k + 1
+
+while i <= n1
+    A[k] = L[i]
+    i = i + 1
+    k = k + 1
+
+while j <= n2
+    A[k] = R[j]
+    j = j + 1
+    k = k + 1
+
+MERGE-SORT(A,p,r)
+if p < r
+    q = floor((p + r) / 2)
+    MERGE-SORT(A,p,q)
+    MERGE-SORT(A,q+1,r)
+    MERGE(A,p,q,r)
