@@ -245,3 +245,27 @@ if p < r
     MERGE-SORT(A,p,q)
     MERGE-SORT(A,q+1,r)
     MERGE(A,p,q,r)
+    
+    
+2.3-3
+Use mathemtical induction to show that when n is an exact power of 2,
+the solution of the recurrence
+
+T(n) = {
+    2               if n = 2
+    2t(n/2) + n     if n = 2^k, for k > 1    
+}
+
+is T(n) = n log n
+
+base case: 
+check if formula works for base case
+T(2) = 2 log 2 = 1
+
+inductive hypothesis
+assume the formla works for an abitrary input, lets say n/2
+T(n/2) = n/2 log n/2
+= ???
+
+inductive step: show that if it works for n/2, then it works for n
+= ???
