@@ -330,7 +330,31 @@ Observe that the while loop of lines 5–7 of the INSERTION-SORT procedure in
  a[1...j-1]. Can we use a binary search (see Exercise 2.3-5) instead to improve
  the overall worst-case running time of insertion sort to O(n lg n)?
 
+ while loop lines 5-7
+ while i > 0 and a[i] > key
+    a[i+1] = a[1]
+    i = i - 1
+
+answer:
+insertion sort has 2 part:
+1. the part where you need to find the element
+2. the part where you need to insert the element in the correct place
+even though if we use ibnary search which gives O(lg n),
+the second part still needs to check 1 by 1 which gives O(n)
+so the total is O(n) + O(lg n) = O(n^2)
+
+
  2.3-7
  Describe a O(n lg n)-time algorithm that, given a set S of n integers and another
  integer x, determines whether or not there exist two elements in S whose sum is
  exactly x
+
+ answer:
+
+; list-of-number number -> boolean
+FIND_SUM(nums, x)
+; assign variable curr-sum (think about the naming later) = x
+; check if first num < curr-sum
+    ; if so reduce curr-sum by first num
+    ; recurse with next one
+; check if ...?
