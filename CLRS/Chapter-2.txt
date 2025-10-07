@@ -331,4 +331,6 @@ Observe that the while loop of lines 5–7 of the INSERTION-SORT procedure in
  the overall worst-case running time of insertion sort to O(n lg n)?
 
  2.3-7
-
+ Describe a O(n lg n)-time algorithm that, given a set S of n integers and another
+ integer x, determines whether or not there exist two elements in S whose sum is
+ exactly x

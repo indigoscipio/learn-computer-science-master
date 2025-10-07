@@ -3,8 +3,12 @@
 ; List-of-X Number Number Number -> Number
 ; perform a binary search
 (define (binary-search list target start-index end-index)
-
-  (cond []
-        [])
-  
+  (let ((mid-index (floor (/ (+ start-index end-index) 2))))
+    (cond []
+          []
+          [])
+    )
   )
+(define sample-list '(1 5 9 11 16 ))
+(binary-search sample-list 11 0 (- (length sample-list) 1) )
+(length sample-list)
