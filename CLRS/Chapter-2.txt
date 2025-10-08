@@ -351,10 +351,39 @@ so the total is O(n) + O(lg n) = O(n^2)
 
  answer:
 
+ ; sort the list
+ ; perform binary serach
+
 ; list-of-number number -> boolean
+nums = sorted list of numbers
+let i = 0
+let arr.length = nums length
 FIND_SUM(nums, x)
-; assign variable curr-sum (think about the naming later) = x
-; check if first num < curr-sum
-    ; if so reduce curr-sum by first num
-    ; recurse with next one
-; check if ...?
+    sort nums
+    for i = 1 to length(nums)
+        complement = x - nums[i]
+        if BINARY_SEARCH(nums, complement) is not empty
+            return true
+        else return false
+
+
+PROBLEMS
+2.1 Insertion sort on small arrays in merge sort
+
+a. 
+each sublist has k element -> insetion sort on one list cost roughly O(k^2)
+n/k lists
+
+n/k . k^2
+k^2 .n /k
+= kn -> the total cost if O(nk)
+
+b. 
+n/k sorted chunks
+merge them all back into one big sorted array
+normal merge sort on n items merge about log n levels deep
+
+On x O log n/k = O n log (n/k)
+
+c. cboose k so that nk is at most on the order of n log on
+k must not grow faster than log n if k is large
