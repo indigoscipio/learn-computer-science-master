@@ -387,3 +387,18 @@ On x O log n/k = O n log (n/k)
 
 c. cboose k so that nk is at most on the order of n log on
 k must not grow faster than log n if k is large
+
+2.2 correctness of bubblesort
+
+
+BUBBLESORT(a)
+for i = 1 to A.length -1 ;outer loop: runs for each element
+    for j = A.length downto i + 1 ;inner loop: compares adjacent pairs and swaps if out of order
+        if A[j] < A[j-1]
+            exchange A[j] with A[j-1]
+
+a. we neeed to prove the following:
+1. termination: bubblesort halts and terminates
+2. correctness for all inputs it always gives the correct result 
+
+b. 
