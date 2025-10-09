@@ -399,6 +399,39 @@ for i = 1 to A.length -1 ;outer loop: runs for each element
 
 a. we neeed to prove the following:
 1. termination: bubblesort halts and terminates
-2. correctness for all inputs it always gives the correct result 
+outer loop: walks through the list one by one until eveyr list is sorted
+condition is from 1st index to 1.length-1
+each iteration increases i by 1, must stop after n-1 steps
 
-b. 
+inner loop: for each list from the outer loop, compares pairs and swap the two position
+starts from a.length down to i+1
+each iteration decrements  j, msut stop after a finite number os teps
+base case list is empty -> trivially sorted
+there's only 1 item -> return as is
+
+2. correctness for all inputs it always gives the correct result 
+the loop terminates because each step inside the inner loop, it checks if one is smaller than another
+
+
+b. Statepreciselyaloopinvariantfortheforloopinlines2–4,andprovethatthis
+ loopinvariantholds.Yourproofshouldusethestructureoftheloopinvariant
+ proofpresentedinthischapte
+
+inner loop -> compares adjacent element and swaps if needed
+after one full pass, the position of the largest element is shifted to the right
+after n pass, the position of the largest leemnt is shifted to n index
+this guarantees the largest element is at the end of the array
+
+Loop invariant
+At the start of each iteration of the inner lop, the largest element emong A[j...n]
+is at position A[n]
+
+Initializastion: After the first iteration completes,
+the largest element among all elements gets moved to the end. 
+
+Maintennace: at eveyr iteration cycle, outer loop runs each element
+and the inner loop compares and swaps
+
+Termination: at the end of the iteration, return a sorted list
+
+c. 

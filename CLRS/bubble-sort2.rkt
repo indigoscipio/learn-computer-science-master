@@ -3,9 +3,17 @@
 ; given a non empty list
 ; swaps 1st and 2nd item
 ; leave it be otherwise (if empty or 1)
+; List-of-x -> List-of-x
 (define (swap l)
-  0
+  (cond [(null? l) '()]
+        [(null? (cdr l)) l]
+        [else (cons (cadr l) (cons (car l) (cddr l) ) )]
+        )
   )
+(swap '(1 2 3 4)) ;should return '(2 1 3 4)
+(swap '(1 2)) ; should return '(2 1)
+(swap '(2)) ; leave as it is
+(swap '()) ; leave as it is
 
 
 (define (bubble-sort list)
