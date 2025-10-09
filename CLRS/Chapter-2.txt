@@ -434,4 +434,30 @@ and the inner loop compares and swaps
 
 Termination: at the end of the iteration, return a sorted list
 
-c. 
+c. outer loop invariant:
+
+after each outer iteration, what portion of the array is definitely sorted?
+the sorted region is sorted (thats aleready sorted by the inner loop)
+
+after 1st outer loop, the largest element is in place, at position A[n]
+2nd loop, the 2nd largest element is in place at position A[n-2]
+ktk outer loop -> last k elements are in sorted orderr
+
+intialization: the last i-1 elements are already sorted
+maintenance: at every iteration cycle, the sorted array adds 1 until everything is sorted
+
+
+termination: since on each iteration n increases by 1,
+when n reaches array length, the whole array is sorted
+
+d. running time
+iner loop -> n times
+outer loop -> n times
+
+total = n . n = n^2 time
+
+insertion sort
+search part -> n time
+insert part -> n time
+
+total = n . n = n^2 time
