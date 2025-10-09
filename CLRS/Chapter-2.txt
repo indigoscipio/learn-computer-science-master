@@ -461,3 +461,29 @@ search part -> n time
 insert part -> n time
 
 total = n . n = n^2 time
+
+
+2.3 Correctness of horner's rule
+
+what is horner's rule?
+
+3 + 2x + 5x^2 + 7x^3
+we wanna know what this equals when x is some number
+
+x + 2(10) + 5(10)^2 + 7(10)^3 = 7523
+
+a. what is the running time?
+O(n), each step grows linearly
+each step one multiply + one add
+
+b. write a pseudocode to implemenet naive polynomial eval
+that cmputes each term of the polynomial from scratch.
+What is the running time of this alrogirhm?
+
+lets say we have 3 + 2x + 5x^2
+input: list of coeficient where 1st = 3, 2nd = 2x, 3rd = 5x^2, etc
+naive way: compute x^k -> then multiply by coeffieint ak -> add to running total
+
+POLYNOMIAL(a, x)
+    ;outer loop: process each coefficient
+    from 0 to a.length
