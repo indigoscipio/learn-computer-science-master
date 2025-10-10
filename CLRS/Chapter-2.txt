@@ -548,3 +548,24 @@ each iteration, we pick up a new coefficient and sum it , scaled by x
 theinvariant ensures its alwasy correct
 when we finlaly reached the first erm, the sum is complete
 thus y = P(x)
+
+______________________________________________________
+
+
+Exercise 2.4 inversiosn
+let A[1...n] be any array of distinct numbers.
+if i < j and a[i] > a[j], then the pair (i,j) is called the inversin of a
+
+a. list the five inversions of the array {2,3,8,6,1}
+inversion of 2 = ?? 
+index 0
+value 2
+
+invnersion of 3
+
+b. What array with elements from the set (1,2,...,n) has the most inversions?
+ Howmany does it have?
+ c. What is the relationship between the running time of insertion sort and the
+ number of inversions in the input array? Justify your answer.
+ d. Give an algorithm that determines the number of inversions in any permutation
+ on n elements in o.nlgn/ worst-case time. (Hint: Modify merge sort.)
