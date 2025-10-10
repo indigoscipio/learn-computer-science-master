@@ -502,3 +502,49 @@ POLYNOMIAL(a, x)
         sum = sum + currterm
     return sum
 
+
+
+y = 0
+for i = n downto 0
+    y = ai + x . y
+
+c. consider the flowing loop invariant
+at the start of each iteration of the for loop of lines 2 - 3,
+
+y = summation from k = 0 to n-(i+1) of ak+i+1 x^k
+
+interpret a summation with no terms as qualing 0.Followingthestructureof
+ theloopinvariantproofpresentedinthischapter,usethisloopinvarianttoshow
+ that,attermination, y = sum from k = 0 to n of ak x^k
+
+i -> count downward from n to 0
+sum runs over k from 0,1,2,...,n - (i+1)
+which means we start at the highest power term
+as we move backward (decreasing i), keep extending the plynomials toward lower power
+before we process a_i, y already process the tail part
+
+initialization:
+what does y equal before any iteration?
+before any iteration begins, y = 0
+
+
+maintenance
+if the invariant holds at the start of one iteration,
+its still true at the start of the next
+
+each iteration accumulates partial sum and add it to y
+previous y is summed until i = 0
+y = ai + x . y
+sum accumulates up to y = a0 + x . y
+
+termination
+when i = -1, y stores the total sum of the ocmputed polynomials
+
+d. . Concludebyarguingthat thegivencodefragmentcorrectlyevaluatesapoly
+nomialcharacterizedbythecoefficientsa0;a1;:::;an
+
+start with y = 0
+each iteration, we pick up a new coefficient and sum it , scaled by x
+theinvariant ensures its alwasy correct
+when we finlaly reached the first erm, the sum is complete
+thus y = P(x)
