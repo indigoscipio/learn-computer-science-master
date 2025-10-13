@@ -557,15 +557,54 @@ let A[1...n] be any array of distinct numbers.
 if i < j and a[i] > a[j], then the pair (i,j) is called the inversin of a
 
 a. list the five inversions of the array {2,3,8,6,1}
-inversion of 2 = ?? 
-index 0
-value 2
 
-invnersion of 3
+inverseion of 2
+is there smaller element? yes -> 1
+index i < j? yes, 1 < 5
+a[i] > a[j]? 2 > 1 is true
+the inversion is (2,1)
+
+inverseion of 3
+is there smaller element? yes -> 2
+index i < j? yes, 2 < 5
+a[i] > a[j]? 3 > 1 is true
+the inversion is (3,1)
+
+inverseion of 8
+is there smaller element? yes -> 6 and 1
+index i < j? yes, 3 < 4
+index i < j? yes, 3 < 5
+a[i] > a[j]? 8 > 6 is true
+a[i] > a[j]? 8 > 1 is true
+the inversion is (8,6), (8,1)
+
+invnersion of 6
+is there smaller element? yes -> 1
+index i < j? yes, 4 < 5
+a[i] > a[j]? 6 > 1 is true
+the inversion is (6,1)
+
+invnersion of 1
+is there smaller element? nothing left
+no inversion for 1
 
 b. What array with elements from the set (1,2,...,n) has the most inversions?
  Howmany does it have?
+ array with most inversion means is reverse sorted
+ how many does it have: triangular numbner -> n(n-1)/2
+
+ n = 5 {5,4,3,2,1}
+ 5(4)/2 = 10 inversions
+ 
  c. What is the relationship between the running time of insertion sort and the
  number of inversions in the input array? Justify your answer.
+
+ running time of insertion sort
+ sort part -> n
+ insert part -> n
+ toal = n^2
+
+ number of inversions = ???
+
  d. Give an algorithm that determines the number of inversions in any permutation
  on n elements in o.nlgn/ worst-case time. (Hint: Modify merge sort.)
