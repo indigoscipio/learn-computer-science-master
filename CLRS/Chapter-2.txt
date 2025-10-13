@@ -604,7 +604,39 @@ b. What array with elements from the set (1,2,...,n) has the most inversions?
  insert part -> n
  toal = n^2
 
- number of inversions = ???
+each insertion performs a swap to move an elment -> one inversion
+unning time of insertion sort is Θ(n + I), where I is the number of inversions.
+
 
  d. Give an algorithm that determines the number of inversions in any permutation
  on n elements in o.nlgn/ worst-case time. (Hint: Modify merge sort.)
+
+where A= arr, p = 1st index, q = mid index, r = last index of the array
+left half = A[p...q]
+right half = A[q+1...r]
+
+COUNT_MERGE_INVERSION(A,p,q,r)
+n1 = q - p + 1 ; length of left half
+n2 = r - q  ;length of right half
+let L[1...n1+1] and R[1...n2+1] be new arrys ;temporary array
+
+for i = 1 to n1 ;loop from 1 to length of the left half + sentinel
+    L[i] = A[p + i - 1] ; copy the content
+for j = 1 to n2 ; loop from 1 to length of the right half + sentinel
+    R[j] = A[q + j] ;copy the content
+L[n1 + 1] = ∞ ;replace last item in left array with sentinel
+R[n2 + 1] = ∞ ;replace last item in right array with sentinel
+
+i = 1 ;index for left array, initialize to 1
+j = 1 ;index for right arary, initialize to 1
+inv_count = 0
+
+for k = p to r ; loop from p to r (loop through the length of the original array)
+    if L[i] <= R[j] ; compare curr item of L & R array at curr index, if left item is less than or equal to right item 
+        A[k] = L[i] ; mutate the original array - replace its ocntent with left item
+        i = i + 1 ; increase counter of the left array
+    else A[k] = R[j] ; otherwise mutate original array's content with right item
+        j = j + 1 ; increase counter of the right array
+        inv_count = inv_count + (n1 - i + 1) ; inversion, increase inv count
+
+return inv_count
