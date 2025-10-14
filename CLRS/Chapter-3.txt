@@ -1,0 +1,67 @@
+
+Theta notation
+f(n) = the original function
+g(n) = the function we're ocmparing with
+
+Theta of g(n) means
+the set of all functions that grow the same rate as g(n)
+
+f(n) = theta of g(n) means
+f(n) grows proportionlally and they only differ in constatn factors
+
+f(n) = 2n^2 + 500n
+g(n) = n^2
+
+f(n) = theta of g(n)
+
+===================================
+
+Big O notation
+
+theta of g(n) is a subset of big O of g(n)
+
+O(g(n))
+no matter how hard things get, f(n) will never gorw faster than a constant times g(n)
+once n is big enough
+
+worst case
+
+===================================
+
+Omega notation
+
+no slower than g(n)
+or the lower bound
+
+
+====================
+
+2n^2 + 3n + 1 = 2n^2 + theta of  (n)
+all those messy constatnt that grows no longer than n^2, just ignore it
+
+
+
+Exercises
+3.1-1
+Let f(n) and g(n) be asymtotically nonnegative functions.
+using the basic definition of big theta notation, prove that
+
+max(f(n),g(n)) = big theta of (f(n) + g(n))
+
+answer:
+we know that big theta means its sandwitched between the two
+so its c1 of g(n) <= f(n) <= c2 of g(n) or something like that so it has upper end and lowerend
+and the two functions grow at the same rate up to constants
+
+so we need to find c1(f(n)+g(n)) <= max(f(n),g(n)) <= c2(f(n)+g(n))
+
+and max function search for the maximum value
+and we know sum  is at least always as big as the bigger one
+and the max sum ratio is no larger than factor of 2
+
+so max(f(n),g(n)) <= f(n) + g(n) <= 2.max(f(n),g(n))
+
+3.1-2
+show that for any real constants of a and b, where b>0
+(n+a)^b = big theta of (n^b)
+
