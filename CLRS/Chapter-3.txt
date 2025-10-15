@@ -65,3 +65,54 @@ so max(f(n),g(n)) <= f(n) + g(n) <= 2.max(f(n),g(n))
 show that for any real constants of a and b, where b>0
 (n+a)^b = big theta of (n^b)
 
+rewrite n+a as n(1+a/n)
+(n+a)^b = [n(1+a/n)]^b
+
+(n+a)^b = n^b(1+a/n)^b
+
+constants L and U
+L <= n^b(1 + a/n)^b <= U
+what simple constants holds up?
+L = (1/2)^b
+U = (3/2)^b
+
+3.1-3
+Explain why the statmenet "the running time of algorithm A is at least O(n^2)"
+is meaningless
+
+answer: because big o notation measures worst case? and to calculate the least
+maybe use big omega?
+Upper bound: “The running time is at most proportional to n²” → use O(n²).
+
+Lower bound: “The running time is at least proportional to n²” → use Ω(n²).
+
+Tight bound: “The running time grows like n²” → use Θ(n²).
+
+3.1-4
+
+is 2^n+1 = O(2^n)?
+is 2^2n = O(2^n)?
+
+
+does there exist constant c > 0 such that f(n) <= c . g(n) for all large n?
+
+divide both sides by g(n)
+2^n+1 / 2^n = 2(n+1-n) = 2^1 = 2
+true because its a constant
+
+2^2n / 2^n = 2^(2n-n) = 2^n = 2n
+false, this grows without bound
+
+3.1-5
+Prove theorem 3.1
+Theorem 3.1
+ For any two functions f.n/ and g.n/,wehavef.n/ D ‚.g.n// if and only if
+ f.n/ D O.g.n// and f.n/ D .g.n//.
+
+ if f(n) = theta(g(n)) , then show f(n) = O(g(n)) and f(n) = omega(g(n))
+and prove the other way around
+
+the constant c1, c2 amd n0 exist when f(n) = theta(g(n))
+
+
+
