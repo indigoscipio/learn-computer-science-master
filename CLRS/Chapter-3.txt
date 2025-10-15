@@ -114,5 +114,43 @@ and prove the other way around
 
 the constant c1, c2 amd n0 exist when f(n) = theta(g(n))
 
+c1 g(n) <= f(n) <= c2 g(n)
+
+since f(n) is between c1 g(n) and c2 g(n) then its
+<= some constant times g(n) => thats the uppper bound, big o
+>= some constant times g(n) => thats the lower bound, big omega
+
+now prove the other way around
+
+if  f(n) = O(g(n)) and f(n) = omega(g(n)), show f(n) = theta(g(n))
+
+we know from definition big O is the upper bound <= some constant times g(n)
+big omega some constant times g(n)
+combine it
+
+c1 (g(n)) <= f(n)
+c2 (g(n)) >= f(n)
+therefore  its sandwitched c1 g(n) <= f(n) <= c2 g(n)
+
+f <= g --- upper bound O
+f >= g --- lower bound Omega
 
 
+3.1-6
+proev that the running time of an algorithm is theta g(n) if and only if 
+its worst case running time is O(g(n))
+and best case is big omega(g(n))
+
+answer:
+
+by the definition of big theta notation we konw there exist some constatnt
+c1 g(n) <= f(n) <= c2 g(n)
+
+we know from definition big o notation is the upper bound f <= g
+and omega lower bound f >= g
+and by definition of theta = O + omega
+
+Tbest(n) <= T(n) <= Tworst(n)
+
+3.1-7
+prove that o(g(n)) intersect w(g(n)) is he empty set
