@@ -1,0 +1,65 @@
+#lang racket
+
+; Perfect
+; num = aliquot
+; 6 = 1 + 2 + 3 + 6 = 6
+
+; Abundant
+; num < aliquot
+; 12 = 1 + 2 + 3 + 4 + 6 = 16
+
+; Deficient
+; num > aliquot
+; 8 = 1 + 2 + 4 = 7
+
+; List-of-number Number Number Number -> List-of-number
+; Adds the valid factors counter and partner to the existing factors list.
+; counter is always added. partner is only added if it is a distinct number from counter
+; and if it is not the original number n itself.
+
+; Number -> String
+; given a number, checks if it;s perfect, abundant or deficient
+; based on their aliquot sum.
+(define (classify n)
+  (let ((num (if (<= n 0) (error "Not a natural number") n) ))
+    ; find all of the factors of n, excluding n itself
+    ; Number List-of-numbers -> List-of-numbers
+    (define (iter counter acc)
+      (cond [(> counter num) acc]
+            [(= (remainder num counter) 0) (let ((partner (/ n counter) ))
+                                             (loop (+ counter 1) (add-factors factors counter partner n))
+                                             ) ]
+            [else (loop (+ counter 1) factors)]
+            )
+      )
+    
+
+    
+    (let* ((factors-list (loop 1 '()))
+           (aliquot-sum (foldr + 0 factors-list)))
+      (cond [(= num aliquot-sum ) "Perfect"]
+            [(< num aliquot-sum ) "Abundant"]
+            [else "Deficient"])
+      )
+    
+   
+  
+    ; determine if the sum of those factors are eq, lt, or gt
+    )
+  )
+
+; Test cases
+
+(classify 28) ; perfect
+(classify 33550336) ; perfect
+(classify 12) ; abundant
+(classify 30) ; perfect
+(classify 33550335) ; perfect
+(classify 2) ; deficient
+(classify 4) ; deficient
+(classify 32) ;deficient
+(classify 33550337) ;deficient
+(classify 1) ;deficient
+(classify 0) ;error
+(classify -1) ;error
+

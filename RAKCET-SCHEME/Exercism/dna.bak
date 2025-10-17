@@ -1,0 +1,28 @@
+#lang racket
+
+; A DNA Sequence is a list of 1 char string consists of either
+; "C","G","T","A"
+
+; An RNA Sequence is a list of 1-char strgin consists of either:
+; "C","G","A","U"
+
+(define (transcribe dna)
+    (cond [(equal? dna "C") "G"]
+          [(equal? dna "G") "C"]
+          [(equal? dna "T") "A"]
+          [else "U"]
+          )
+  )
+
+; List-of-DNA-sequence -> List-of-RNA-sequence
+(define (dna->rna dna)
+  ; base case: return empty string if sequence is empty
+  (cond [(empty? dna) ""]
+        [else (let ((sequence (string->list dna)))
+                (cons (transcribe sequence)
+                      (dna->rna (cdr dna)))
+                )]
+        )
+  )
+
+(dna->rna "CGTACTGC")

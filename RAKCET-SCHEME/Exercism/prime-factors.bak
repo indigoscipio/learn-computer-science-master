@@ -1,0 +1,19 @@
+#lang racket
+
+; given a natural number n, computes its prime factors
+; Number -> List-of-numbers
+(define (factorize n)
+
+  ; acc holds the prime factors seen
+  (define (iter num curr-prime acc)
+    (cond [(eq? (/ num curr-prime) 1) acc]
+          [(eq? (remainder num curr-prime) 0) (iter (/ num curr-prime) curr-prime (cons curr-prime acc))] ;set new num
+          [else (iter (/ num curr-prime) ... () )] ;doesn't divide evenly, move on to the next divisor
+          )
+    )
+  (iter n 2 '())
+  
+  )
+(factorize 2) ;return 2
+(factorize 9) ;'(3 3)
+(factorize 60) ; 

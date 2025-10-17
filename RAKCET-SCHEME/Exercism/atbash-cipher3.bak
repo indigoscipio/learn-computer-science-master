@@ -1,0 +1,138 @@
+#lang racket
+
+; a -> z
+; b -> y
+; c -> x
+; ...
+; z -> a
+
+; Character -> Character
+; given a char, checks if it's alphanumeric
+(define (is-alphanum? char)
+  (or (char-alphabetic? char)
+      (char-numeric? char))      
+  )
+
+; Character -> Character
+; encodes a single alphabetic character with the atbash chiper
+; returns a char with its index mirrored
+(define (encode-char char)
+  (let ((index (- (char->integer char)(char->integer #\a))))
+    (integer->char (+ (- 25 index) (char->integer #\a) ) )
+    )
+  )
+;(encode-char #\a) ; should return #\z
+
+; Character -> Character
+; decodes a char using the atbash cypher
+(define (decode-char char)
+  (encode-char char))
+
+; given a list of chars, return the first n chars
+; Number List-of-chars -> List-of-chars
+(define (grab-first n chars)
+  (cond [(zero? n) '()]
+        [(null? chars) '()]
+        [else (cons (car chars) (grab-first (- n 1) (cdr chars)))])
+  )
+;(grab-first 5 '(#\g #\v #\h #\t #\t #\z))
+
+
+; given a list of chars, drops the first n chars and only returns the rest
+; Number List-of-chars -> List-of-chars
+(define (drop-first n chars)
+  (cond [(zero? n) chars]
+        [(null? chars) '()]
+        [else (drop-first (- n 1) (cdr chars))])
+  )
+;(drop-first 5 '(#\g #\v #\h #\g #\r #\m #\t #\1 #\2 #\3 #\g #\v #\h #\g #\r #\m #\t))
+
+
+; String -> String
+; given a phrase, encodes it using the atbash cypber method
+(define (encode phrase)
+  (let* ((chars (map char-downcase (string->list phrase)))
+         (normalized-chars (filter is-alphanum? chars))
+         )
+    
+    ; for each char in normalized,
+    ; check if it's a alphabetic, if so call encode char
+    ; otherwise keep the numbers the same
+    ; List-of-chars List-of-chars -> List-of-chars
+    (define (iter l acc)
+      (cond [(null? l) (reverse acc)]
+            [(char-alphabetic? (car l)) (iter (cdr l) (cons (encode-char (car l)) acc) ) ]
+            [else (iter (cdr l) (cons (car l) acc) )]
+            )
+      )
+
+    (map (lambda (char) (if (char-alphabetic? char)
+                            (encode-char char)
+                            char) ) normalized-chars)
+
+ 
+    ; approach 1, using chunking
+    #|
+    (let ((result (iter normalized-chars '())))
+      ; acc holds the list of chunks built so far
+      ; List-of-chars Number List-of-List-of-chars -> List-of-List-of-chars
+      (define (split l index curr-chunk acc)
+        (cond [(null? l)
+               (if (null? curr-chunk)
+                   (reverse acc)
+                   (reverse (cons (reverse curr-chunk) acc)) )]
+              [(= index 5)
+               (split l 0 '() (cons (reverse curr-chunk) acc)) ] ;finalize chunk, add it to acc, and start building new chunk
+              [else (split (cdr l)
+                           (+ 1 index)
+                           (cons (car l) curr-chunk)
+                           acc)]) ; build chunk, increase index and recurse
+        )
+      (string-join (map list->string (split result 0 '() '())))
+      )
+
+
+    ; approach 2, using grab/drop
+    (let ((result (iter normalized-chars '())))
+      ;List-of-chars List-of-List-of-chars -> List-of-list-of-chars
+      ; on each iteration, acc builds a list of chunks
+      (define (iter l acc)
+        (cond [(null? l) (reverse acc)]
+              [else (iter (drop-first 5 l) (cons (grab-first 5 l) acc)) ] ;grab the first 5 and put it inside the acc, on the next iteration drop the 1st five
+              )
+        )
+      (string-join (map list->string (iter result '())))
+      )
+        |#
+   
+
+    
+    )
+  )
+(encode "a")
+(encode "yes") ; should return "bvh"
+(encode "Testing,1 2 3, testing.") ; should return "gvhgr mt123 gvhgr mt"
+(encode "mindblowingly") ;should return "nrmwy oldrm tob"
+
+; String -> String
+; given a phrase, decodes it using the atbash cypher
+(define (decode phrase)
+  (let* ((chars (string->list phrase))
+        (valid-chars (filter is-alphanum? chars))
+
+        )
+  (define (iter l acc)
+    (cond [(null? l) (reverse acc)]
+          [(char-numeric? (car l)) (iter (cdr l) (cons (car l) acc))]
+          [else (iter (cdr l) (cons (decode-char (car l)) acc ))]
+          )
+    )
+  (list->string (iter valid-chars '()))  
+    )
+  )
+;(decode "z") ; a
+;(decode "gvhgr mt123 gvhgr mt") ;testing123testing
+;(decode "gsvjf rxpyi ldmul cqfnk hlevi gsvoz abwlt") ;thequickbrownfoxjumpsoverthelazydog
+;(decode "vc vix    r hn") ;exercism
+
+

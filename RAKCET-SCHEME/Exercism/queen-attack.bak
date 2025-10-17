@@ -1,0 +1,5 @@
+#lang racket
+
+(define (attacking? white black)
+  'implement-me!
+  )

@@ -1,0 +1,19 @@
+#lang racket
+
+; a Cleaned NANP is a string
+; that consists of 10 digit telephone number
+; "NXXNXXXXXX"
+; where n is any digit from 2 - 9
+; and X is any digit from 0 - 9
+
+
+
+; String -> Cleaned NANP
+(define (clean phone-number)
+  ; make sure the input are all numbers
+  ; clean the whitespace, plus or minus, dashes, dots
+  )
+(clean "+1 (613)-995-0253")
+(clean "613-995-0253")
+(clean "1 613 995 0253")
+(clean "613.995.0253")

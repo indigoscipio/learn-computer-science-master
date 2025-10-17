@@ -1,0 +1,155 @@
+#lang racket
+
+; exclude digits from encryption
+; E(x) = (a . i + b) mod m
+; i = original leter's index (a=0, b=1, ...)
+; m = size of alphabet
+; a and b = secret keys
+; a must be coprime with 26, eg only have 1 as the only common factor
+
+; Char Pair-of-number -> Char
+; given a number (alphabet index) and a affine key-pair, returns an encrypted char.
+(define (encrypt-char char key-pair)
+  (let ((i (- (char->integer char) (char->integer #\a)) )
+        (a (car key-pair))
+        (b (cdr key-pair))
+        )
+    (integer->char (+ (modulo (+ (* a i) b) 26) (char->integer #\a)))
+    )
+  )
+;(encrypt-char #\t '(5 . 7))
+
+
+; Number Number -> Boolean
+(define (is-coprime? n x)
+  (= (gcd n x) 1)
+  )
+
+; Number -> MaybeNumber
+; given a number n, returns its modular multiplicative
+(define (mmi n)
+  (define (iter counter)
+    (cond [(= (modulo (* n counter) 26) 1) counter]
+          [(> counter 25) (error "Error must be a coprime")]
+          [else (iter (+ counter 1))]
+          )
+    )
+  (iter 1)
+  )
+
+; given an encyrpted char and a key pair, returns a decrypted char
+; Char Pair-of-number -> Char
+(define (decrypt-char char key-pair)
+ (let* ((i (- (char->integer char) (char->integer #\a)))
+        (a (car key-pair))
+        (b (cdr key-pair))
+       )
+   (integer->char (+ (modulo (* (mmi a) (- i b)) 26)
+                     (char->integer #\a)) )
+   )
+  )
+;(decrypt-char #\y '(5 . 7))
+
+; given a list of chars, return the first n chars
+; Number List-of-chars -> List-of-chars
+(define (grab-first n chars)
+  (cond [(zero? n) '()]
+        [(null? chars) '()]
+        [else (cons (car chars) (grab-first (- n 1) (cdr chars)))])
+  )
+;(grab-first 5 '(#\g #\v #\h #\t #\t #\z))
+
+
+; given a list of chars, drops the first n chars and only returns the rest
+; Number List-of-chars -> List-of-chars
+(define (drop-first n chars)
+  (cond [(zero? n) chars]
+        [(null? chars) '()]
+        [else (drop-first (- n 1) (cdr chars))])
+  )
+;(drop-first 5 '(#\g #\v #\h #\g #\r #\m #\t #\1 #\2 #\3 #\g #\v #\h #\g #\r #\m #\t))
+
+;given a char, checks if its valid
+; valid char contains no whitespace or punctuations
+; digits stay as it is
+; Char -> Boolean
+(define (is-valid-char? char)
+  (or (char-alphabetic? char) (char-numeric? char))
+  )
+
+; Pair-of-number String -> String
+;given a pair of key and text, encode text using the affine cipher
+(define (encode key text)
+  (let* ((chars (map char-downcase (string->list text)))
+          (normalized-chars (filter is-valid-char? chars )) ;with removed whitespace and punctuation
+          (is-key-valid? (is-coprime? (car key) 26))
+        )
+
+    ; List-of-chars List-of-chars -> List-of-chars
+    ; encrypt a given list of normalized chars
+    (define (iter l acc)
+      (cond [(null? l) (reverse acc)]
+            [(char-numeric? (car l)) (iter (cdr l) (cons (car l) acc))] ; don't encrypt digits
+            [else (iter (cdr l) (cons (encrypt-char (car l) key) acc)) ]
+            )
+      )
+
+    #|
+    (let ((encrypted-chars (iter normalized-chars '())))
+      ; given a list of encrypted chars, group the list into chunks of n 
+      ; Number List-of-chars -> List-of-List-of-string
+      (define (iter n l acc)
+        (cond [(null? l) (reverse acc)]
+              [else (iter n (drop-first n l) (cons (grab-first n l) acc) )])
+        )
+
+      
+      (if is-key-valid?
+          (string-join (map list->string (iter 5 encrypted-chars '())))
+          (error "Must be a coprime")
+          )
+      )
+    |#
+
+    
+    )
+  )
+
+(encode '(5 . 7) "yes") ;xbt
+(encode '(15 . 18) "no") ;fu
+(encode '(21 . 3) "OMG") ;lvz
+(encode '(25 . 47) "OMG") ;hjp
+(encode '(11 . 15) "mindblowingly") ;rzcwa gnxzc dgt
+(encode '(3 . 4) "Testing,1 2 3, testing.") ;jqgjc rw123 jqgjc rw
+(encode '(5 . 17) "Truth is fiction.") ;iynia fdqfb ifje
+(encode '(17 . 33) "The quick brown fox jumps over the lazy dog.") ;"swxtj npvyk lruol iejdc blaxk swxmh qzglf"
+;(encode '(6 . 17) "This is a test.") ; err
+
+
+#|
+; Pair-of-number String -> String
+; given a key and string, decodes it using the affine cipher
+(define (decode key text)
+ (let* ((chars (map char-downcase (string->list text)))
+       (normalized-chars (filter is-valid-char? chars ))
+       )
+
+   ; List-of-char List-of-char -> List-of-char
+   (define (decrypt l acc)
+     (cond [(null? l) (reverse acc)]
+           [(char-numeric? (car l)) (decrypt (cdr l) (cons (car l) acc))] ;ignore numerics
+           [else (decrypt (cdr l) (cons (decrypt-char (car l) key) acc))]
+           )     
+     )
+   (list->string (decrypt normalized-chars '()))
+   
+   )
+  )
+(decode '(3 . 7) "tytgn fjr") ;exercism
+(decode '(19 . 16) "qdwju nqcro muwhn odqun oppmd aunwd o") ;anobstacleisoftenasteppingstone
+(decode '(25 . 7) "odpoz ub123 odpoz ub") ;testing123testing
+(decode '(17 . 33) "swxtj npvyk lruol iejdc blaxk swxmh qzglf") ;thequickbrownfoxjumpsoverthelazydog
+(decode '(17 . 33) "swxtjnpvyklruoliejdcblaxkswxmhqzglf")
+(decode '(15 . 16) "vszzm    cly   yd cg    qdp") ;jollygreengiant
+;(decode '(13 . 5) "Test") ; coprime error
+|#

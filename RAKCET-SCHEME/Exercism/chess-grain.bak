@@ -1,0 +1,17 @@
+#lang racket
+
+
+; how many grains were ona given square
+(define (square n)
+  (define (iter init acc)
+       (cond []
+             []) 
+    )
+  (iter 1 1)
+  )
+
+; the total number of grains on the chessboard
+(define total
+  (expt 2 64)
+  )
+

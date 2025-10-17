@@ -1,0 +1,13 @@
+#lang racket
+
+; Number -> List-of-[XList-of-number]
+; generates the first n rows of a pascals triangles
+(define (pascals-triangle n)
+  ...
+  )
+(pascals-triangle 3)
+
+; Number -> List-of-Number
+(define (fib n)
+
+  )
