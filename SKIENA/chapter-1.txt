@@ -101,3 +101,42 @@ Sk+1 = (k+1)! - 1 + k+1 * k+1!
 sk+1 = k+1! (1 + k+1) - 1
 sk+1 = k+1! (k+2) - 1
 sk+1 = k+2! - 1
+
+
+_____________________
+Modeling means turning a messy real-world problem into a clean math or logic problem that we already understand.
+
+permutation problm
+what order should i do these things?
+- robot tour
+- sorting
+- scheduling
+
+subsets problem
+which items should i choose?
+order doesn't matter
+- choosing members
+- movie scheduling
+
+Tree Problem
+hierarchical parent/child relationship
+- company orgs chart
+- file system
+- decision tree
+- family tree
+- categories, subcategories
+
+graphs problem
+anything connected to anything else
+- road maps
+- social network
+- computer networ
+
+points problem
+- location in space
+- location on map
+-stars in astronomy
+
+strings problem
+- dna seq
+- text docs
