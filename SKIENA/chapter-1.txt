@@ -140,3 +140,24 @@ points problem
 strings problem
 - dna seq
 - text docs
+
+
+_____________________
+
+Exercises
+
+1-1
+show that a+b can be less than min(a,b)
+
+lets pick a small example
+let a = -1
+let b = -2
+
+a+b = -1 -2 = -3
+min(a,b) = min(-1,-2) = -2
+
+-3 < -2? true
+therefore shown
+
+1-2 show that axb can be less than min(a,b)
+
