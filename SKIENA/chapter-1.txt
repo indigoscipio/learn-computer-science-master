@@ -161,3 +161,47 @@ therefore shown
 
 1-2 show that axb can be less than min(a,b)
 
+lets pick an example
+a = -1
+b = 2
+
+a x b = -1 * 2 = -2
+min(a,b) = min(-1,2 = -1)
+
+therefore axb < min(a,b)
+
+1-5
+
+The knapsack problem is as follows: given a set of integers S = {s1,s2,...,sn},
+ and a target number T, find a subset of S which adds up exactly to T. For example,
+ there exists a subset within S = {1,2,5,9,10} that adds up to T = 22 but not
+ T =23.
+
+ Find counterexamples to each of the following algorithms for the knapsack problem.
+ That is, giving an S and T such that the subset is selected using the algorithm does
+ not leave the knapsack completely full, even though such a solution exists.
+
+a. put the elements of s in the knapsack in left to right order if they fit.
+ie the first fit algorithm
+
+b. put the elements of s in the knapsack from smallest to largest. ie tbest fir lagorithm
+
+c. put the elements of s in the knpsack from largest to smallest
+
+
+answer:
+a. this would fail because it fails to plan ahdead
+it doesn't know what the unchecked part is
+counterexample: 
+let T = 6
+S={2,3,3}
+
+b. smallest to largest and it fails
+it fails because it waste space early
+it has no room left for single large item
+counterexample:
+let S = {1,2,2,6}
+let T = 6
+
+
+c. 
