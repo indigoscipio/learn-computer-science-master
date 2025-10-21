@@ -270,3 +270,24 @@ we must show it holds true for the first k+1 coeficients
 at each iteration p represents the total part of polynomial already processed/sum
 by multiplying p and x.
 
+induction
+1.10. prove that sigma from i = 1 to n of i = n(n+1)/2 for n>=0 by induction
+
+answer:
+base case: n = 0
+n(n+1)/2
+= 0(0+1)/2
+= 0/2
+= 0
+ true since the sum of the first 0 digit is 0
+
+inductive hypothesis
+assume the formula works for n = k
+k(k+1)/2
+
+inductive step
+show that the formula works for n = k + 1
+k+1(k+1+1)/2
+= k+1(k+2)/2
+
+1-11
