@@ -18,5 +18,6 @@ rcross-bb
 ; Exercise 2.8
 ; computes the sum of first n squares, where n is a nonnegative integer
 (define (sum-of-squares n)
-
+  (cond [(> a b) 0]
+        [else (* (sum-integers-from-to (+ a 1) b) a)])
   )

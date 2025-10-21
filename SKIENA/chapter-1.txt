@@ -290,4 +290,32 @@ show that the formula works for n = k + 1
 k+1(k+1+1)/2
 = k+1(k+2)/2
 
-1-11
+1-11.
+prove that sigma from i = 1 to n of i^2 = n(n+1)(2n+1)/6 for n>= 0 by induction
+
+base case: n = 0
+0(0+1)(2(0)+1)/6
+= 0(1)(1)/6
+= 0/6 = 0
+
+sum of 0^2 = 0
+so the base case holds
+
+inductive hypothesis
+assume the formula works for n = k
+1^2 + 2^2 + ... + k^2 = k(k+1)(2k+1)/6
+
+inductive step
+we must show the formula forks for n = k+ 1
+use IH to replace sum to up k
+
+1^2 + 2^2 + ... + k^2 + (k+1)^2
+= [k(k+1)(2k+1)/6] + [k+1^2]
+= k+1(k(2k+1)/6 + k+1)
+= k+1 (2k^2+k/6 + k+1)
+= k+1 . 2k^2 + 6k + 6 / 6
+= k+1 . (k+2) (2k+3) / 6
+= k+1 . k+2 . 2k + 3 / 6
+
+1-12 prove that sigma from i = 1 to n of i^3 = n^2(n+1)^2/4 for n>= 0 by induction
+
