@@ -319,3 +319,23 @@ use IH to replace sum to up k
 
 1-12 prove that sigma from i = 1 to n of i^3 = n^2(n+1)^2/4 for n>= 0 by induction
 
+base case: n = 0
+i^3 = 0^3 = 0
+
+ n^2(n+1)^2/4
+ 0^2(1)^2/4
+ = 0/4 = 0
+
+ therefore the bsae case holds
+ inductive hypothesis
+ assume the formula works for n = k
+1^3 + 2^3 + ... + k^3 = n^2(n+1)^2/4
+
+inductive step
+we must show the ofrmula works for n = k+1
+1^3 + 2^3 + ... + k^3 + (k+1)^3
+
+use IH to replace sum up to k
+[k^2(k+1)^2/4] + (k+1)^3
+= k+1^2 (k^2)/4 + k+1
+= (k+1)^2(k+2)^2/4
