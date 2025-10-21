@@ -227,7 +227,8 @@ s2 = {1,2,3}
 s3 = {4,5}
 
 Proofs of correctness
-1-7. prove the correctness of the following recursive algorithm to multiply two natural numbers,
+1-7. prove the correctness of the following recursive algorithm to multiply
+two natural numbers,
 for all integer constants c>= 2
 
 function multiply(2)
@@ -236,3 +237,36 @@ function multiply(2)
         return 0
     else
         return multiply(cy, floor(z/c)) + y . (z mod c)
+
+answer:
+
+base case: z = 0 -> yz = 0 -> any number multiplied by 0 is always 0, so correct
+
+assume/IH: multiply(y,z) works correctly for all z' < z
+
+prove/IS: correct for all integers
+
+1-8
+prove the correctness of the following algorithm for evaluating a polynomial
+P(x) = anx^n+an-1xn^-1+...+a1x+ao
+
+function horner(A,x)
+    p = an
+    for i from n - 1 to 0
+    p = p * x + A
+    return p
+
+answer:
+
+base case: a0 -> lowest term which is just a coeficient
+Before the first iteration, i = n-1 and p = a n
+
+
+inductive hypothesis
+assume the algorithm holds at the start of iteration i
+
+inductive step
+we must show it holds true for the first k+1 coeficients
+at each iteration p represents the total part of polynomial already processed/sum
+by multiplying p and x.
+
