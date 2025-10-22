@@ -436,3 +436,40 @@ focus on LHS -> substitute from IH
 = k^2 / 4 + k+1 
 = (k+1)^2(k+2)^2/4
 
+Estimation
+1-19. Do all the books you own total at least one million pages? How many total
+ pages are stored in your school library?
+
+answer:
+what if i don't own any books at all? does that mean it has 0 pages? so at least one million pages is false?
+im not sure how to answer this. lets assume average person reads 10-20 books a year
+and each book has around average of 300-500 pages 
+so from they were born - average adult age (25 or above) they have colleceed 10-20*300-500
+so around 3000-10000 pages - this number seesm to be too low. maybe this is for person who doesn't read oboks
+what counts as a book? i forgot to add school/academic books lets say from grade 1 - 12+ up to college
+lets say additional 30 books/year so 30*25 = 750 books * 300-500 = 225000 - 375000
+i'm gonna say false here and the answer depends if the person is a bookworm or just a regular person
+
+how many total pages are stored in your school library?
+now this one im not suer how to answer
+lets assume one "deck" holds around 100 - 200 books
+and average library has around 50-100 of these decks
+
+so average library should hold around 5000 - 20000 total books
+and multiply that by the average number of pages (300-500). lets pick an average lets say 300 pages average book
+so 300*5000 - 300*20000 = 1.500.000 - 6.000.0000 pages total
+
+
+1-20
+how many words are there in this textbook?
+
+answer:
+lets see, this is a skiena algorithm textbook im currently opening it says it has around 739 pages
+ don't know what the average word in a page is but i remember having to
+ do a 200 word essay that takes around almost a page
+since this is a textbook lets say each page holds around 300 - 500 cause its more dense
+so multiply it 739*300 - 739*500 = ~220000 - 370000
+
+
+1-22. How many hours are one million seconds? How many days? Answer these
+ questions by doing all arithmetic in your head.
