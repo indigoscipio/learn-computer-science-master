@@ -339,3 +339,96 @@ use IH to replace sum up to k
 [k^2(k+1)^2/4] + (k+1)^3
 = k+1^2 (k^2)/4 + k+1
 = (k+1)^2(k+2)^2/4
+
+1-13 prove that
+sigma from i = 1 to n of i(i+1)(i+2) = n(n+1)(n+2)(n+3)/4
+
+answer:
+base case: n=0
+n(n+1)(n+2)(n+3)/4 = 0.1.2.3/4 = 0
+i(i+1)(i+2) = 0(1)(2) = 0 
+so the base case holds
+
+inductive hypothesis
+assume formula holds for n = k
+1(1+1)(1+2)+ ... + k(k+1)(k+2) = k(k+1)(k+2)(k+3)/4
+
+inductive step
+we must show the formula works for n=k+1
+use IH to replace sum up to k
+[1(1+1)(1+2)+ ... + k(k+1)(k+2)] + k+1
+= k(k+1)(k+2)(k+3)/4 + (k+1)(k+2)(k+3)
+= (k+1)(k+2)(k+3) . k+4/4
+= 
+
+1-16
+prove by induction that n^3 + 2n is divisible by 3 for all n>= 0
+
+base case: n = 0
+n^3 + 2n = 0^3 + 2(0) = 0 + 0 = 0
+is 0 divisible by 3? yes, 0 is divisibe by any number except for 0 itself
+
+inductive hypothesis
+assume the formula nolds for n = k
+k^3 + 2k is divisble by 3
+that means k^3 + 2k = 3m for some integer m
+
+inductive step
+we must show that the formula works for n = k+1
+k+1^3 + 2(k+1) is divisble by 3
+= (k+1)(k+1)(k+1) + 2(k+1)
+= (k+1)(k^2+2k+1) + 2(k+1)
+= k^3 + 2k^2 + k + k^2 + 2k + 1 + 2(k+1)
+= k^3 + 3k^2 +3k + 1 + 2(k+1)
+= k^3 + 3k^2 + 5k + 3
+= k^3 + 2k + 3k + 3k^2 + 3
+= 3m + (3k^2 + 3k + 3)
+= 3m + 3(k^2 + k + 1)
+
+
+1-17
+prove by induction that a tree with n vertices has exactly n-1 edges
+
+base case
+tree with one single vertex -> n = 1
+edge = 0 since its not connected to other vertex
+n - 1 = 0 -> base case holds
+
+inductive step
+suppose the formula holds for n = k vertices
+that is, a tree with k vertices has exactly k - 1 edges
+
+inductive hypothesis
+we must show that the property holds for n = k + 1 vertices
+to attach a new vertex to a tree and keep it ocnnected
+the minimum edge rquired is at least 1
+
+we know from IH a tree with k vertices has k-1 edges
+so k+1 vertices kas k+1-1 edges
+so k edges total.
+
+1-18
+prove by mathematical induction that the sum of the cubes of the first
+n positive integer is qual to the square of the sum of these integers, ie
+
+sigma from i to n of i^3 = (sigma from i to n of i)^2
+
+base case: n = 1/first 1 positive integer
+sigma from i to 1 of i^3 = 1^3 = 1
+(sigma from i to n of i)^2 = (1)^2 = 1
+base case holds
+
+inductive hypothesis
+assume the formula holds for n = k positive integer
+
+sigma from i to k of i^3 = (sigma from i to k of i)^2
+(1^3 + ... + k^3) = (1+2+...+k)^2
+
+inductive step
+we must show that the formula holds for n = k+1
+
+(1^3 + ... + k^3) + (k+1)^3 = (1+2+...+k+(k+1))^2
+
+focus on LHS -> substitute from IH
+(1+2+...+k)^2 + (k+1)^3 
+= ...?
