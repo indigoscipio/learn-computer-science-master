@@ -7,8 +7,15 @@
 ; given point 1 and point 2, calculates its distance
 ; using pythagoren theorem
 (define (calc-dist p1 p2)
-
+  (let ((x1 (car p1))
+        (y1 (cdr p1))
+        (x2 (car p2))
+        (y2 (cdr p2))
+        )
+    (sqrt (+ (sqr (- x2 x1) ) (sqr (- y2 y1))) )
+    )
   )
+;(calc-dist p1 p2)
 
 ; a Point is a pair of number
 ; interpretation stores a position of x and y axis
@@ -26,15 +33,23 @@
 ; finds the city in points that is closest to p, excluding p itself
 ; Point List-of-points -> Point
 (define (nearest p lop)
-  (define (loop points closest)
+  (define (loop points closest-dist closest-p)
     ; base case 1: points has 0 points -> return empty list
     ; base case 2: points has 1 point -> return that 1 point
-    ; recursive case:
+    ; recursive case: compare dist between p and car points. if its < closest, replace closest else go on to the next one
     (cond [(null? points) '()]
           [(null? (cdr points)) (car points)]
-          [else 0]
+          [else (let ((curr-dist (calc-dist (car points) p)))
+                  (if (< curr-dist closest-dist)
+                      closest-dist
+                      (loop (cdr points) closest-dist closest-p)
+                      )
+                  )]
           )
     )
-  (loop lop ...)
+  ; initialize closest point to p and closest dist to 0
+  (loop lop (calc-dist p (car lop)) (car lop) )
   )
 (nearest p1 (list p2 p3))
+;(nearest p1 '())
+;(nearest p1 (list p2))
