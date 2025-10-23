@@ -1,0 +1,17 @@
+#lang racket
+
+; a Point is a pair of number
+; interpretation stores a position of x and y axis
+; (cons 10 50)
+
+; a Points is a list of point
+; (list (cons 10 20) (cons 20 50))
+
+; implementation of TSP with nearest neighbour
+; from skiena 1.1
+; Points -> Number
+(define (tsp-nn points)
+ ...
+  )
+(tsp-nn)
+
