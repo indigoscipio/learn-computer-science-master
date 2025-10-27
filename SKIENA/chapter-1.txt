@@ -543,3 +543,7 @@ NearestNeighbor(P)
  if dist(s,t) ≤ d then sm = s, tm = t,andd = dist(s,t)
  Connect (sm,tm) by an edge
  Connect the two endpoints by an edge
+
+ 
+=============  Interview problems
+
