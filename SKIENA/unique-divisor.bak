@@ -1,0 +1,17 @@
+#lang racket
+
+
+; Exercise 1-28
+; integer division without using / or *
+
+; Number Number -> Number
+; performs division without using / or *
+; where a is the dividend and b is the divisor
+(define (div a b)
+  ; base case: 
+  ; at each step
+
+  ; handle case where b = 0
+
+  )
+(div 24 4) ; should return 6
