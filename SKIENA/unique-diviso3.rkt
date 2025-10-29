@@ -15,23 +15,27 @@
 ; where a is the dividend and b is the divisor
 ; basically like (quotient) in scheme?
 (define (div a b)
-
   ; Number Number -> (cons Number Number)
+  ; finds largest multiple of divisor that fits into current dividend (chunk diivdend)
+  ; and how many times that divisor was used to make it (chunk quotient)
   (define (find-biggest-chunk dividend chunk times)
     (cond [(> (* chunk 2) dividend) (cons chunk times)]
-          [else (find-biggest-chunk dividend (* chunk 2) (* times 2))]
+          [else (find-biggest-chunk dividend (+ chunk chunk) (+ times times))]
           )
     )
   
   
   (define (loop dividend divisor quotient)
     (cond [(< dividend divisor) quotient]
-          [else (loop (- dividend divisor) divisor (+ 1 quotient)) ])
+          [else (let* ((chunk (find-biggest-chunk dividend divisor 1))
+                       (chunk-dividend (car chunk))
+                       (chunk-quotient (cdr chunk))
+                       )
+                  (loop (- dividend chunk-dividend) divisor (+ chunk-quotient quotient))
+                  ) ] )
     )
 
-  (find-biggest-chunk 50 6 1)
-
-  #|
+  
   ; handle case where b = 0
   (if (= b 0)
       (error "b can't be 0")
@@ -42,7 +46,7 @@
         (* sign quotient)
         )
       )
-  |#
+ 
 
   )
 (div 24 -4) ; should return 6
