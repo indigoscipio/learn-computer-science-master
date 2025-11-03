@@ -1,0 +1,9 @@
+#lang racket
+
+
+; 
+(define (find-match word target)
+
+  )
+(find-march "hello" "ll")
+(find-match "hey" "h")

@@ -1,0 +1,80 @@
+RAM Modeling
+
+Addiiton, mult, comparison = 1 step
+Memory read/write= 1step
+
+
+Big O
+measures number of steps grows
+as the input size n grows
+it measure growth rate, not runtime
+what is the shape of the curve?
+
+O(n²) = “you’ll never go faster than n² steps”
+
+Ω(n) = “you’ll always go at least n steps”
+
+Θ(n log n) = “you consistently hover around n log n steps”
+
+
+===========
+
+f(n) = Your actual travel time in a specific car
+
+g(n) = Travel time of a rocket bike
+
+If you say "My car is O(rocket bike)", you're saying: 
+On a long enough road, my car will never be slower than a rocket bike.
+The rocket bike is a valid upper bound for my car's speed."
+
+O = "Won't be worse than..." (Upper bound)
+
+Ω = "Won't be better than..." (Lower bound)
+
+Θ = "Grows exactly like..." (Tight bound - most informative!)
+
+===========
+
+Problem: 
+is (x + y)^2 = O(x^2 + y^2)?
+
+answer:
+by the definitino of O(n), f(n) = O(g(n)) iff there exists constant c
+such that  n f (n) <= c g(n)
+(x+y)^2 <= (x^2 + y^2) for some constant c
+
+LHS
+(x + y) (x + y) 
+= x^2 + 2xy + y^2 <= c(x^2 + y^2) for all sufficiently large x,y
+
+we need to show 2xy is less than or equal to some constant times (x^2 + y^2)
+
+since we know any real number squared is always >= 0
+(x-y)^2 >= 0
+(x^2 + 2xy + y^2) >= 0
+x^2 + y^2 >= 2xy
+
+x² + 2xy + y² ≤ x² + (x² + y²) + y²
+
+
+
+ ===================
+
+ Stop and think: transitive experience
+ problem: show that big o relationship are transitive.
+that is, if f (n) = O (g(n)) and
+g(n) = O(h(n)), then f(n) = O(h(n))
+
+answer:
+
+f(n) = O(g(n))
+by definition, f(n) = o(g(n)) iff there exists constant c such that 
+n . f(n) <= c g(n)
+this means f grows much slower than g
+
+g(n) = O(h(n))
+n . g(n) <= c h(n)
+this means g grows slower than h
+
+therefore if f < g, then g < h
+so f < g < h
