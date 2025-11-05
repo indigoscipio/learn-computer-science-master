@@ -234,3 +234,62 @@ for i := 1 to n do
         for k := j to i+j do
             r := r+1
 return(r)
+
+answer:
+lets trace pesky(1)
+r = 0
+outer -> i = 1 to 1
+
+i = 1
+    j = 1 to 1
+    j = 1
+        k = 1 to 2
+        k = 1
+            r = 0 + 1 = 1
+        k = 2
+            r = 1 + 1 = 2
+return 2
+
+pesky(2)
+r = 0
+ouer -> i = 1 to 2
+i = 1
+    j = 1 to 2
+    j = 1
+        k = 1 to 2
+        k = 1
+            r = 0 + 1 = 1
+        k = 2
+            r = 2
+    j = 2
+        k = 2 to 3
+        k = 2
+            r = 3
+        k = 3
+            r = 4
+
+i = 2
+    j = 1 to 2
+    j = 1
+        k = 1 to 3
+        k = 1
+            r = 5
+        k = 2
+            r = 6
+        k = 3
+            r = 7
+    j = 2
+        k = 2 to 4
+        k = 2
+            r = 8
+        k = 3
+            r = 9
+        k = 4
+            r = 10
+return 10
+
+pattern: n=1 return 2, n=2 return 10
+the sum from i=1 to n + the sum of j=1 to i of i + j
+
+worst case running time: feels limilar to toe previous triangular thing
+n * n * n since its 3 loops??
