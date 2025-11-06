@@ -293,3 +293,145 @@ the sum from i=1 to n + the sum of j=1 to i of i + j
 
 worst case running time: feels limilar to toe previous triangular thing
 n * n * n since its 3 loops??
+
+2-3
+ 2.2 what value is returned by the following function?
+ express your answer as a function of n
+ give worst-case running time using big o notation
+
+function prestiferous(n)
+r:= 0
+ for i := 1 to n do
+    for j := 1 to i do
+        for k := j to i+j do
+            for l := 1 to i+j −k do
+             r := r+1
+return(r)
+similar to the previous one
+
+trace example
+r = 1
+
+outer loop
+i = 1 to 1
+i = 1
+    j = 1 to 1
+    j = 1
+        k = 1 to 2
+        k = 1
+            l = 1 to 1
+        k = 2
+            l = 1 to 0
+
+worse case = 4  loops = n *n * n * n
+it only runs when i + j - k > 0
+O(n^4)
+
+2.4 
+ 2.2 what value is returned by the following function?
+ express your answer as a function of n
+ give worst-case running time using big o notation
+
+function conondrum(n)
+r := 0
+    for i := 1 to n do
+        for j := i+1to n do
+            for k := i+j −1 to n do
+                r := r+1
+return(r)
+
+inner loop k runs when i + j - 1 < n
+
+2.5
+suppose the following algorithm is used to evaluate polynomial
+p(x) = anx^n + an-1x^n-1 + ... + a1x + a0
+
+p:= a0 ; lowest term?
+xpower := 1 ; curr power? initialize power to 1
+for i:=1 to n do
+    xpower := x * xpower
+    p:= p + ai * xpower
+end
+
+a. how many multpilications are done in the worst case? how many additions?
+b. how many multiplications are done on the average?
+c. can you improve this algorithm?
+
+answer:
+a. worst case:
+if there are many terms
+the main loop:
+
+runs from 1 to n
+only do one mltiplication and one addition
+that is, update xpower to x * xpower
+and update p to p + ai * xpower
+for each terms,
+so for the whole algorithm
+
+pre loop + (operations per iteration * n)
+
+b. how many multplications are done on the average?
+Since the algorithm does the exact same work regardless of the coefficient values, the average case is identical to the worst case.
+
+
+
+c. horner;s rule
+accumulate the sum of term multiplications inside a variable
+and sum it each iteration
+
+2.6
+prove that the following algorithm for computing the maximum value in a narray A[1...n]
+is correct
+
+
+function max(A)
+    m:=A[1] ;set current max  value to first item in array A
+    for i := 2 to n do  ; loop from 2nd item to n (total array length)
+        if A[i] > m then m := A[i] ; check if current item's value is greater than m, if so this is new max found so far
+    return (m)
+
+
+initialization:
+before the start of the iteration, m: A[1]
+set the current max value to the Array's first item
+since we've only seen one element so far, m correctly holds the maximum of the subarray A[1..1]
+
+maintenance:
+at the start of each iteration, the loop checks for the next current item of the ARray
+it checks if there is a item greater than temporary max item initialized
+
+assume m holds the maximum of a[1...i-1]. After comparing with A[i] m becomes max(m,A[i]) which is the maximums of A[1..i]
+
+terminateion
+loop terminates when i = n + 1
+ At this point, m holds the maximum of A[1..n], which is exactly what we return.
+
+ Big Oh
+
+ 2.7
+ true or false?
+ a. is 2^n+1 = O(2^n)?
+ b. is 2^2n = O(2^n)?
+
+ answer:
+a. true because 2^n+1 is just 2^n . 2^1 which is just O(2^n)
+b. false because 2^2n <= 2^n . c
+
+2.8
+for each of the following pairs of funciton,
+either f(n) is in O(g(n)),
+f(n) is in Omega(g(n)),
+or f(n) = theta(g(n)) determine correct relationship and explain why
+
+a. f(n) = log n^2;
+g(n) = log n + 5
+
+fn dominant growth = log n^2 = 2 . log(n)
+gn dominant growth = log n
+
+since the grows are the same
+lowre bound is the same and upper bound is the same therefore 
+f(n) is in theta(g(n))
+
+b. 
