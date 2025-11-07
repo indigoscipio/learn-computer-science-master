@@ -434,4 +434,187 @@ since the grows are the same
 lowre bound is the same and upper bound is the same therefore 
 f(n) is in theta(g(n))
 
-b. 
+b. f(n) = sqrt(n)
+g(n) = log n^2
+
+fn growth = sqrt(n)
+gn growth = log(n^2) = 2 . log(n)
+
+since sqrt grows faster than log,
+
+f(n) <= c . g(n)
+but sqrt n grows faster than log n
+f(n) = Omega(g(n))
+g(n) = O(f(n))
+
+c. f(n) = log^2 n
+g(n) = log n
+
+fn growth = log^2 n = log^2 = log n . log n
+gn growth log n
+
+n = 100 -> log n = 6.6, log^2 n = 43.6
+n = 1000 -> log n = 20, log^2 n = 400
+gn grows slower since its log n
+
+therefore fn >= gn
+so fn = big omega (gn)
+gn = big O (fn)
+
+d. f(n) = n
+g(n) = log^2 n
+
+here n grows linearly
+n = 100 -> log n^2 = 44
+n = 1000 -> log n^2 = 400
+
+n grows faster than log^2 n
+therefore
+
+fn > gn
+so f(n) = big omega(g(n))
+and g(n) = big o (f(n))
+
+e. f(n) = n log n + n
+g(n) = log n
+
+for n = 10
+f(10) = 10 . log2 10 + 10 = 10 . 3.3 + 10 = 43
+g(10) = log2 10 = 3.3
+
+for n = 100
+f(100) = 100 . log2 100 + 100 = 100 . 6.64 + 100 = 664 + 100 = 764
+g(100) = log 100 = 6.64
+
+therefore fn grows faster than gn
+fn > gn
+therefore fn = big omega (g(n))
+and g(n) = big O (f(n))
+
+f. f(n) = 10
+g(n) = log 10 = 3.3
+
+fn grows faster here
+fn/gn = 10/3 = ~3
+but the growth doens't pass each other its always linearly
+
+fn = O(1)
+gn = O(1)
+so fn = big theta of gn
+and gn = big theta of fn
+
+g. f(n) = 2^n,
+g(n) = 10n^2
+
+n = 10
+2^10 = 1024
+10.10^2 = 1000
+
+fn grows faster than gn - exponential n growth
+so fn > gn
+therfore fn = big omega (gn)
+2^n = big omega(10n^2)
+
+and gn = big O (fn)
+10n^2 = big O (2^n)
+
+h. f(n) = 2^n
+g(n) = 3^n
+
+n = 10
+f(10) = 2^10 = 1024
+g(10) = 3^10 = 59049
+ratio = 0.01
+
+n = 20
+f(10) = 2^10 = 1048576
+g(10) = 3^10 = 3486784401
+ratio = 0.0003
+
+therefore 3^n grows faster
+gn > fn
+so g(n) = big Omega (fn)
+and f(n) = big O (gn)
+
+Any cⁿ vs dⁿ where d > c → dⁿ dominates
+
+2.9
+for each following pairs of function fn and gn
+determine wheter fn = O(g(n)) , gn = O(f(n)) or both
+
+a. fn = (n^2-n)/2
+gn = 6n
+
+fn -> n^2 growth dominates
+gn -> n growth
+
+therefore fn grows faster than gn
+so fn > gn, fn = big omega gn
+and gn = O(f(n))
+
+As n → ∞, does f(n)/g(n) approach a constant or infinity
+
+b. fn = n + 2sqrt(n)
+g(n) = n^2
+
+fn -> n growth dominates
+gn -> n^2 growth
+
+therefore gn > fn
+so gn = big omega (fn)
+and fn = O(g(n))
+n = O(n^2)
+
+c. fn = n log n
+gn = n sqrt n / 2
+
+fn -> n log n growth
+gn -> n . n^1/2 / 2 = n^1.5
+
+ gn grows faster than fn
+ so gn > fn
+ therefore fn = O(g(n))
+
+d. f(n) = n + log n
+g(n) = sqrt(n)
+
+which one grows faster?
+n = 10
+f(10) = 10 + log2 10 = 10 + 3.3
+g(10) = sqrt 10 = 3.1
+ratio fn/gn = ~1.06
+
+n = 100
+f(100) = 100 + log2 100 = 100 + 6.6 = 106.6
+g(100) = sqrt 100 = 3.1 = 10
+ratio = 10.6
+
+therefore fn dominates and grows faster
+so fn > gn, and gn = O(f(n))
+
+e. 
+fn = 2(log n)^2
+gn = log n + 1
+
+
+fn grows faster than gn since it grows like log n . log n
+therfore fn > gn, so gn = O(f(n))
+
+f. fn = 4n . log n + n
+gn = (n^2-n) / 2
+
+fn = n dominates
+gn = n^2 dominates
+therefore gn > fn
+so fn = O(g(n))
+
+2-10
+prove that n^3 - 3n^2 - n + 1 = big theta (n^3)
+
+to prove big theta we must show that
+fn = big omega (gn)
+and gn = big O (fn)
+
+n^3 - 3n^2 - n + 1
+here the term n^3 dominates
+.. ??
