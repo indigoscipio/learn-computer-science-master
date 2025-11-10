@@ -766,3 +766,148 @@ f1(n) + f2(n) = c1 . g1(n) + c2 . g2(n)
 2.14
 Prove that if f1(N)=Ω(g1(n)) and f2(n)=Ω(g2(n)), then f1(n)+f2(n)=
  Ω(g1(n)+g2(n)).
+
+ answer:
+ since f1n = Ωg1(n) and f2n = Ωg2(n),
+  then f1n + f2n = Ω(g1n + g2n)
+
+the sum of two functions is govern by the dominant one
+Ω(gn + gn) -> Ω(max gn, gn)
+
+since f1n = Ωg1n, there exist constant c1 > 0 and n1 such that
+f1n >= c1 . g1n for all n >= n1
+
+since f2n = Ωg2n, there exist constant c2 > 0 and n2 such that
+f2n >= c2 . g2n for all n >= n2
+
+then
+f1n + f2n >= c1 . g2n + c2 . g2n
+
+2.15
+3] Prove that if f1(n)=O(g1(n)) and f2(n)=O(g2(n)), then f1(n) · f2(n)=
+ O(g1(n) · g2(n))
+
+ since f1n = og1n and f2n = og2n
+ then f1n . f2n = o (g1n . g2n)
+
+ by definition of big o,
+ there cists some constant c1 and n1 such that
+ f1n <= c1 . g1n for all n >= n1
+
+ and 
+ f2n <= c2 . g2n for all n >= n2
+
+if f1 <= c1 . g1 and f2 <= c2 . g2 then
+ f1 . f2 <= c1 . g1 . c2 . g2
+f₁·f₂ ≤ (c₁·g₁)·(c₂·g₂) = (c₁·c₂)·(g₁·g₂)
+f₁(n)·f₂(n) ≤ C·[g₁(n)·g₂(n)] for all n ≥ N
+
+let C = c1 .c2 and  N = max(n1, n2)
+then for all n >= N, we have n >= n1 and n >= n2
+therefore equalitties hold
+
+2.16
+prove for all k>=1 and all sets of constants {ak, ak-1, ..., a1, a0} E R,
+akn^k + ak-1n^k-1 + ... + a1n + a0 = O(n^k)
+
+answer:
+by definition of big O, there exists constant c and n0 such that
+fn <= c . gn for all n >= n0
+akn^k + ak-1n^k-1 + ... + a1n + a0 <= c . n^k
+= ...
+
+2.17 
+[5] Show that for any real constants a and b, b>0
+ (n +a)^b =Θ(n^b)
+
+by definition of big theta there exist ocnstant c1 and c2 and n1 and n2 such that
+
+fn = theta(gn)
+fn <= c1. gn and fn >= c2 . gn
+
+part 1 - upper bound
+(n+a)^b <= c1 . n^b
+???
+
+
+2.18
+List the functions below from the lowest to the highest order. If any two or
+ more are of the same order, indicate which.
+
+ n
+ 2n
+ ln n
+ n−n^3+7n^5
+ lg n
+ sqrt n
+ e^n
+n^2 + lg n
+n^2
+2^n-1
+lg lg n
+n^3
+(lg n)^2
+n!
+n^1+e where 0 < e < 1
+
+answer
+lowest to highest growth
+5. lg lg n
+1. lg n
+2. ln n
+4. (lg n)^2
+6. sqrt n
+7. n
+8. n^1+e
+9. n^2
+10. n^2 + lg n
+11. n^3
+12. n - n^3 + 7n^5
+13. 2^n-1
+14. 2^n
+15. e^n
+16. n!
+
+2.19 list thefunctions below from lowest to highest order
+if any two or more are the same indicate which
+
+sqrt n
+n
+2^n
+n log n
+n - n^3 + 7n^5
+n^2 + log n
+n^2
+n^3
+log n
+n^1/3 + log n
+(log n)^2
+n!
+ln n
+n/log n
+log log n
+(1/3)^n
+(3/2)^n
+6
+
+answer:
+lowest to hiwghest growth
+1/3^n
+6
+log log n
+log n
+ln n
+(log n)^2
+n^1/3 + log n
+sqrt n
+n / log n
+n
+n log n
+n^2
+n^2 + log n
+n^3
+n - n^3 + 7n^5
+3/2^n
+n^2
+2^n
+n!
