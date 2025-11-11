@@ -911,3 +911,112 @@ n - n^3 + 7n^5
 n^2
 2^n
 n!
+
+2.20
+find two functions fn and gn that satisfy the following relationship
+if no such f and g exist write none
+a.  f(n)=o(g(n)) and f(n) does not equal Θ(g(n))
+b.f(n)=Θ(g(n)) and f(n)=o(g(n))
+c.  f(n)=Θ(g(n)) and f(n) does not equal  O(g(n))
+d. f(n)=Ω(g(n)) and f(n) does not equal O(g(n))
+
+answer:
+
+
+2.21
+true or false?
+a. 2n^2 + 1 = O(n^2)
+answer:
+
+by definition of big O notation, there exists constant c and n such that
+fn <= O(gn) 
+
+fn -> grows like n^2
+gn -> n^2 growth
+
+n=1
+fn = 2(1)^2 + 1 = 5
+gn = 1^2 = 1
+ratio = 5
+
+n = 100
+fn = 2(100)^2 + 1 = 20001
+gn = 100^2 = 10000
+ratio = ~2
+
+n = 1000
+fn = 2(1000)^2 + 1 = 2000001
+gn = 1000^2 = 1000000
+ratio = ~2
+
+ratio fn/gn = 2n^2 + 1 / n^2
+= 2 + 1/n^2
+
+as n reaches infinity, it approaches a constant ~2
+it is bounded above by some constant multiple of n^2
+since the dominant growth is the same (n^2) therefore true
+
+
+b. sqrt n = O(log n)
+by definition of big O notation, there exists constant c and n such that
+fn <= O(gn) for all sufficiently large n
+or sqrt n <= log n
+
+fn -> grows like sqrt n
+gn -> log n growth - slower than sqrt n
+is fn <= gn? since its slowe it should be fn >= gn or fn = big omega gn
+
+n = 1
+fn = sqrt 1 = 1
+gn = log n = 0
+ratio = 1
+
+n = 100
+fn = 10
+gn = ~6.6
+ratio = ~1.5
+
+n = 10000
+fn = 100
+gn = 13
+ratio = ~7.6
+
+ratio of fn / gn = sqrt n / log n
+as n approaches infinity, the ratio reaches infinity
+therefore false
+
+
+c. log n = O(sqrt n)
+this is the reverse of the previous question
+
+fn -> log n growth, slow
+sqrt n -> sqrt n grwoth
+so gn should be faster than fn -> fn <= gn
+
+n = 1
+fn = log n = 0
+gn = sqrt 1 = 1
+ratio = 0
+
+n = 100
+fn = ~6.6
+gn = 10
+ratio = ~0.66
+
+n = 10000
+fn = 13
+gn = 100
+ratio = ~0.13
+
+ratio of fn / gn = sqrt n / log n
+as n approaches infinity, the ratio reaches infinity
+therefore there exist some constant c such that log n <= c . sqrt n for all sufficiently large n
+therefore its true, fn <= gn
+
+d. n^2(1 + sqrt n) = O (n^2 log n)
+e. 3n^2 + sqrt n = O(n^2)
+f. sqrt n log n = O(n)
+g. log n = O(n^-1/2)
+
+
+2.22
