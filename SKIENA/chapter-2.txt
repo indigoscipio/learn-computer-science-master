@@ -1014,9 +1014,209 @@ therefore there exist some constant c such that log n <= c . sqrt n for all suff
 therefore its true, fn <= gn
 
 d. n^2(1 + sqrt n) = O (n^2 log n)
+
+fn = n^2 + n^2 . sqrt n
+fn = n^2 + n^2 . n^1/2 = n^2.5
+fn = n^2 + n^2.5 - n^2.5 is the dominant growth
+gn = n^2 log n - n^2 is the dominant growth
+
+n = 100
+fn = ~100000
+gn = ~10000
+ratio = 10
+
+n = 1000
+fn = 31622776.6017
+gn = 1000000
+ratio = ~31
+
+as n approaches infinity, the ratio also approaches infinity
+therefore fn >= gn, so the statement is false
+
+
 e. 3n^2 + sqrt n = O(n^2)
+fn = 3n^2 + sqrt n
+fn = 3n^2 + n^1/2 -> dominant growth is n^2
+gn = n^2 - dominant growth is n^2
+
+we need to see if there exists some constant c
+such that fn ≤ c·n² for all large n.
+
+n = 100
+fn = 3n^2 + sqrt n = 3. 10000 + 10 = 30010
+gn = 100^2 = 10000
+ratio = ~3
+
+n = 1000
+fn =3n^2 + sqrt n = 3. 1000000 + 31 = 3000030
+gn = 1000^2 = 1000000
+ratio = ~3
+
+as n approaches infinity, the ratio gets close to ~3
+therefore we can choose any constant (c = 4) and have
+3n^2 + sqrt n <= 4n^2 for all sufficiently large n
+
+
 f. sqrt n log n = O(n)
+fn = n^1/2 . log n -> log n dominates
+gn = n -> constant is much faster than log n
+
+therefore fn <= gn
+so true
+
 g. log n = O(n^-1/2)
+fn = log n growth 
+gn = n^-1/2 growth
+
+we need to see if there exists some constant c
+such that fn ≤ c·n² for all large n.
+
+n = 1000
+fn = ~10
+gn = 0.0005
+ratio = 20000
+
+n = 10000
+fn = ~13.288
+gn = 0.00005
+ratio = 200000000
+
+as n approaches infinity, the ratio also reaches infinity
+we can choose any constant and have 
 
 
 2.22
+[5] For each of the following pairs of functions f(n)andg(n), state whether f(n)=
+ O(g(n)), f(n)=Ω(g(n)), f(n)=Θ(g(n)), or none of the above.
+
+(a) f(n)=n^2 + 3n + 4,
+g(n)=6n + 7
+
+fn -> dominant = n^2
+gn -> dominant = n
+
+therefore fn grows faster than gn
+so fn >= gn, or fn = big Omega (gn)
+
+n = 10:
+
+f(10) = 100 + 30 + 4 = 134
+
+g(10) = 60 + 7 = 67
+
+Ratio = 134/67 ≈ 2.0
+
+n = 100:
+
+f(100) = 10000 + 300 + 4 = 10304
+
+g(100) = 600 + 7 = 607
+
+Ratio = 10304/607 ≈ 17.0
+
+n = 1000:
+
+f(1000) = 1,000,000 + 3000 + 4 = 1,003,004
+
+g(1000) = 6000 + 7 = 6007
+
+Ratio = 1,003,004/6007 ≈ 167.0
+
+ (b) f(n)=n√n,
+ g(n)=n^2 −n
+
+ fn -> n . n^1/2 = n^3/2 dominant growth
+ gn = n^2 - n -> dominant growth = n^2
+
+n = 10:
+
+f(10) = 10 × √10 ≈ 10 × 3.16 = 31.6
+
+g(10) = 100 - 10 = 90
+
+Ratio = 31.6/90 ≈ 0.35
+
+n = 100:
+
+f(100) = 100 × 10 = 1000
+
+g(100) = 10000 - 100 = 9900
+
+Ratio = 1000/9900 ≈ 0.10
+
+n = 1000:
+
+f(1000) = 1000 × 31.6 ≈ 31600
+
+g(1000) = 1,000,000 - 1000 = 999,000
+
+Ratio = 31600/999000 ≈ 0.032
+ therefore gn grwos faster than fn
+ so fn <= gn, so fn = O(g(n))
+
+
+ (c) f(n)=2^n − n^2,
+ g(n)=n^4 +n^2
+
+ fn => dominant growth = 2^n
+ gn => dominant growth = n^4
+
+test cases
+n = 10:
+
+f(10) = 2¹⁰ - 10² = 1024 - 100 = 924
+
+g(10) = 10⁴ + 10² = 10000 + 100 = 10100
+
+Ratio f(n)/g(n) ≈ 924/10100 ≈ 0.091
+
+n = 20:
+
+f(20) = 2²⁰ - 20² = 1,048,576 - 400 = 1,048,176
+
+g(20) = 20⁴ + 20² = 160,000 + 400 = 160,400
+
+Ratio ≈ 1,048,176/160,400 ≈ 6.53
+
+n = 30:
+
+f(30) = 2³⁰ - 30² = 1,073,741,824 - 900 ≈ 1.074 × 10⁹
+
+g(30) = 30⁴ + 30² = 810,000 + 900 = 810,900
+
+Ratio ≈ 1.074 × 10⁹ / 810,900 ≈ 1324
+
+ therefore fn grows faster than gn, and the ratio reaches infinity
+ so fn >= gn, so fn = big omega (gn)
+
+ 2.23
+ for each of these questions briefly explain your answer
+ a. If I prove that an algorithm takes O(n2) worst-case time, is it possible that it
+ takes O(n) on some inputs?
+answer: 
+many inputs will take less time than the worst case
+O(n^2) -> grows no faster than n^2, x <= n^2
+O(n) -> grows linearly, much slower than n^2
+
+therefore it is possible to take n if the worst case is n^2
+
+ (b) If I prove that an algorithm takes O(n^2) worst-case time, is it possible that it
+ takes O(n) on all inputs?
+answer: no because if all input takes O(n) then the worst case cannot possibly be On^2
+because all input is bounded by On
+
+
+ (c) If I prove that an algorithm takes Θ(n^2) worst-case time, is it possible that it
+ takes O(n) on some inputs?
+answer:
+Θ(n²) = the slowest possible input takes exactly n² time
+But many other inputs can be much faster - including O(n) time
+
+
+  (d) If I prove that an algorithm takes Θ(n2) worst-case time, is it possible that it
+ takes O(n) on all inputs?
+answer:
+
+ (e) Is the function f(n)=Θ(n2), where f(n) = 100n2 for even n and f(n)=
+ 20n2 −nlog2n for odd n?
+answer:
