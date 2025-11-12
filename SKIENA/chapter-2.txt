@@ -1331,3 +1331,23 @@ f1n = sigma from i=1 to n of sqrt i -> sum of sqrt growth
  f4n = 12n^3/2 + 4n -> n^3/2 dominant
 
  so f4 > f3 > f1 > f2
+
+ 2.28
+ For each of the following expressions f(n) find a simple g(n) such that
+ f(n)=Θ(g(n)). (You should be able to prove your result by exhibiting the rel
+evant parameters, but this is not required for the homework.)
+
+a. fn = sigma from i =1 to n of 3i^4 + 2i^3 - 19i + 20
+gn = n^5
+
+b. fn = sigma form i = 1 to n of 3(4^i) + 2(3^i) - i^19 + 20
+gn = 4^N
+
+c. fn = sigma from i = 1 to n of 5^i + 3^2i
+gn = 9^i
+
+2.29
+whiich of the following are true?
+a.
+b.
+c.
