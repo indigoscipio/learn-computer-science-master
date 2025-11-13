@@ -1485,3 +1485,27 @@ b. = sigma i=1 to n of i + sigma i=1 to n of 1
 
 2.36
 consider the following code fragment
+
+for i=1 to n/2 do
+    for j=i to n-i do
+        for k=1 to j do
+output ‘‘foobar’’
+
+asume n is even. let tn denote the number of times foobar is printed as a function of n
+a. express tn as three nested sumation
+b. simplify the summation, show your work
+
+a. inner loop
+k=1 to j, numbero f iterations = j - 1 + 1 = j iterations
+
+mid loop
+j = i to n-i, number of iterations = (n - i - i) + 1 = n - 2i + 1
+
+outer loop
+i=1 to n/2, number of iterations = n/2 - 1 + 1 = n/2 iterations
+
+
+summation
+Tn = sigma from i=1 to n/2 + sigma j=i to n-i + sigma k=1 to j 1
+= sigma from i=1 to n/2 + sigma j=i to n-i + j
+= sigma from i=1 to n/2 + 
