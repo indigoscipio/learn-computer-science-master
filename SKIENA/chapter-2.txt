@@ -1348,6 +1348,140 @@ gn = 9^i
 
 2.29
 whiich of the following are true?
-a.
-b.
-c.
+a. sigma i=1 to n of 3^i = big theta (3^n-1)
+b. sigma fom i = 1 to n of 3^i = big theta(3^n)
+c. sigma from i=1 to n of 3^i = big theta(3^n+1)
+
+by definition of big theta, there exists two constants c1 (lower) c2 (uppwer)  and n1 n2 such that
+
+ c1 . g1 <= fn <= c2 g2
+
+f(3) = 39
+
+a. g3 = 9, fn >= gn
+b. g3 =27, fn = gn
+c. g3 = 81, fn <= gn
+
+2.30
+for each f find simple function g such that fn = big theta(g(n))
+a. f1n = (1000)2^n + 4^n
+b. f2n = n + n log n + sqrt n
+c. f3n = log(n^20) + (log n)^10
+d. f4n = (0.99)^n + n^100
+
+a. (1000)2^n + 4^n = 1000 × 2^n + 2^(2n)
+dominant growth = 2^2n
+gn = 4^n
+
+b. n + n log n + sqrt n = n + n log n + n^1/2
+dominant growth = n log n
+therfore gn = n log n
+
+c. log(n^20) + (log n)^10
+dominant growth = (log n)^10
+therefore gn = (log n)^10
+
+d. (0.99)^n + n^100
+dominant growth is n^100 since 0.99^2 grows towards 0
+therefore gn = n^100
+
+2.31
+
+ Foreachpairofexpressions(A,B)below, indicatewhetherAisO,o,Ω,ω,or
+ ΘofB.Notethatzero,oneormoreof theserelationsmayholdforagivenpair;
+ listallcorrectones.
+
+A/fn, B/gn
+ a. n^100, 2^n
+ b. (lg n)^12, sqrt n
+ c. sqrt n, n^cos(pi n / 8)
+ d. 10^n, 100^n
+ e. n^lg n, (lg n)^n
+ f. lg (n!), n lg n
+
+ answer:
+ a. 2^n grows faster than n^100 so fn <= gn
+gn goes towards 0 as n gets larger, therefore A = big O(B)
+b. (lg n)^12 grows faster to sqrt n, so fn >= gn
+fn goes towards infinity as n gets larger, therefore A = big Omega(B)
+c. not sure about this i don't know cos thing
+d. they have the same growth dominant which is exponential/^n,
+so A = big theta(b), A = big O(B), and B = big Omega(B)
+e. (lg n)^n grows faster so fn <= gn
+therefore A = big O(gn)
+f. same growth, A = big theta B
+
+Summations
+2.32
+prove that
+1^2 - 2^2 + 3^2 - 4^2 + ... + (-1)^k-1 . k^2 = (-1)^k-1 . k(k+1)/2
+
+base case k=1
+LHS = (-1)^k-1 . k^2 
+(-1)^0 . 1^2 = 1 . 1 = 1
+
+RHS
+(-1)^k-1 . k(k+1)/2
+= (-1)^1-1 . 1(1+1)/2
+= 1 . 1
+= 1
+
+therefore the base case is true
+
+inductive step
+assume true for k = m
+
+Sm = (-1)^m-1 . m(m+1)/2
+
+inductive hypothesis
+we mse show its true for k+1
+sm+1 = sm + (-1)^m+1-1 . m+1^2 
+
+
+2.33
+ Findanexpressionfor thesumof the ithrowof the followingtriangle, and
+ prove itscorrectness.Eachentryisthesumof thethreeentriesdirectlyabove it.
+ Allnonexistingentriesareconsidered0.
+
+1
+1 1 1
+1 2 3 2 1
+1 3 6 7 6 3 1
+1 4 10 16 19 16 10 4 1
+
+1st row = 1
+2nd row = 1 + 1 + 1
+looks like a pascals triangle
+
+sum of the ith row = 3^n-1
+
+Base: Row 1 sum = 1 = 3^0
+
+inductive step:
+each element in row i comes from sum up to 3 in row i-1
+so sum(row i) = 3 x 3^i-2 = 
+
+[3] AssumethatChristmashasndays.Exactlyhowmanypresentsdidmy“true
+ love”sendme?(Dosomeresearchifyoudonotunderstandthisquestion.)
+
+ 2.35
+ consider the following code fragment
+ for i=1 to n do
+    for j=i to 2*i do
+        output 'foobar'
+
+let T(n) denote thenumberoftimes‘foobar’ isprintedasafunctionofn.
+a. express tn as a summation
+b. simplify the fummation. show your owrk
+
+a. inner loop runs from j=i to j = 2*i inclusive
+number of iterations = (2*i) - i + 1 = i + 1
+
+TN = sigma from i=1 to n of i+1
+
+b. = sigma i=1 to n of i + sigma i=1 to n of 1
+= n(n+1)/2 + n
+
+
+2.36
+consider the following code fragment
