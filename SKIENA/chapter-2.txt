@@ -1508,4 +1508,93 @@ i=1 to n/2, number of iterations = n/2 - 1 + 1 = n/2 iterations
 summation
 Tn = sigma from i=1 to n/2 + sigma j=i to n-i + sigma k=1 to j 1
 = sigma from i=1 to n/2 + sigma j=i to n-i + j
-= sigma from i=1 to n/2 + 
+
+Number of terms = n - 2i + 1
+First term = i
+Last term = n-i
+
+tn = = sigma from i=1 to n/2 of n(n-2i+1)/2
+= n^3/8
+
+2.37
+x*y = sum of x y times -> x * y = 5 + 5 + 5 + 5 = 20
+
+time complexity of multiplying two n-digit numbers in base b using repeated addition
+as a function of n and b?
+assume single digit by single digit addition or multiplication takes O(1) time.
+
+what's the formula for the maximum value of an n-digit number in base b?
+largest single digit is b-1 because digits go to 0 to b-1
+n digits = b^n-1, b^n-2, ... , b^1, b^0
+max value = b-1 x b^n-1 + b-1 x b^n-2 ... b-1 x b^0
+
+2.38
+
+[6] In grade school, you learned to multiply long numbers on a digit-by-digit basis,
+ so that 127 × 211 = 127 ×1+127×10+127×200 = 26,397. Analyze the time
+ complexity of multiplying two n-digit numbers with this method as a function of
+ n (assume constant base size). Assume that single-digit by single-digit addition or
+ multiplication takes O(1) time.
+
+ Logarithms
+ 2.39
+ prove the following identities on logaritms
+ a. prove that log a (xy) = log a (x) + log a (y)
+
+let m = log a (x) = a^m = x
+log n = log a (y) = a^n = y
+
+we want to show log a (xy) = m + n
+or evuivalently, a^m+n = xy
+
+by product exponent law, a^m . a^n = a^m+n
+xy = a^m . a^n = a^mn
+if xy = a^mn then log a (xy) = m + n = log a (x) + log a (y)
+
+
+b. prove that log a (x)^y = y . log a (x)
+let m = log a (x) -> this means a^m = x
+
+LHS
+log a (x)^y = y
+x^y -> (a^m)^y = a^my
+
+so log a (x)^y = log a (a)^my
+log a (a)^my = my
+
+substitute back my
+= log a (x)  . y
+= y . log a (x)
+
+
+ c. prove that log a (x) = log b (x) / log b (a)
+let m = log a (x) -> so a^m = x
+
+RHS
+log b (x) / log b (a)
+since we know x = a^M we can substitute
+log b (a^m) = m . log b (a)
+log b (x) = m . log b (a)
+m =  log b (x) / log b (a) 
+substitue back m
+log a (x) =   log b (x) / log b (a) 
+
+d. prove that x^log b (y) = y^log b (x)
+let m = log b (y)
+so b^m = y
+
+let n = log b (x)
+so b^n = x
+
+LHS
+x^log b (y) = x^m
+
+RHS
+y^log b (x) = y^n
+
+
+x^m = (b^n)^m = b^nm
+y^n = (b^m)^n = b^mn
+
+since b^nm = b^mn, then we have
+x^
