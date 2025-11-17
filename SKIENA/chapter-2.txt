@@ -1598,3 +1598,13 @@ y^n = (b^m)^n = b^mn
 
 since b^nm = b^mn, then we have
 x^
+
+2.40
+show that ceil(lg (n+1)) = floor(lg n) + 1
+
+let k = floor(lg n)
+by definition of floor, this means
+k <= lg n < k + 1
+2^k <= n < 2^k+1
+
+Interview problems
