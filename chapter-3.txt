@@ -1,0 +1,121 @@
+Data Structures
+
+Contiguous vs Linked
+
+Contiguous
+Array -> each elmelent can be located by its index/house number
+A street full of houses
+
++ instant time access/lookups
++ space efficent
++ memory locality
++ great for iteratiog
+
+- cant do n+1 /more than n/fixed memory size
+- resizing sucks
+
+Linked
+List, trees
+houses that points to other houses,
+to get address #500, you'd need to find house #1, hosue #2, etc
+
++ easy insertion/deletion
++ flexible memory allocation
+- slow lookup
+- not cache friendly
+
+=================================
+
+Pointers
+connection that hold the piece of linked structures together, like a chain
+represnts the address of a location
+
+
+
+=================================
+
+Stacks and queues
+
+you put things in, you take things out later
+the difference between stacks and queues is the rule that you decide
+what to take out next.
+
+Stack (LIFO)
+cafetaria trays - only cares about the most recent item
+- Undo functionality
+- function call stack
+- browser back button
+
+Queue (FIFO)
+movie ticket queue/orderly coffee shop
+fair ordering
+- ticket purchasing app
+- print document
+- BFS 
+
+
+========================================
+
+Dictionaries
+
+is a storage system dhat does 3 things:
+- insert
+- delete
+- search
+
+key-value structure
+keys are unique
+hash table is a dicitionary
+
+stop and think: comparing dictionary implementations
+
+ Problem: What are the asymptotic worst-case running times for each of the seven
+ fundamental dictionary operations (search, insert, delete, successor, predecessor,
+ minimum, and maximum) when the data structure is implemented as:
+
+ • An unsorted array.
+ • Asorted array.
+
+answer:
+unsorted  array
+search: you have to check the item 1 by 1 if you wanna earch for something , so worst case is O(n)
+insert: since this is unserted O(1)
+delete: finding the element is O(n) then shift 
+successor: need to find the entire array, O(n)
+predeccor: same as successor, O(n)
+min: need to check all elements, O(n)
+max: same as min, O(n)
+
+ 
+sorted
+search: we can use binary search, so O(log nn)
+insert: the item inserted needs to be sorted so need to check each element 1 by 1 O(n)
+delete: same as insert, check element 1 by 1 then shift O(n)
+successor: o1
+predeccor: o1
+min: O(1) since its sorted, just get the head
+max: O(1) same as min
+
+read/write
+read -> sorted
+write -> unsorted
+
+
+comparing dictionary implementations
+singly linked unsorted list
+search: 
+insert: 
+delete: 
+successor: 
+predeccor: 
+min: 
+max: 
+
+singly linked unsorted list
+search: 
+insert: 
+delete: 
+successor: 
+predeccor: 
+min: 
+max: 
