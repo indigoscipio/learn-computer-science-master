@@ -103,19 +103,37 @@ write -> unsorted
 
 comparing dictionary implementations
 singly linked unsorted list
-search: 
-insert: 
-delete: 
-successor: 
-predeccor: 
-min: 
-max: 
+search: since this is unsorted linked list it needs to check the whole item , so O(n)
+insert: O(1), just insert it to the head
+delete: find the item -> delete -> reassign pointer (update x predecessor so it points to x successor), O(n)
+successor: find each item 1 by one, O(n)
+predeccor: same as successor, O(n)
+min: O(n)
+max: O(n)
 
-singly linked unsorted list
-search: 
-insert: 
-delete: 
-successor: 
-predeccor: 
-min: 
-max: 
+double  linked unsorted list
+search: on
+insert: o1
+delete: o1
+successor: on
+predeccor: on
+min: o1
+max: o1
+
+sorted linked list
+search: stilll On
+insert: O(n) since we need to check 1by1
+delete: same as insert, O(n)
+successor: On
+predeccor: On
+min: O1
+max: O(n)
+
+doubly linked sorted list
+search: still O(n), need to check 1 by 1
+insert: O(n), same as search
+delete: O(n)
+successor: since its sorted it should be O(n) right?
+predeccor: O(n)
+min: o1
+max: o1 since we have tail pointer?
