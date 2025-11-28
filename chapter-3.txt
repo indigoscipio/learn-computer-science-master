@@ -133,7 +133,104 @@ doubly linked sorted list
 search: still O(n), need to check 1 by 1
 insert: O(n), same as search
 delete: O(n)
-successor: since its sorted it should be O(n) right?
-predeccor: O(n)
+successor: since its sorted it should be O(1) right?
+predeccor: O(1)
 min: o1
 max: o1 since we have tail pointer?
+
+
+=====================
+
+BST
+search rule: if key is smaller than target, go to the left subtree
+if the key is bigger than the target, go to the right subree
+
+how it works
+start at the root
+at each node, make one comparison and move down one level (1 step)
+repeat the process until we find the key or hit the end of the branch
+
+degenerate tree - unbalanced
+
+; A BinaryTree (BT) is one of:
+; 1. '() ; The empty tree
+; 2. (make-node number BT BT) ; A node with a 
+
+-----
+
+Searching
+search(bt, target)
+value = value(bt) ;get bt's root value
+if value = null ; no more children to check, not found
+    return null
+if value = target ; target found
+    return value
+if value < target
+    return search(bt_left, target) ;recurse to the left
+    else return search(bt_right, target) ;recurse to the right
+    
+-----
+
+Min-Max
+
+-----
+
+In-order traversal
+list every item in order
+
+-----
+
+Insertion
+
+-----
+
+Deletion
+the difficulty is in reassignment,
+you can't just delete a node since it leaves a empty space
+
+deleting 0 child - just delete leaf
+deleting 1 child - pass to grandchild
+deleting 2 child
+
+=================
+
+BST good and bad
+
+Problem: You are given the task of reading n numbers and then printing them
+out in sorted order. Suppose you have access to a balanced dictionary data struc
+ture, which supports the operations search, insert, delete, minimum, maximum,
+successor, and predecessor each in O(logn) time.
+1. How can you sort in O(nlogn) time using only insert and in-order traversal?
+answer:
+so the task is reading, then writing them in sorted order
+read -> print (in sorted order)
+
+1. take all n inputs and put them in the dictionary
+single number takes o(log n) * n = n log n
+
+traversal = takes n time
+so n log n + n > n log n dominates
+
+2. How can you sort in O(nlogn) time using only minimum, successor, and
+insert?
+build structure
+insert all items -> n . log n = n log n
+cost for minimum = log n
+cost of n -1 uscesor = (n-1) log n = n log n
+
+total = n log n + n log n = n log n
+
+3. How can you sort in O(nlogn) time using only minimum, insert, delete,
+search?
+
+build structure
+insert all items -> n . log n = n log n
+
+find minimum -> log n
+print it -> 1
+delete it -> log n
+repeat
+
+so one cycle is log n
+we wana aply it to all n items
+so n . log n = n log n
