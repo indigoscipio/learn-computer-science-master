@@ -234,3 +234,60 @@ repeat
 so one cycle is log n
 we wana aply it to all n items
 so n . log n = n log n
+
+======================
+
+Priority Queue
+aka sort by importance
+
+3 things:
+Insert
+find min, find max
+delete
+
+hospital emergency
+
+===========================
+Stop and think:
+ Problem: What is the worst-case time complexity of the three basic priorityqueue
+ operations (insert, find-minimum, and delete-minimum)
+when the basic data structure is
+
+• An unsorted array.
+• Asorted array.
+• Abalanced binary search tree.
+
+answer:
+unsorted array:
+- insert: since its unsorted you can just insert at the beginning of an array? so O(1)?
+i'm not sure if its the same with priority queue
+
+- find min: check eaci item 1 by 1, O(n)
+
+- delete min: check each item 1 by 1 and delete it so O(n)
+
+sorted array:
+- insert: O(n) since this is sorted
+- find min: O(1), just the check the first item/heado f the array
+- delete min: O(n), delete the first and shift the remaining array
+
+balanced BST:
+since bst is sorted
+- insert: find (n log n) and insert to correct leaf
+- find min: log n
+- delete min: log n
+
+
+=========================
+
+Hash tbales
+o1 lookup
+turning search -> arithmetic
+using modulo base 10 operators
+different key uses different numbers
+
+1. Calculate a number from your key (fast)
+2. Use that number as an array index (instant)
+
+Collusion
+Chaining vs open addressing
