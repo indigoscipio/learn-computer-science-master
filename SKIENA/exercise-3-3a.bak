@@ -27,14 +27,3 @@
   
   )
 (reverse sample-list) ; should return '(3 2 1)
-
-; funcitonal version
-(define (reverse-func list)
-  (define (loop l acc)
-    (cond [(null? l) acc]
-          [else (loop (cdr l) (cons (car l) acc))])
-    )
-  
-  (loop list '())
-  )
-(reverse-func '(1 2 3 4 5))

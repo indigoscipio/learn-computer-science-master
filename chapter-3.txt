@@ -292,3 +292,90 @@ different key uses different numbers
 Collusion
 Chaining vs open addressing
 
+3.3
+a. worst case is size oscillation
+everytime you perform an operation the size shrink -> grow, shrink, grow
+bad amortized cost is O(n)
+
+b. underflow strategy
+choose a better shrink threshold lower than 1/2
+1/4 or 1/8
+
+3.4
+direct access table
+
+is an array where the index is the key
+the key is an integer between 1 and n
+
+
+
+3.5
+a. all nodes store data, two child pointers, and parent pointer
+data field needs 4 byte
+each pointer require four bytes
+answer: total pointer = 3 (2x child + parent) . 4 byte = 12 bytes
+data field = 4.n bytes where n is the data
+
+total space = 12 + 4 = 16 bytes
+data space = 4 bytes
+
+overhead fraction = 4/16 = 1/4 = 25%
+
+this means 75% is allocated to structure
+and 25% allocated to actual data
+
+b. leaf node store data
+internal node store two child pointer
+data fields need 4 byte and each pointer need 2 byte
+
+leaf node = node that has no children
+internal node = node that has one or more children. this is the branching point, to allow
+the tree to grow
+2n / 2n+2n
+1/2 = 50%
+
+does having more memory allocation of data structure means good or bad?
+what if its more memory allocation for poniter/ the other way around?
+
+3.6
+how to modify balanced tree data structure
+such thatsearch, insert, delete, min,max, takes ologn time
+but successor and predeccsor take 01
+
+which operation hve to be modified?
+answer:
+we know that searching takes o log n
+
+answer:
+in binary tree usually sucessor and predeceesor takes o logn 
+coz you have to climb up/down tree
+
+the solution is to find its prev/next node in sorted order
+every node needs to store two extra pointers:
+- poitner to its sucessor (next node in sorted order)
+- pointer to its predeccesor (prev node in sorted order)
+
+modififcations needed to be made
+insertion and deletion since they mofidy the structure/order of the tree
+min,max and search only reads the data
+
+insert:
+set x's rped and success to new neighbor
+set neighbours pred ans suc to point to x
+
+delete:
+when x is deleted, pred of a and succ b becomes neighbouring
+- update a's succ to poitn to b
+- update b's pred to point to a
+
+3.7
+store the current min/max value outside the data structure
+insert -> search, insert = o log n + o1
+
+delete -> search o log n
+
+3.8
+design a data structure to support the following operations
+a. insert(x,t) - insert item x into the set t
+b. delete(k,t)
+c. member(x,T)
