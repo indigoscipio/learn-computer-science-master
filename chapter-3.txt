@@ -379,3 +379,70 @@ design a data structure to support the following operations
 a. insert(x,t) - insert item x into the set t
 b. delete(k,t)
 c. member(x,T)
+All operations must take O(logn)timeonann-element set.
+
+for unsorted array
+insert: o1, just insert at the head
+delete: search and delete, takes O(n)
+member: same, O(n)
+
+for bbst:
+insert: o log n since its sorted, find the spot and insert
+member: saerch based on height
+delete: search to find element, deletion, rebalance
+
+
+3.9
+seperate s1 and s2
+find the mid ground - new root -> maximum of s1
+isolate the subtree - delete s1max from s1
+join the tree with kmax as the root
+rebalnce the tree
+
+stotal = s1 (without s1max), kmax, s2
+
+
+3.10
+
+n metal objects
+0 - 1 kg
+find smallest number of bins that will hold the n objects
+with each bin holding one kg
+
+3.11
+
+input = n
+weights = w1, w2, w3 ...
+output = number of bins used
+
+bbst data structure
+key = remaining capacity
+
+find a bin whose capacity is >= current weight (it fits)
+and is te smallest possible value that satifsies the fit condition (snuggest fit)
+perform successor on bbst
+if bin is found, calculate new capacity, delete old capacity from bst and insert new capacity
+if no bin is found, start a new bin and insert its initial remaining capacity
+
+
+worst fit
+find maximum capcaity max()
+if max capacity >= wi, use that bin and update its capacity. 
+if max capacity <= wi, start  a new bin and insert its initial remaining capcity
+
+3.11
+
+n values x1,x2, ... xn
+gien i and j, find smallest value in xi, ... xj
+basically find smallest value within a range
+
+a. design data structure that uses O(n^2) space and answers queries in O(1) time
+o1 query -> store min value in lookup table
+
+lookup table M[i][j] = minimum of the sequence
+on^2 -> check each minimum in the table
+o1 -> compute current min using prev min
+
+total = on^2 . o1 = on^2
+
+3.12
