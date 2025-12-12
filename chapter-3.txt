@@ -446,3 +446,44 @@ o1 -> compute current min using prev min
 total = on^2 . o1 = on^2
 
 3.12
+
+input: set S of n numbers
+given any sequence of real numbers and integer k
+instantly and correctly answers wheter there is a subset of input sequence whose sum is exactly k
+
+what is subset sum problem? SSP
+does there exist subset of S whose sum is exactly up to k?
+
+initialiation: start with original set S and target k
+the solution set A = empty set
+
+loop through i=1 to n
+test: ask black box if solution existsin the remaining elements for the current target k
+if it exists: xi is optional, skip and leave k unchanged
+if it doesn't exsist: add x1 to a and update k -> k - xi
+
+final: a is subset that sums the rogiinal target k
+
+
+3.13
+A[1...n] is an array of real numbres
+design algorithm to perform:
+
+1. add(i,y) - add value y to the ith number
+2. partial-sum(i) - return sum of the first i numbers,
+
+no insertion or deletion,
+only change the valus of the numbers
+should take o log n steps
+use one additional array of size n
+
+3.15
+
+3.18
+the words are sotred
+
+3.19
+
+3.20
+function to find middle node of a single linked list
+turtle and hare thing
