@@ -1,0 +1,34 @@
+Referrential Transparency
+An expression can be replaced by its value without changing the program’s meaning.
+
+
+how fp works
+- sees an expression
+- substitute that expression using definition (the RULE)
+- simplify that expression using the defintion
+- keep evaluating until you see no value that can be evaluated
+- that value ist he final value
+
+building definitionw
+what is a definition?
+A definition is how the program “knows” what a name means.
+it is a set of rule that govern how the program behaves
+definition are always algebraic in nature
+
+eg. square x = x . x
+min x y = if x < y return x else return y
+
+canonical expression = expression that cannot be simplified further
+aka normal form
+
+referrential transparency
+equal expression can be repalced with each other anywhere
+(+ 3 4) -> can be replaced with 7
+
+value does not equal representaiton of a value
+49 = 7 x 7 = XLIX = 110001
+FP is about value, not representation of a value
+
+order of value does not matter
+because epression always evaluate to the same value
+no matter how you reduce them
