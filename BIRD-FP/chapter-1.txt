@@ -32,3 +32,64 @@ FP is about value, not representation of a value
 order of value does not matter
 because epression always evaluate to the same value
 no matter how you reduce them
+
+=====================
+
+
+1.4 Functions and definitions
+
+func x = "A" (char)
+func y = func x + y -> this is illegal
+
+2 stage of analysis
+1. syntax analysis: check expression
+2. type analysis : matches differen type
+
+evaluation only begins when it passes these 2 stages
+
+
+functions
+f :: A -> B
+where a is the source/input type and b is the targe/totput type
+
+the function f
+functions are values
+
+function value vs function definitino
+
+double x = x + x
+double' x = 2 * x
+
+one can be more efficient than the other,
+but efficiency cannot be attached to function values
+
+Polymorphisn
+
+square :: num -> num -> type declaration
+square x = x * x  -> function definition
+
+type variable:
+greek alphabet a -> a
+
+identity function is polymorphic
+constant function
+
+------
+
+forms of definition
+
+======================
+
+Currying
+break down multi arg function -> single arg function
+
+min x y
+if x <= y return x
+if x > y return y
+
+min' (x, y)
+if x <= y return x, else return y
+
+type
+min = num num -> num
+min' (num, num) -> num

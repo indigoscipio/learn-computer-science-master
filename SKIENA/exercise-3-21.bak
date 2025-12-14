@@ -1,0 +1,22 @@
+#lang racket
+
+; a BT is one of the following:
+; '()
+; (listof Node BT BT)
+; where node is te parent followed by left bt and right bt
+(define bt1 (list 2 '() '()))
+
+; BT -> Value
+(define (node bt)
+  (car bt)
+  )
+
+(define (right bt)
+  (cdr bt)
+  )
+
+(define (left bt)
+  (car bt)
+  )
+
+; if one has a left child, the other has a left child

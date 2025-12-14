@@ -131,5 +131,43 @@ in whichcever case add will evnetually reduce by the threee cases
 (add (pred e1) e2) => (pred (add e1 e2)) -> reduce add since (pred e1) need to be reduce
 will eventually reach the base case
 
+=======================================
+
+1.2.4
+Imagine a languagge of finite sequences 0 and 1
+the rules for simplifying string in this languare are given by:
+
+1. 1??x -> x1101
+2. 0??x -> x00
+
+? denoes  a single either 0 or 1
+a. reduce thefollowing expression to canonical form:
+
+1110
+= 01101
+
+10
+= does not fit 1??x or rule 2
+so its alreayd at canonical form
+
+1110100
+= 01001101 by rule 1
+= 0110100 by rule 2
+= 010000 by rule 2
+= 00000 by rule 2
+= 0000 by rule 2
+= 000
+
+b.
+construct expr for which reduction process does not terminate
+lets say tail begins with 1
+1111 -> 11101 -> 011101 -> 10100 -> 001101 ->  10100 -> 001101 -> 10100 -> 001101 -> ..
+
+tail begins with 0
+1110 -> 01101 -> 0100 -> 000 -> 3 digit, therefore canonical
+happens because the "x" part on the 2nd rule starts with "1"
+
+0??x -> 1001 -> 11101 -> 10100 -< ...
 
 |#
+
