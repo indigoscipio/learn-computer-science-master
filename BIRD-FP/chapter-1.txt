@@ -93,3 +93,49 @@ if x <= y return x, else return y
 type
 min = num num -> num
 min' (num, num) -> num
+
+partial application
+from multiple argument > less arguments
+it remembers the arguments
+decrease the arguments
+we can parameterize without rewriting new logic
+
+currying
+min x y = ((min x) y)
+
+function composition
+is all about chaining the functions
+not adding their result
+
+
+Exercises
+
+1.41
+describe one appropriate type for the definite integral function of
+mathematical analysis as usedi n the phrase the integral from a to b
+
+2. 
+takes 3 inputs
+function to be integrated (number -> number)
+upper limit a
+lower limit b
+
+integral(f, a, b)
+(num -> num) -> num -> num -> num
+
+1.4.2
+give examples of functions with the following types
+(num -> num) -> num
+num -> (num -> num)
+(num -> num) -> (num -> num)
+
+answer:
+(num -> num) -> num (HOF Style pattern)
+function that takes a function and returns a number
+fn x = x * x
+at_zero f = (f 0)
+
+
+num -> (num -> num)
+function creator
+add n f = n f
