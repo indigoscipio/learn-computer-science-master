@@ -487,3 +487,27 @@ the words are sotred
 3.20
 function to find middle node of a single linked list
 turtle and hare thing
+
+3.24
+
+hash table but memory problem
+Bloom Filter
+
+3.25
+search string and magazine
+i want to generate all chars in search string by curring them out from the mag
+
+using a hash map
+1, build inventory
+"hello world" ->
+h = 1, e = 2, ...
+if a char is not on the table, add it
+
+time complexity = M . O(1) = O(M)
+so it depends on the input M/proportional
+
+step 2
+lookup each char on the string and compare
+O(1) . O(S) = O(S)
+
+total = O(M) + O(S) = O(M + S)

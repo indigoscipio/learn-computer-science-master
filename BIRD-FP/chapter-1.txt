@@ -130,12 +130,97 @@ num -> (num -> num)
 (num -> num) -> (num -> num)
 
 answer:
-(num -> num) -> num (HOF Style pattern)
+(num -> num) -> num
+(HOF Style pattern)
 function that takes a function and returns a number
 fn x = x * x
 at_zero f = (f 0)
 
+RACKET EXAMPLE:
 
 num -> (num -> num)
 function creator
-add n f = n f
+add n x = x + n
+where n is the recipe
+and x is the argument
+
+example:
+add 10 x -> x + 10 
+(add 10) 5 -> 15
+
+RACKET EXAMPLE:
+
+(num -> num) -> (num -> num)
+function transformer
+double_result f x = 2 * f(x)
+twice f x = f(f(x))
+
+1.4.3
+give a definition of a function
+sign:: num -> number which returns 1 if its argument is positievv
+-1 if its argument is negative,
+and 0 otherwise
+
+1.4.4
+suggest possible types for the following functions
+
+1. one x = 1
+2. apply f x = f x
+3. compose f g x = f(g x)
+
+answer:
+1. the function one takes x and returns a number 1, so
+(any -> number)
+
+2. function apply takes function f -> then number y,
+then returns application of that function to x
+like hof?
+so (A -> B) -> A -> B
+
+3. this is function composition where it chains multiple functions
+(B -> C) -> (A -> B) -> A -> C
+
+(A -> B) -> (B -> C)  -> A -> C
+
+
+==================
+
+specification vs implementation
+specificaton = the what
+purpose, clarity
+
+implementation = the how
+efficiency
+
+=============
+
+exercise 1.5.1
+
+write down specification of function isSquare
+that determines wheter or not its argumennt is an integer which is the square of another integer
+
+suppose (intsqrt x) is the largest integer which is no greater than sqrt(x)
+will the following efinition meet your specification?
+
+isSquare x = (square (intsqrt x) = x )
+
+answer:
+specification:
+is-square? x
+is-square? num -> bool
+input : x needs to be a non negative number?
+output: a boolean, if true then x is the square of another integer, if false then its not
+that is n^2 = x
+
+isSquare x = (square (intsqrt x) = x )
+if x is negative then intsqrt is imaginary?
+setup a conditional and check for x
+if x is negative, return error
+
+1.5.2
+write down a precise specification of the function intsqrt mentioned in the previous question
+;; intsqrt: number -> number
+takes a number x, returns r - the largest integer no greater than sqrt(x)
+- x and r must be an integer
+- r <= sqrt(x)
+- next integer (r + 1)^2 must be > x
