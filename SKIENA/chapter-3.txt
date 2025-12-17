@@ -511,3 +511,45 @@ lookup each char on the string and compare
 O(1) . O(S) = O(S)
 
 total = O(M) + O(S) = O(M + S)
+
+
+3.27
+2 pointers - fast and slow
+hare -> 2 steps
+tortoise -> 1 step
+
+finding the meeting point:
+start the turtle at start of hte loop
+and the hare at the bgining of the linked list
+the gap will eventually close in and will meet
+
+3.28
+unordered array X of n integers
+X = [3,1,555,...n]
+
+find array M containing n elements where Mi is he product of all integers in X
+except for Xi.
+
+you may not use division
+you can use extra memory.
+hnt: there are solutions fater than O(n^2)
+
+answer:
+M0 = [m1 . m2 . m3]
+M1 = [m0 . m2 . m3]
+M2 = [m0 . m1 . m3] etc
+
+make array that calculates multiplies to the left and righ
+so if theres X = [1,2,3,4]
+
+left -> [1,1,2,6]
+right -> [24,12,4,1]
+
+total = [24,12,8,6]
+
+optimization
+fill output array with left
+[1,1,2,6], loop backwards
+running_right-product
+
+3.29

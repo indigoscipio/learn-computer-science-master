@@ -1,0 +1,60 @@
+Data types
+
+integers -> exact
+fractions -> floating point approximation
+
+what is floating point?
+a way for computer to approximate decimal
+similar to scientific notation
+
+==========
+
+infix -> standard notation,
+opration sits between arguments, eg (3 + 5)
+
+prefix
+operation sits before argument, like racket (+ 3 5)
+
+=============
+
+precedence / order of operation
+PEMDAS
+
+association
+3 - 7 - 2 - how to evaluate it?
+left to right
+(3 - 7) - 2
+
+===============
+
+ in fp, function application is treated with the highest priority
+
+ Precedence - stickiness hierarchy
+ - function application
+ - exponentiation
+ - mult/div
+ - add/sub
+
+ Order of association
+ left-associative
+group left to right
+most of arithmetic does this
+
+ right-associative
+ group right to left
+ exponentiation does this
+
+
+ ======
+
+ operators and sections
+ (+) - this is a section
+ enclosing operator converts to a prefix function
+
+ (+) x y -> x + y
+
+ both f x = f x x
+ both (*) 5 = (*) 5 5 = 25
+
+
+ ====
