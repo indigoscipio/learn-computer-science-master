@@ -1,0 +1,10 @@
+
+exercise 2.1
+word now here = nowhere
+sentence now here = '(now here)
+first blackbird = b
+first '(blackbird) = '(blackbird)
++
+butfirst
+false
+the

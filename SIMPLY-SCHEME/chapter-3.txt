@@ -1,0 +1,7 @@
+
+
+in scheme, parentheses are never optinal
+
+If the order of the "same level" people doesn't matter, let's look at this expression:
+(+ (* 10 10) (* 2 2))
+doest matter if 10 * 10 is first the result is always the same

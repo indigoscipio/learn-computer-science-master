@@ -1,0 +1,31 @@
+#lang simply-scheme
+
+(define (vowel? x)  (member? x '(a o i e u)) )
+
+
+;answer:
+;appearances takes a target x and list y  and checks how many times x occurs in y
+;and returns a number
+
+
+(item 1 15221111)
+(item 1 '(1 2 3 1 1 1))
+(item 2 'hello)
+(item 5 'hello)
+;this is like a string-ref whch finds the valute at index n
+;input: number and list/ collection
+;output is the value at index n
+
+(item 2 '(the (quick (hoe ass niggas)) brown fox))
+(item 2 'fox)
+
+;2.5
+; even? odd? -? number to boolean
+; number? number to boolean
+; vowel? letter to boolean
+; count
+
+;2.7
+;math operations -> num num -> num
+;word operation -> word word -> word
+;sentence operation -> sen sen -> sen
