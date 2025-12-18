@@ -58,3 +58,89 @@ most of arithmetic does this
 
 
  ====
+
+ computing sqrt of a number using approximation
+ sqrt is defined as
+
+ sqrt x >= 0 and sqrt(x)^2 = x
+
+ here we define it as
+ sqrt x >= 0 and abs(sqrt(x)^2 - x) < eps
+
+ newton's method
+ yn+1 = (yn + x / yn) / 2
+ y = approximation
+ yn = current guess
+ yn + 1 = next guess
+ x = target number - value stays the same - number that you want the square root of
+
+ why -x ? to see hwo far the error/distance between landing spot vs target
+
+ example:
+ x = 9 - we wanna find the sqrt of 9
+ suppose y0 (initial guess) = 1
+ find the next guess
+ yn+1 = 1 + 9 /1 / 2
+ y1 = 10 / 2 = 5 -> is 5^2 close to 9? no, 25-9 = 16. still too far
+ 
+ keep guessing, find y2
+y2 = 5 + 9/5 / 2 = 3.4
+
+keep guessing
+y3 = 3.4 + 9 / 3.4 / 2 = 3.4 + 2.6 / 2 = ~3...
+
+
+improve x y = (y + x/y) / 2 - the averaging machine
+satis x y = abs(y^2 - x) < eps - the stopping condigion
+
+until p f x = x - the loop
+            = until p f (f x) otherwise
+where p = the stopping condiiton checker
+f = the averaging machine
+x = the target number of sqrt we wanna find
+
+until: (a -> bool) -> (a -> a) -> a -> a
+
+Exercises
+
+2.1.1
+the oeprators x and div have the same binding power and associate to the left
+what is the value of the following expr?
+
+1. 3 div 1 x 3
+2. 3 x 7 div 4
+3. 6 div 2 x 8 div 4
+
+answer:
+1. 3 x 3 = 9
+2. 21 div 4 = 5
+3. 6 div 2 = 3
+3 x 8 div 4
+24 div 4 = 6
+
+2.1.2
+using the definition of mod given in 2.1.3
+show that for all positive x,y, and z
+
+definition from 2.1.3
+x = q * y + r and 0 <= r < y
+where q = quotient
+r = reminder
+y = divisor
+
+1. (x + y) mod z = (x mod z + y mod z) mod z
+2. x x (y mod z) = (x + y) mod (x x z)
+
+answer:
+LHS
+(x + y) mod z
+
+x = q1 * z + r1
+y = q2 * z + r2
+
+= (q1 * z + r1) + (q2 * z + r2)
+= q1 * z + q2 * z + r1 + r2
+= z (q1 + q2) + r1 + r2
+since q1 and q2 is a multiple of z, it has no reminder
+= r1 + r2
+= ...
