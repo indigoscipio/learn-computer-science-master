@@ -129,7 +129,7 @@ r = reminder
 y = divisor
 
 1. (x + y) mod z = (x mod z + y mod z) mod z
-2. x x (y mod z) = (x + y) mod (x x z)
+2. x * (y mod z) = (x * y) mod (x * z)
 
 answer:
 LHS
@@ -141,6 +141,85 @@ y = q2 * z + r2
 = (q1 * z + r1) + (q2 * z + r2)
 = q1 * z + q2 * z + r1 + r2
 = z (q1 + q2) + r1 + r2
-since q1 and q2 is a multiple of z, it has no reminder
-= r1 + r2
-= ...
+since q1 + q2 is a multiple of z, it has no reminder
+mod z in the first part is 0
+= r1 + r2 mod z
+(x mod z) + (y mod z) mod z
+
+part 2
+x * (y mod z) = (x + y) mod (x * z)
+
+LHS
+y = q * z + r where
+r = y mod z
+
+x * y = x (qz + r)
+xy =  xqz + xr 
+
+we wanna find the remainder of (x+y) when divided when divisor (x * z)
+rearrange
+xy = q(xz) + xr
+xy mod xz = xr
+xy mod xz = x . (y mod z)
+
+2.1.4
+what function is (+ (-x))
+answer:
+
+lets see,
+first it negate x
+then it adds that with an empty argument? not sure
+
+so in cases x is negative
+-x -> negate = positive -> adds with empty args - positive
+x -> negate = negative -> adds with empty args - negative
+
+so its like a sign inverter?
+
+2.15
+for what arguments do the following functions return true?
+(= 9) . (2 +) . (7x) . (3 >) . (mod 2)
+
+1. 9
+2. 7
+3. multiply funcion doest return a boolean
+4. any numbers less than 3
+5. any number that doesnt have atruthy value like 0?
+
+2.16
+which of the following statements are true (if any?)
+(x) x = (x x)
+(+) x = (x +)
+(-) x = (-x)
+answer:
+not sure what this means here,
+1. were applying the operation multiply to argument x - does it always equal x?
+yes since multiplication is commutative
+2. were applying the addition operation to argument x - does it equal x +?
+yes since addition is commutative  doesnt matter where you add
+3. were applying the operation - to argument x, does it equal (-x)?
+no, one is a function and another is a number
+
+2.1.7
+in newtons method the test for determining wheter an approximation
+y to sqrt x is good enough was defined to be
+
+abs(y^2 - x) < eps
+
+another test is
+abs(y^2 - x) < eps * x
+
+rewrite the sqrt function to use this test
+answer:
+
+
+sqrt x >= 0 and abs(y^2 - x) < eps * x
+
+yet another test for convergence is to stop when two successive approximation y and y' are
+sufficiently close
+
+sqrt x = until goodEnough improve x
+  where
+    goodEnough y = abs (y^2 - x) < eps * x
+    improve y = (y + x/y) / 2
+    eps = 0.0001

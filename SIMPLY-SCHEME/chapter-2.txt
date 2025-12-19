@@ -8,3 +8,7 @@ first '(blackbird) = '(blackbird)
 butfirst
 false
 the
+
+2.2
+what is the domain of the vowel? function?
+the input of the vowel function 

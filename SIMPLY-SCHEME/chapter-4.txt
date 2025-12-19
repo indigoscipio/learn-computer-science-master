@@ -1,0 +1,101 @@
+
+
+Special form
+
+(define x y)
+why is it special form?
+if it was a regular prodcedure
+
+(define (square x) (* x x))
+
+then it would evaulate (sqare x) first which doesn't eist
+when you see define, stop what you usuallyl do
+
+it has its own evaluation rule
+
+expression represents procedure invocation
+Scheme first evaluates all the subexpressions,
+then applies resulting procedure to the argument value
+
+argument vs parameter
+
+square x
+
+argument = the value that is passed on to square x (eg square 7)
+parameter = the template x
+
+exercises
+4.1
+consider this procedure
+(define (ho-hum x y)
+    (+ x (* 2 y))
+)
+
+show substitution that occurs when you evaluate
+(ho-hum 8 12)
+when its evlauated, the procedure ho hum runs and it binds x = 8 and y = 12
+so (+ 8 (* 2 12))
+
+4.2
+(define (yawn x)
+    (+ 3 (* x 2))
+)
+list all ittle people when evaluating
+(yawn (/ 8 2))
+
+there are 3little people
+1. the division specialist (evaluates argument inside (yawn))
+2. the function yawn/master specialist which cals the body
+3. + specialist -> (+ 3 (* x 2))
+4. * specialist -> (* x 2)
+
+4.3
+here are some procedure defintions
+
+4.4
+each of the following procedure definitinos has an erorr of some kind
+say what's wrong and why and fix it
+(define (sphere–volume r)
+(* (/ 4 3) 3.141592654)
+(* r r r))
+answer: this does not have 1 return value (* ...) (* 3...)
+fixed versoin:
+(define (sphere–volume r)
+(* (/ 4 3) 3.141592654 (* r r r)))
+
+(define (next x)
+(x + 1)
+)
+answer: this one has the wrong operator placement
+fixed: (+ x 1)
+
+
+(define (square) (* x x))
+answer: this one the procedure square does not take any argument
+the body doesn't know what x is
+
+fixed: (define (square x) (* x x))
+
+(define (triangle–area triangle)
+(* 0.5 base height))
+answer: this one only takes one argument (triangle) and does not take height
+
+fixed: just add base to the argument (triangle-area base triangle ..)
+
+(define (sum–of–squares (square x) (square y))
+  (+ (square x) (square y)))
+  answer: this one the procedure takes a function applicaion as its argument
+  to fix just do (sum-of-squares x y)
+
+  4.6 Define a procedure fourth that computes the fourth power of its argument. Do this two ways, first using the 
+multiplication function, and then using square and not (directly) using multiplication.
+
+first day:
+(define (fourth n)
+    (* n (* n (* n n)))
+)
+
+second:
+(define (forth n)
+    (sqr (sqr n))
+)

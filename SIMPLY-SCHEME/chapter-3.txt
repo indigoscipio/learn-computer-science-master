@@ -5,3 +5,39 @@ in scheme, parentheses are never optinal
 If the order of the "same level" people doesn't matter, let's look at this expression:
 (+ (* 10 10) (* 2 2))
 doest matter if 10 * 10 is first the result is always the same
+
+exercise 3
+3.1 
+translate arith expression (3+4) * 5 and 3 + (4*5) into scheme expression
+and into plumbing diagrams
+
+
+(+ 3 4) * 5
+pipe 1 -> evaluate 3 + 4  = 7
+then goes into pipe * -> 7 *  5 = 35
+
+3.2
+how many little peopl does alonzo hire in evaluating each of these following expressions
+
+1. (+ 3 (* 4 5) (- 10 4)) (* 3 x x)
+2. the * operation (* 4 5)
+3. the - operation (- 10 4)
+
+3.4 Five little people are hired in evaluating the following expression:
+(+ (* 3 (- 4 7))
+   (- 8 (- 3 5)))
+
+3.9 The expression (+ 8 2) has the value 10. It is a compound expression made up of three atoms. For this problem, 
+write five other Scheme expressions whose values are also the number ten:
+• An atom
+• Another compound expression made up of three atoms
+• A compound expression made up of four atoms
+• A compound expression made up of an atom and two compound subexpressions
+• Any other kind of expression
+
+answer:
+1. 10
+2. (+ 2 8)
+3. (+ 2 4 4)
+4. (+ (+ 2 2) (+ 3 3))
+5. (- 12 2)
