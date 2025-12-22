@@ -223,3 +223,32 @@ sqrt x = until goodEnough improve x
     goodEnough y = abs (y^2 - x) < eps * x
     improve y = (y + x/y) / 2
     eps = 0.0001
+
+
+
+========================
+
+
+BOoleans
+Polymorphic comparison
+a -> a -> Bool
+2 = 3
+False < true
+2 = true (type error)
+
+Comparison operators have the same level of precedence
+>, <, =<, etc
+
+
+======================
+
+Bottom symbol
+it never halts
+
+
+=================
+
+Characters
+Code -> char to ascii
+decode -> ascii ot char
+these are two essential helpers
