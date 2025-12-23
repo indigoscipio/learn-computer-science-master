@@ -1,0 +1,11 @@
+
+Quote is a special form
+the arguments arent evaluated, return as it is
+
+
+What's not first clas
+- Operators
+you can't pass around + to +
+- control flows - if, else, etc
+- you cant save the logic of an if proceudre to a variabel and use it laster
+- 

@@ -1,0 +1,3 @@
+#lang racket
+
+(append '("niggas" "for") 6 '(("you") ("are not")))

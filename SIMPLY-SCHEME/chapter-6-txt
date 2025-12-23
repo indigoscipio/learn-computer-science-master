@@ -1,0 +1,8 @@
+a fucntion that returns true or false is a predicate
+
+= vs equal?
+= -> only for number comparison
+eq? -> for all types of datas
+
+if is special expr
+also and and or
