@@ -252,3 +252,29 @@ Characters
 Code -> char to ascii
 decode -> ascii ot char
 these are two essential helpers
+
+
+======================
+
+A tuple is a pair of different types
+(num, char)
+first(a,b) -> a
+second(a,b) -> b
+
+======================
+
+2.5 patterns
+
+cond true x y = x
+cond false x y = y
+
+cond p x y
+= x if p is true
+= y is p is false
+
+true A x = x
+false A x = flase
+
+true V x = true
+false V x = x
+

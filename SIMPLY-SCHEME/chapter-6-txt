@@ -6,3 +6,5 @@ eq? -> for all types of datas
 
 if is special expr
 also and and or
+
+in scheme, everything that is not false is treated as true
