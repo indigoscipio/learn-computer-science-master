@@ -46,9 +46,6 @@
         [(equal? (cadr time) 'pm) (+ (remainder (car time) 12) 12)]
         [else (remainder (car time) 12)])
   )
-(european-time '(8 am)) ; 8
-(european-time '(4 pm)) ;16
-(european-time '(12 am)) ; 24
 
 ; Number -> (listof Number Symbol)
 (define (american-time time)
@@ -58,5 +55,140 @@
         [else 
          (se (if (= (remainder time 12) 0) 12 (remainder time 12)) 
              'pm)]))
-(american-time -421) ; 9 PM
-(american-time 12) ;12 PM
+
+
+;==========================
+
+; exercise 6.6
+; write function teen? that returns true if arg is between 13 and 19
+(define (teen? age)
+  (and (integer? age)
+       (>= age 13)
+       (<= age 19))
+  )
+
+; exercise 6.7
+; write procedure type-of that takes anything as arg and returns one of the words:
+; word, sentence, number, or boolean
+;(Even though numbers are words, your procedure should return number if its argument is a number.)
+(define (type-of arg)
+  (cond [(number? arg) 'number]
+        [(word? arg) 'word]
+        [(sentence? arg) 'sentence]
+        [(boolean? arg) 'boolean]
+        [else 'type-not-detected]
+        )
+  )
+
+; exercise 6.8
+; write indef-article that works like this:
+; > (indef-article 'beatle)
+; (A BEATLE)
+
+; (indef-article 'album)
+; (AN ALBUM)
+; don't worry about silent initial consonants like the h in hour
+
+(define (indef-article w)
+  ; check if starting letter is a vowel.
+    ; if so, insert n,
+  ; else its a consonant
+    ; just insert a
+  (cond [(member? (first w) 'aeiou) (sentence 'an  w)]
+        [else (sentence 'a  w)])
+  )
+(indef-article 'beatle)
+(indef-article 'album)
+
+; exercise 6.9
+; Sometimes you must choose the singular or the plural of a word: 1 book but 2 books. Write a procedure 
+; thismany that takes two arguments, a number and a singular noun, and combines them appropriately:
+
+; Number Word -> (listof Number Word)
+(define (thismany num noun)
+  ; base logic
+  ; if the item is more than 1, then add s at the end of the noun
+  ; else just add the noun at the end
+  (cond 
+    [(= num 1) (list num noun) ]
+    [(equal? (last noun) 'y) (if (member? (last (bl noun)) 'aiueo)
+                                 (list num (word noun 's))
+                                 (list num (word (bl noun) 'ies))
+                                 ) ]
+    [else (list num (word noun 's)) ])
+
+  )
+(thismany 1 'partridge) ; (1 partridge)
+(thismany 3 'french-hen); (3 french-hens)
+(thismany 0 'french-hen); (3 french-hens)
+(thismany 2 'fly)
+(thismany 2 'boy)
+
+;6.10
+; wirte procedure sort2 that takes as its arg sentence containing two numbers
+; it should return a sentence containing hte same two numbers, bug in ascending order
+; > (sort2 '(5 7))
+; (5 7)
+; > (sort2 '(7 5))
+; (5 7)
+
+(define (sort2 l)
+  (if (< (first l) (last l))
+      (se (first l) (last l))
+      (se (last l) (first l))
+      )
+  )
+
+;6.11
+;Write a predicate valid–date? that takes three numbers as arguments, representing a month, a day of the 
+;month, and a year. Your procedure should return #t if the numbers represent a valid date (e.g., it isn't the 31st of 
+;September). February has 29 days if the year is divisible by 4, except that if the year is divisible by 100 it must also be 
+;divisible by 400.
+
+; Number -> Number
+; given a year, determines if its a leap year
+(define (leap-year? y)
+  (or (= (remainder y 400) 0)
+       (and (= (remainder y 4) 0)
+            (not (= (remainder y 100) 0)) ))
+  )
+
+(define (month-days m y)
+  (cond [(member? m '(1 3 5 7 8 10 12)) 31]
+        [(member? m '(4 6 9 11)) 30]
+        [(leap-year? y) 29]
+        [else 28]))
+
+; Number Number Number -> Boolean
+(define (valid-date? m d y)
+  ; handle correct input for the date
+  ; month is between 1 - 12
+  ; day depends onxxx
+  ; then handle the february month thing?
+
+  (and (>= m 1) (<= m 12) (> d 0) (<= d (month-days m y)) )
+  
+  
+  )
+
+; Exercise 6.14
+; write proc desrribe-time tha takes num of seconds and return
+; a useful description of that mouantof time
+;> (describe–time 45)
+;(45 SECONDS)
+;> (describe–time 930)
+;(15.5 MINUTES)
+;> (describe–time 30000000000)
+;(9.506426344208686 CENTURIES)
+
+(define (describe-time sec)
+  ; the logic
+  ; if its less than 60 -> seconds
+  ; if ltes than 3600 -> minutes
+  ; if its less than 86400 -> hour
+  ; ...
+  0
+  )
+(describe-time 45)
+(describe-time 930)
+(describe-time 30000000000)

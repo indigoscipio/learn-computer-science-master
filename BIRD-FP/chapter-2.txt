@@ -278,3 +278,31 @@ false A x = flase
 true V x = true
 false V x = x
 
+=================
+
+Higher order function
+functions can take any value as argument
+ and can return any value
+ a function which take a function as argument is a HOF
+
+ function vs operator
+ function -> add(x,y) -> prefix
+ operator -> x + y - > infix
+
+
+ =================
+
+ The Bootom value
+ bottom value is polymorphic
+
+bottom value represnets undefined/broken computation
+
+strict vs non strict
+strict -> if you give bottom value argument, it returns bottom value
+non-strict -> might not give you a bottom value 
+
+example:
+(define (three x) 3)
+if you feed (three 1/0)
+in strict it returns undefined
+in nonstrict it treutns 3
