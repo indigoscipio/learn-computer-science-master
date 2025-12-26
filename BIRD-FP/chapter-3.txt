@@ -1,0 +1,7 @@
+Lists
+
+3 parts of a recipe
+
+Result expression
+Generator : x <- List
+Filters
