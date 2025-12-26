@@ -150,4 +150,46 @@ show the indentity function id is equal to (subst const const)
 where subst and const are as defined in previous question.
 the function compose can also be expressed in terms of these functoins. how?
 
+(subst const const) x
+subst f g x = f x (g x)
+const x (const x)
+1st arg = x
+2nd arg = (const x)
+therefore it returns x/itself
+
+finding compose
+f g x = f (g x)
+= (const f x) (g x)
+
+
 |#
+
+#|
+2.8.3
+define function apply which applies its first argument to its second
+what is its type? what is the relationship between apply and id?
+
+|#
+
+; apply: (A -> B) -> A -> B
+; 1st arg must be afunction
+(define (apply f x)
+  (f x)
+  )
+(apply identity 5)
+
+; when given identity, apply just returns the 2nd arg iteself unchanged
+; in other words apply identy = identiy
+
+; 2.8.4
+; suppose the function query is defined by
+; query f x g = g f (f x g)
+
+; is there a sensible type which can be assigned to this function? if not explain why
+
+; query f x g :: tResult
+; f :: takes 2 args -> x and g
+; g :: takes 2 args -> f and (f x g)
+; (f x g) :: type z
+
+; since f and g takes each other as argument the type is stuck ina loop
