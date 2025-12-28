@@ -1,0 +1,29 @@
+Chapter 7
+
+Variables
+
+two ways of thining about variables:
+- imperative - mutable
+- functonal - just tag it once and don't modify
+
+shadowing:
+where global variable gets shadow /replaced
+by a local variable
+
+
+; let is just a syntactic sugar
+for calling an anonymous procedure
+
+(let ((x 5)) (+ x 10))
+is equal to
+((lambda (x) (+ x 10)) 5)
+
+
+let evaluates all values/variables first before binding 
+
+let -> all variables are created simultaneously
+let* -> variables are created sequentially, like a nested let
+
+let is a special form that takes 2 args
+arg 1 - list of name value pairs in parenthesis
+arg 2 - body of let - expr to evaluate

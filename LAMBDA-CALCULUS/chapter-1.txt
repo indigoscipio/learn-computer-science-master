@@ -1,0 +1,15 @@
+imperative
+mutates variable
+iterations
+doesn't remember old value
+chalkboard analogy, define, mutate, delete
+
+functinoal
+variables stay the same
+recursions
+keep old value
+paper stack analogy, function call -> new   
+
+
+1.5
+continue here
