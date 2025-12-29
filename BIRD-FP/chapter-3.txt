@@ -5,3 +5,16 @@ Lists
 Result expression
 Generator : x <- List
 Filters
+
+============
+
+Operations
+
+++ : concatenation
+[a] -> [a] -> [a]
+identity : [] - if you hook empty list into a list of [a], its just [a]
+
+
+
+take first item and join it with the rest
+[head xs] ++ tail xs

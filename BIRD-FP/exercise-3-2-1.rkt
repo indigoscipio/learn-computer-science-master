@@ -64,9 +64,74 @@ when xs is empty
 using list comprehension, define a function for counting the number of negative numbers in a list
 
 answer:
-[(count xs) | x <- xs ; x < 0 ]
+;; count-negative:: [Int] -> Int
+countNegs xs = length [x | x <- xs ; x < 0]
 filter each number and check if its < 0
 list the numbers that are negaitve
 count those numbers and output as a result
+
+
+3.2.4
+define a function intpairs so that (intpairs n) is a list of all distinct
+pairs of integers 1 <= x, y <= n
+
+answer:
+1st loop x
+2nd loop y
+intpairs n = [(x,y) | x <- [1..n] ; y <- [1..n]]
+
+3.2.25
+write program to find all quadruples (a,b,c,d) in the range 0 < a,b,c,d <= n such that
+a^2 + b^2 = c^2 + d^2
+
+answer:
+quadruples n = [(a,b,c,d) | a <- [1..n] ; b <- [1..n] ; c <- [1..n] ; d <- [1..n] ; a^2 + b^2 == c^2 + d^2 ; (a, b) /= (c, d)  ]
+
+3.2.6
+define x^n using a list of comprehension
+
+expt b n = product [b | i <- [1..n]]
+
+3.2.7
+determine the value of (divisors 0) where
+
+divisors n = [d | d <- [1..n] ; n mod d = 0]
+
+ansewr:
+ok so we want to know what the value of divisors 0
+so first determine the d
+d comes from generator from 1 to 0
+which means its an empty list since 1..0
+and therefore the filter n mod d will not be evaluated since theres nothing int htelist
+
+3.2.8
+define a function mindivisor which returns smallest divisor
+greater than 1, of a given positive integer
+using mindivisor construct a function for testing wheter a number is prime
+answer:
+
+mindivisor n = min[d | d <- [2..n]; n mod d == 0]
+
+primetest
+a number is prime if it has a divisor 1 and itself
+mindivisor 17 = 17 - so mindivisor needs to return that number itself to know a number is prime
+is-prime? n = (mindivisor n) == n
+
+
+3.2.9
+define gcd to allow for zero arguments
+
+gcd is largest number that divides a and b without a reminder
+
+gcd = [d | d <- list1 ; (member? d list2)]
+
+3.2.10
+show that if n has a divisor in the range 1 < d < n then it has one in the range
+1 < d <= sqrt(n)
+
+d > sqrt(n) . k > sqrt(n)
+= d . k > n
+therefore it must be impossible
+
 
 |#
