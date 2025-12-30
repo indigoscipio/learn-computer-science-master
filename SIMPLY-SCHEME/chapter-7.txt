@@ -27,3 +27,5 @@ let* -> variables are created sequentially, like a nested let
 let is a special form that takes 2 args
 arg 1 - list of name value pairs in parenthesis
 arg 2 - body of let - expr to evaluate
+
+part 3 functions as data

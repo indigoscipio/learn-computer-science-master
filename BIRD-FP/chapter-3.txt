@@ -14,7 +14,18 @@ Operations
 [a] -> [a] -> [a]
 identity : [] - if you hook empty list into a list of [a], its just [a]
 
-
-
 take first item and join it with the rest
 [head xs] ++ tail xs
+
+its basically like union U for sets
+
+
+===
+ Length
+ denoted with #
+
+ init = lik bf in simple scheme
+
+
+ take and drop
+ take 0 xs = []    
