@@ -117,8 +117,6 @@
   ; map each member word and apply filter to it
   (keep pred '(john paul george ringo))
   )
-(choose–beatles ends–vowel?)
-(choose–beatles even–count?)
 
 ;8.5  Write a procedure transform–beatles that takes a procedure as an argument, applies it to each of the Beatles, 
 ;and returns the results in a sentence:
@@ -137,8 +135,6 @@
 
 (define (amazify name)
   (word 'the-amazing '- name))
-(transform-beatles amazify)
-(transform-beatles bf)
 
 #|
 8.6 When you're talking to someone over a noisy radio connection, you sometimes have to spell out a word in order to 
@@ -165,7 +161,6 @@ Hint: Start by writing a helper procedure that figures out the name for a single
 (define (words wd)
   (every char->radio-word wd)
   )
-(words 'cab)
 
 #|
 8.7 [14.5]* Write a procedure letter–count that takes a sentence as its argument and returns the total number of 
@@ -208,8 +203,111 @@ return #t if the predicate argument returns true for every word in the sentence.
 
 ; basically like andmap
 (define (true–for–all? proc sen)
-  #|
+
   (= (length (keep proc sen))
      (length sen) )
-  |#
+
   )
+
+
+#|
+8.11
+[12.6] Write a GPA procedure. It should take a sentence of grades as its argument and return the corresponding 
+grade point average:
+
+Hint: write a helper procedure base–grade that takes a grade as argument and returns 0, 1, 2, 3, or 4, and another 
+helper procedure grade–modifier that returns–.33, 0, or .33, depending on whether the grade has a minus, a plus, 
+or neither
+|#
+
+; grade-modifier:: word -> number
+; given a letter grade, returns a modifier based on its last sign
+(define (grade-modifier grade)
+  (cond [(eq? (last grade) '+) 0.33]
+        [(eq? (last grade) '-) -0.33]
+        [else 0]
+        )
+  )
+(grade-modifier 'A-)
+
+; base-grade:: word -> number
+; given a letter grade, returns its grade point
+(define (base-grade grade)
+  (cond [(equal? (first grade) 'A) (if (equal? grade 'A+) 4.0 (+ (grade-modifier grade) 4)) ]
+        [(equal? (first grade) 'B) (+ (grade-modifier grade) 3)]
+        ; lets just do 2 for now
+        )
+  )
+
+
+;gpa:: list-of-numbers -> number
+(define (gpa grades)
+  (/ (accumulate + (every base-grade grades)) (count grades))
+  )
+(gpa '(A A+ B+ B))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#|
+8.12
+When you teach a class, people will get distracted if you say "um" too many times. Write a count–ums 
+that counts the number of times "um" appears in a sentence:
+|#
+
+; contains-um?:: word -> boolean
+; checks wheter a word contain the word 'um'
+(define (contains-um? word)
+  (eq? word 'um)
+  )
+
+; count-ums:: sentence -> number
+(define (count-ums se)
+  ;for each word in the sentence, check if there's an occurence of 'um'
+  ; filter it out and count it
+  (count (keep contains-um? se))
+  )
+(count-ums '(today um we are going to um talk about functional um programming)) ;returns 3
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;8.13
+;Write a procedure phone–unspell that takes a spelled version of a phone number, such as POPCORN, 
+;and returns the real phone number, in this case 7672676. You will need to write a helper procedure that uses an 8
+;way cond expression to translate a single letter into a digit.
+
+(define (letter->num letter)
+  (cond [(member? letter 'ABC) 2]
+        [(member? letter 'DEF) 3]
+        [(member? letter 'GHI) 4]
+        [(member? letter 'JKL) 5]
+        [(member? letter 'MNO) 6]
+        [(member? letter 'PQRS) 7]
+        [(member? letter 'TUV) 8]
+        [(member? letter 'WXYZ) 9]
+        ; lets try 2 for now
+        )
+  )
+
+(define (phone-unspell num-letter)
+ (every letter->num num-letter)
+  )
+(phone-unspell 'POPCORN)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#|
+
+8.14 Write the procedure subword that takes three arguments: a word, a starting position number, and an ending 
+position number. It should return the subword containing only the letters between the specified positions:
+> (subword 'polythene 5 8)
+; no lambda or recursion only simply-scheme library
+
+|#
+
+(define (subword wd start end)
+  ((repeated bl (- (count wd) end) ) ((repeated bf (- start 1)) wd))
+  )
+(subword 'polythene 5 9) ;should return then
+
