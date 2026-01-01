@@ -10,3 +10,18 @@ false
 lambda f . lambda s. s -> takes item f and s, and within the body lf lambda s, return s
 
 false
+
+
+normal order vs applicative
+normal - doesn't evaluate arg until its needed
+applicative - eager - eval args
+
+function applications
+
+λ
+(λfunc.λarg(func arg) λx.x) λs.(s.s)
+func = λx.x
+arg = λs.(s.s)
+
+func arg = (λx.x λs.(s.s))
+=λs.(s.s)
