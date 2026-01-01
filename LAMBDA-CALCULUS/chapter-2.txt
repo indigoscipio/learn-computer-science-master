@@ -25,3 +25,6 @@ arg = λs.(s.s)
 
 func arg = (λx.x λs.(s.s))
 =λs.(s.s)
+
+
+2.6 introducting new snyatx

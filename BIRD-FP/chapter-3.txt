@@ -29,3 +29,72 @@ its basically like union U for sets
 
  take and drop
  take 0 xs = []    
+
+
+ =================
+
+
+ foldr
+
+ bsically like
+ (cons 1 (cons 2 (cons 3 '())))
+
+ where the last '() is replaced with the base case and the cons is replaced
+ with value of your choosing
+
+ so foldr + 0 '(1 2 3)
+ since this is right associative
+ (+ 1 (+ 2 (+ 3 0)))
+
+ but in foldl
+(+ (+ (+ 1 0) 2) 3)
+
+example: fold - 50 '(10 2)
+foldl = (- (- 50 10) 2) = 38
+foldr =  (- 10 (- 2 50))= -42
+
+in foldl the base case is the leader/front line
+in foldr the base case is at the very end and the list items are ordered
+
+
+foldr f a [x1,x2, ... xn] = (f x1 (f x2 ... (f xn a) ... ) )
+so it applies the last item with the base case
+even though the list starts from 1 - n, the first thing that gets evaluated is xn
+
+equivalent formulation
+⊕
+
+foldr:: (a -> b -> b) -> b -> [a] -> b
+foldr:: (b -> a -> b) -> b -> [a] -> back
+
+in foldr item a is on thel eft
+foldl item a is on the right
+
+ (+ 1 (+ 2 (+ 3 0)))
+ f 1 (f 2 (f 3 0)) 
+ item on the left (1,2,3...)
+ accumulator on the right (f 2 (f 3 0)
+
+ but in foldl)
+(f (f (f 1 0) 2) 3)
+accumulate on the left (f (f (...) 2) 3)
+item on the righ (1,2,3)
+
+we can use fold to define basic math operator
+
+sum = (foldr + 0)
+
+to be monoid, the operation must behaviour
+- associative (a ⊕ b) ⊕ c = a ⊕ (b ⊕ c)
+- iidentity; there must be idenetity a where x ⊕ a = x and a ⊕ x = a
+
+
+(foldr + 0 '()) ;monoid: gives back a (or 0)
+
+
+foldr is good for booolean since outer to inner - outer short circuit
+foldl is for * + etc since inner to outer
+foldl always have to look at every item and cannot short circuit
+
+
+3.5.2 fold over nonemptyl ist

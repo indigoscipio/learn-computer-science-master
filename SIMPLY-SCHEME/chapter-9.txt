@@ -1,3 +1,6 @@
 Chapter 9
 
 Lambda
+
+define square x * x x
+is just (define (square) (lambda (x) (* x x)) )
