@@ -1,0 +1,12 @@
+Abstraction
+
+lambda a lambda b lambda c (whatever the body si)
+takes 3 items - currying
+
+true
+lambda f . lambda s . f -> takes item f and s, and within the body of lambda s, return the first item which is f
+
+false
+lambda f . lambda s. s -> takes item f and s, and within the body lf lambda s, return s
+
+false

@@ -10,6 +10,51 @@ recursions
 keep old value
 paper stack analogy, function call -> new   
 
+1.4
+in imperative, asignment value/thevariable value changes on each iteration
+in fp, each recusrive call creates local variable until the base case reached, then finally unfolds
+
 
 1.5
-continue here
+arrays are unwieldy in fp
+imperaitve -> find arr  #500 -> instant jsut swap it
+fp -> car cdr format -> traverse, each recursion the variable still exists
+
+1.6
+functions are first class citizens
+in imperative, you rarely see function that outputs other function
+
+
+1.7
+origin of fp language
+
+the birth of recursion
+to understand the value of 5 you don't need 5
+jsut do successor(0) -> successor(successor(0)) -> until it reaches 5
+
+alan turing
+move, erase, write -> imperative
+
+alonzo church
+plug one rule into another, don't erase anything -> functional
+
+In functional math, if there are multiple ways to simplify an expression,
+they all eventually lead to the same answer.
+
+so in fp it doesn't matter whihc  one you evaluate first the result always the same
+referential transparency = function/expr call can be replaced with its value
+witout changing the program behaviour
+if f(x) = 10 you can swap every isntance with f(x) without breaking the program
+fp = executable mathematics
+lambda calc is evaluation order independent
+
+
+1.8-9
+lambda calculus is the smallest language that cna calculate anyhing a modern computer can
+it needs 3 tings
+- function name/variable, like x
+- function application
+- function definition (abstraction)
+
+imperative = assignment sequences matters, fixed evaluation order
+fp = nested function calls, independent evaluaiton order, functions are values
