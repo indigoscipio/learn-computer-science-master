@@ -1,0 +1,8 @@
+#lang racket
+
+; apply:: λf.λg.(f g)
+(define apply (λ(f)
+                (λ (g)
+                  (f g))))
+
+((apply sqr) 5)

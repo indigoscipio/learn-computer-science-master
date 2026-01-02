@@ -28,3 +28,120 @@ func arg = (λx.x λs.(s.s))
 
 
 2.6 introducting new snyatx
+
+
+== definition replacement
+define square = lambda x . x * x
+
+(square 5) == lambda x . x * x
+
+=> beta reduction
+lambda x . x * x => (+ 5 5)
+
+definition
+def identity = lam x . x
+def self_apply = lam s . (s s)
+def apply = lam f . lam arg . (f arg)
+
+def identity2 = lam x ((apply identity) x)
+
+(identity2 identity)
+identity2 ==
+(lam x ((apply identity) x) identity) ==>
+((apply identity) identity) ==
+( ((lam f . lam arg . (f arg)) identity) identity) ==>
+((lam arg . (identity arg)) identity) ==>
+(identity identity) ==>
+identity
+
+
+def self_apply2 = lam s . ((apply s) s)
+
+(self_apply2 identity) ==
+((lam s . ((apply s) s)) identity) =>
+((apply identity) identity) =>
+(identity identity) =>
+identity
+
+
+select-first: lam f . lam s . f
+((select-first identity) apply) ==
+((lam f.lam s.f identity) apply) =>
+((lam s.identity) apply) =>
+identity
+
+in other words
+((select-first arg1) arg2) => returns arg1
+
+
+select-second: lam f.lam s.s
+
+((select-second identity) apply) ==
+((lam f.lam s.s identity) apply) =>
+(lam s.s apply) =>
+apply
+
+
+(((select_first identity) apple) banana)
+if we feed select_first identity 2 args it changes to second
+(identity banana)
+banana
+
+2.9.3
+making pairs from 2 args
+
+def make-pair = lam first. lam second. lam func. ((func first) second)
+
+((make-pair identity) apply) ==
+
+((lam first. lam second. lam func. ((func first) second) identity)  apply)  =>
+(lam second. lam func. ((func identity) second) apply) =>
+lam func. ((func identity) apply)
+
+apply to select first
+(lam func. ((func identity) apply) select-first) =>
+((select-first identity) apply) 
+identity
+
+in general make-pair gives lam func ((func arg1) arg2)
+
+===
+
+2.10
+bound vs free variable
+bound = curently inside the scope created by lamb with that same name
+free = its being used but theres no lam room that claims it
+
+example:
+lam x. (x y)
+x is bound cos the lam x binds it
+y is free, not being used
+
+λx. (x (λy. x) (λx. x))
+
+how substitution works
+replace all free occurences of x with n
+
+the scope of bound variable <name> is <body>
+
+
+eta reduction
+lam x.(f x) = f
+as long as f is not free in x
+
+summary
+<expr> :== <name> | <function> | <application>
+
+<name> :== non-blank character sequence
+
+<function> :== lam <name>.<body>
+<body> :== <expression>
+
+<application> :== (<funciton expression> <argument expression>)
+
+<function expression> :== <expression>
+<argument expression> :== <expression>
+
+normal order: simplify left first until no mor redexes
+(function waiting for argument)
+

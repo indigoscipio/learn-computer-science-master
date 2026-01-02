@@ -1,0 +1,108 @@
+#lang racket
+
+#|
+3.4.1
+the function filter can be defined in terms of concat and map
+
+filter p = concat . map box
+where box x = ...
+
+give definition of box
+
+answer:
+ok so on RHS we have 2 operations, map then concat
+since its a map operation box must be a list
+
+so box x = if x is true, return '(x), else return '()
+
+
+-------
+
+3.4.2 what is the type of (map map)
+
+answer:
+let see, map expects a proc and a list and returns a list that's transfomred
+if we apply a map to that transformed list, that list will get transformed again
+
+so outer map:: (a -> b) [a] -> [b]
+inner map:: (c -> d) -> [c] -> [d]
+and (map map):: (c -> d) [c] -> [d] -> ?? -> ??
+
+
+;; Curried map in Scheme:
+(define (map f)
+  (lambda (xs)
+    (if (null? xs)
+        '()
+        (cons (f (car xs))
+              ((map f) (cdr xs))))))
+
+;; Now you can do:
+(map add1)           ;; Returns a function: [Num] -> [Num]
+((map add1) '(1 2 3)) ;; Apply that function to a list
+
+;; And this makes sense:
+(map map)            ;; Returns a function: [(a->b)] -> [[a]->[b]]
+
+
+
+3.4.3
+using rules  given in section 3.4 convert following expr into combinations of map filter and concat
+reference:  map f xs = [f x | x <- xs]
+filter p xs = [x | x <- xs; p x]
+
+1. [x | xs <- xxs; x <- xs; odd x]
+2. [(x,y) | x <- xs; p x; y <- ys]
+
+answer:
+1. seems liek it has 2 loops here, list within a list and we want to filter out x
+concat [xs <- xxs; x <- xs ]
+[x | xs <- xxs; filter odd xs]
+
+then from rule 4, if you havem ultiple generator use map
+concat(map (λxs . [x | x <- filter odd xs] ) xxs)
+
+since we know [x | x <-xs] = xs
+concat(map (λxs . filter odd xs) xxs)
+concat(map (filter odd) xxs)
+
+2. [(x,y) | x <- xs; p x; y <- ys]
+filter xs first
+
+[(x,y) | x <- filter p xs; y <- ys]
+
+apply riule 4
+concat [[(x,y) | y <- ys] | x <- filter p xs]
+concat (map (λx. [(x,y) | y <- ys]) (filter p xs))
+concat (map (λx. map (λy. (x,y)) ys) (filter p xs))
+
+
+
+3.4.4
+consider the following two expr
+
+1. [(x,y) | x <- xs ; p x ; y <- ys]
+2. [(x,y) | x <- xs ; y <- ys ; p x]
+
+Are they equivalent? Supposing #xs = 1000, #(filter p xs) = 10 and #ys = 
+100, compare the costs of evaluating the two expressions. What conclusions 
+do you draw?
+
+answer:
+seems theyre different in terms of oepration order
+the only thing thats same is the outer loop which comes from xs
+#1 one filters first,so it filters every x in xs
+#2 one just goes into the inner loop and then filters last so it filters y in ys
+
+assuming the outer list is #1000
+1st one -> outer loop is 1000 -> x gets filtered -> so now its 10
+then goes into inner loop -> 10 * 100 = 1000
+
+2nd one -> outer loop is 1000 -> doesnt get filtered -> still 1000
+goes into inner loop -> 100 * 1000 = 100000
+
+so 2nd one is computationally more expensive
+
+
+|#
+

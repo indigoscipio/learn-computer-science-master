@@ -98,3 +98,14 @@ foldl always have to look at every item and cannot short circuit
 
 
 3.5.2 fold over nonemptyl ist
+max -> does not have a identity
+max(-1,-2,-3) -> max(-3,0) -> 0 which isn't in the list
+
+the solutiON? start with the first item in the list as the base case for foldr
+and first item for foldl
+foldl -> start at begining -> end
+foldr -> start at end -> beginning
+
+
+3.5.3
+Scan
