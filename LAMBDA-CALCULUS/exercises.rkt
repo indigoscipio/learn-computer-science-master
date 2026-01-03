@@ -1,5 +1,8 @@
 #lang racket
 
+; identity:: λf.f
+(define identity (λ(f) f))
+
 ; apply:: λf.λg.(f g)
 (define apply (λ(f)
                 (λ (g)
@@ -10,6 +13,9 @@
 
 ; select-second:: λf.λs.s
 (define select-second (λ (f) (λ (s) s )))
+
+; self-apply:: λs(s s)
+(define self-apply (λ (s) (s s) ))
 
 ; make-pair: λfirst.λsecond.λfunc((func first) second)
 (define make-pair (λ (first) (lambda (second) (lambda (func) ((func first) second) ) ) ))
@@ -243,12 +249,182 @@ arg: i
 
 end
 
+===========================================
+
 
 2.2 evaluate the following λexprs
 a. ((λx.λy.(y x) λp.λq.p) λi.i)
 b. (((λx.λy.λz.((x y) z) λf.λa.(f a)) λi.i) λj.j)
 c. (λh.((λa.λf.(f a) h) h) λf.(f f)) 
-d. ((Ap.xq.(p q) (Ax.x Aa.>\b.a)) Ak.k) 
+d. ((λp.λq.(p q) (λx.x λa.λb.a)) λk.k)
+e. (((λf.λg.λx.(f(g x)) λs.(s s)) λa.λb.b) λx.λy.x) 
+
+answer:
+a. 
+((λx.λy.(y x) λp.λq.p) λi.i) =>
+(λy.(y λp.λq.p) λi.i) =>
+(λi.i λp.λq.p) =>
+λp.λq.p
+
+end
+
+b. ( ( (λx.λy.λz.((x y)z) λf.λa.(f a)) λi.i ) λj.j)
+innermost
+(λx.λy.λz.((x y)z) λf.λa.(f a)) =>
+λy.λz.((λf.λa.(f a) y)z) =>
+λy.λz.(λa.(y a) z) =>
+λy.λz.(y z)
+
+back up
+( ( λy.λz.(y z) λi.i ) λj.j) =>
+
+inner
+λz.(λi.i z) =>
+λz.z
+
+back up
+(λz.z λj.j) =>
+λj.j
+
+end
+
+c. (λh.((λa.λf.(f a) h) h) λf.(f f))
+inner
+(λa.λf.(f a) h) =>
+λf.(f h)
+
+((λa.λf.(f a) h) h) =>
+(λf.(f h) h) =>
+(h h)
+
+(λh.(h h) λf.(f f)) =>
+(λf.(f f) λf.(f f)) =>
+(λf.(f f) λf.(f f)) => ...
+
+therefore it has no normal form
+
+d. ((λp.λq.(p q) (λx.x λa.λb.a)) λk.k)
+inner
+(λp.λq.(p q) (λx.x λa.λb.a)) =>
+
+arg
+(λx.x λa.λb.a) =>
+λa.λb.a
+
+(λp.λq.(p q) (λx.x λa.λb.a)) =>
+(λp.λq.(p q) λa.λb.a) =>
+λq.(λa.λb.a q) =>
+λq.λb.q
+
+back up
+(λq.λb.q λk.k) =>
+λb.λk.k
+
+e. ( ( (λf.λg.λx.(f(g x)) λs.(s s)) λa.λb.b) λx.λy.x)
+
+inner application
+(λf.λg.λx.(f(g x)) λs.(s s)) =>
+λg.λx.(λs.(s s) (g x)) =>
+λg.λx.((g x) (g x))
+
+( (λf.λg.λx.(f(g x)) λs.(s s)) λa.λb.b) =>
+(λg.λx.((g x) (g x)) λa.λb.b) =>
+λx.((λa.λb.b x) (λa.λb.b x)) =>
+λx.(λb.b λb.b) =>
+λx.λb.b
+
+(λx.λb.b λx.λy.x) =>
+λb.b
+b
+
+end
+
+===========================================
+
+
+2.3
+For each of the following pairs, show that function (i) is equivalent 
+to the function resulting from expression (ii) by applying both to 
+arbitrary arguments:
+
+a.
+1. identity
+2. (apply (apply identity))
+
+b.
+1. apply
+2. λx.λy.(((make-pair x) y) identity) 
+
+c.
+1. identity
+2. (self-apply (self-apply select-second))
+
+answer:
+
+refrence
+apply:: λf.λg.(f g)
+identity:: λf.f
+make-pair:: λf.λs.λfunc((func f) s)
+self-apply:: λs(s s)
+select-first:: λf.λs.f
+select-second:: λf.λs.s
+
+
+let arg = z
+
+a.
+1. (identity z) => (λf.f z) => z
+2. (apply (apply identity)) =>
+((apply (apply identity)) z)
+
+inner part
+(apply identity) =>
+(λf.λg.(f g)  λf.f) =>
+λg.(λf.f g)=>
+λg.g
+
+((apply λg.g) z) =>
+inner part
+(λf.λg.(f g) λg.g) =>
+λg.(λg.g g) =>
+λg.g
+
+back up
+((apply λg.g) z) =>
+(λg.g z) =>
+z
+
+therefore 1 and 2 is equal
+
+-----
+
+b.
+1. (apply z) =>
+(λf.λg.(f g) z) =>
+λg.(z g)
+
+
+2. λx.λy.(((make-pair x) y) identity)
+(λx.λy.(((make-pair x) y) identity) z) =>
+
+inner part
+make-pair:: λf.λs.λfunc((func f) s)
+((make-pair x) y) ->
+( (λf.λs.λfunc((func f)s) x) y) ->
+(λs.λfunc.((func x)s) y) ->
+λfunc.((func x)y)
+
+back up
+(((make-pair x) y) identity) z) =>
+(λfunc.((func x)y) identity) =>
+((identity x) y) =>
+
+(λx.λy.((identity x) y) z) =>
+λy.((identity z) y) =>
+λy.((λf.f z) y) =>
+λy.(z y)
+
+therefore 1 and 2 is equal
+
 
 |#
-

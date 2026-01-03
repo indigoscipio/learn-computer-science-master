@@ -108,4 +108,4 @@ foldr -> start at end -> beginning
 
 
 3.5.3
-Scan
+
