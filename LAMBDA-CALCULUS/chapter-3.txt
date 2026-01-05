@@ -1,0 +1,6 @@
+Chapter 3: Conditions, booleans, and numbers
+
+true and false is a function
+
+
+cond:: λe1.λe2.λc.((c e1) e2)
