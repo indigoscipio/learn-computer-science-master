@@ -109,3 +109,10 @@ foldr -> start at end -> beginning
 
 3.5.3
 
+3.6
+cons is right associative
+
+1 : (2 : (3 : []))
+
+
+cons:: a -> [a] -> [a]
