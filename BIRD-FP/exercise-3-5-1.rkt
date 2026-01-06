@@ -200,3 +200,87 @@ foldl or foldr.
 ; small trace
 ; (? 1 (? 2 (2 '()) ) )
 ; the operator ? compares if theyre equal
+
+
+
+#|
+3.5.6 Given a list xs = [x1,x2,...,Xn] of numbers, the sequence of successive 
+maxima (ssm xs) is the longest subsequence [xjl, xj2,...,xjm] such that jl = 1 
+and xj < xjk for j < jk For example, the sequence of successive maxima of 
+[3,1,3,4,9,2,10,7] is [3,4, 9,10]. Define ssm in terms of foldl. 
+|#
+
+#|
+answer:
+
+small example with foldr, which means checks from left - right and accmulate on the left)
+lets say ssm [3,1,3,4]
+
+(op (op (op (op x 3) 1) 3) 4)
+
+op = > mix of >, cons and max since we want to compare highest build list
+base case x = since this is a list we want to bild the list so '()
+on each step, compare item with highest result and check if its greater
+
+|#
+
+; ssm:: list-of-number -> list-of-number
+(define (ssm xs)
+  (reverse (foldl (λ (x acc) (if (null? acc)
+                                 (cons x acc)
+                                 (if (> x (car acc) )
+                                     (cons x acc)
+                                     acc
+                                     ))
+                    )
+                  '() xs))
+  ; reverse at the end but lets just focus on getting the logic right first
+  )
+(ssm '(3 1 3 4 9 2 10 7))
+
+
+
+
+#|
+3.5.7
+the following law relates foldl and map:
+
+foldl (⊕) a . map f = foldl (⊗) a
+where x ⊗ y = x ⊕ f y.
+
+derive this law from the corresponding law relating 
+foldr and map, using the fact that:
+
+map f . reverse = reverse . map f
+and one of the duality theorems
+
+answer:
+LHS
+(foldl ⊕ a (map f xs)) 
+= (foldr (⊗) a (reverse (map f xs) ))
+= (foldr (⊗) a (map f (reverse xs))
+= foldr ((flip ⊕) . f) a . reverse
+= ...
+
+==============================================
+
+3.5.8
+define the functions foldr1 and scan1 that relate to foldr and scan analogously to the way that foldl1
+relates to foldl
+
+|#
+
+(define (foldr1 f a xs)
+  ...
+  )
+
+
+#|
+3.5.9
+the mathematical constant e is defined by
+
+e = sigma from n>=0 of 1/n!
+
+write down anexpr that can be used to eval e to some reasonable measure of accuracy
+|#
+
