@@ -195,7 +195,7 @@ then #true
 else y
 
 so in lambda calculus we can represent this as
-λx.λy.((x y) true)
+implies:: λx.λy.((x y) true)
 ; if x is true -> grab whatever y is
 ; if x is false -> then return true
 
@@ -323,7 +323,392 @@ true, therefore matches
 for each of the following pairs, show functions (i) and (ii) are equivalent for all
 boolean values of their args
 a
-i. 
+i. λx.λy.(and (not x) (not y))
+ii. λx.λy.(not (or x y))
+
+b
+i. implies
+ii. λx.λy.(implies (not y) (not x))
+
+c
+i. not
+ii. λx.(not (not (not x))) 
+
+d
+i. implies
+ii. λx.y.(not (and x (not y)))
+
+e
+i. equiv
+ii. λx.λy.(and (implies x y) (implies y x))
+
+
+answer:
+===============
+reference/note
+implies:: λx.λy.((x y) true)
+not:: λx.((x false) true) - simplified version
+and:: λx.λy.((x y) false) - simplified version
+or:: λx.λy.((x true) y) - simplified version
+equiv:: λx.λy.((x y) ((y false) true))
+
+a
+FALSE FALSE
+i.λx.λy.(and (not x) (not y))
+apply args
+((λx.λy.(and (not x) (not y)) false) false) =>
+(λy.(and (not false) (not y)) false) =>
+(and (not false) (not false))  =>
+(and (λx.((x false) true) false) (λx.((x false) true) false)) =>
+
+1st arg (not false)
+(λx.((x false) true) false) =>
+((false false) true) =>
+true
+
+2nd arg (not false) => true
+
+(and true true) =>
+((λx.λy.((x y) false) true) true) =>
+((true true) false) =>
+true
+
 ii.
+((λx.λy.(not (or x y)) false) false) =>
+(not (or false false)) =>
+
+(not (λx.λy.((x true) y) false false)) =>
+(not ((false true) false)) =>
+(not false) =>
+(λx.((x false) true) false) =>
+((false false) true)  =>
+true
+
+therefore both are equal
+
+----- 
+
+FALSE TRUE
+i.
+((λx.λy.(and (not x) (not y)) false) true) =>
+(and (not false) (not true)) =>
+
+(not false) =>
+(λx.((x false) true) false) =>
+((false false) true) =>
+true
+
+not true => ... => false
+
+(and true false) =>
+(λx.λy.((x y) false) true false) =>
+((true false) false) =>
+false
+
+
+ii.
+((λx.λy.(not (or x y)) false) true) =>
+(not (or false true)) =>
+(not (λx.λy.((x true) y) false true)) =>
+(not ((false true) true)) =>
+(not true) => ... => false
+
+therefore two are equal.
+
+-----
+
+TRUE FALSE
+i.
+((λx.λy.(and (not x) (not y)) true) false) =>
+(and (not true) (not false)) => ...
+(and false true) => ... =>
+false
+ 
+ii.
+((λx.λy.(not (or x y)) true) false) =>
+(λy.(not (or true y)) false) =>
+(not (or true false)) => ... =>
+(not true) => ...
+false
+
+therefore two are equal.
+
+-----
+
+TRUE TRUE
+i.
+((λx.λy.(and (not x) (not y)) true) true) =>
+(and (not true) (not true)) => ... =>
+(and false false) =>
+false
+
+ii.
+((λx.λy.(not (or x y)) true) true) =>
+(λy.(not (or true y)) true) =>
+(not (or true true)) => ... =>
+(not true) =>
+false
+
+therefore the two are equal.
+
+
+============================= end of a =============================
+
+b
+i. implies
+ii. λx.λy.(implies (not y) (not x))
+
+FALSE FALSE
+i. ((λx.λy.((x y) true) false) false) =>
+((false false) true) =>
+true
+
+ii. ((λx.λy.(implies (not y) (not x)) false) false) =>
+(implies (not false) (not false)) => ...
+(implies true true) =>
+(λx.λy.((x y) true) true true) =>
+((true true) true) =>
+true
+
+therefore the two are equal
+
+-----
+
+FALSE TRUE
+i. ((λx.λy.((x y) true) false) true) =>
+((false true) true) => 
+true
+
+ii. ((λx.λy.(implies (not y) (not x)) false) true) =>
+(implies (not true) (not false)) => ...
+(implies false true) => ...
+(λx.λy.((x y) true) false true) => ...
+((false true) true) => ...
+true
+
+therefore the two side are equal
+
+
+-----
+
+TRUE FALSE
+i. ((λx.λy.((x y) true) true) false)
+((true false) true) =>
+false
+
+ii. ((λx.λy.(implies (not y) (not x)) true) false) =>
+(implies (not false) (not true)) => ...
+(implies true false) =>
+(λx.λy.((x y) true) true false) =>
+((true false) true) =>
+false
+
+therefore the 2 are equal
+
+-----
+
+TRUE TRUE
+i. ((λx.λy.((x y) true) true) true) =>
+((true true) true) => true
+
+ii. ((λx.λy.(implies (not y) (not x)) true) true) =>
+(implies (not true) (not true)) =>
+(implies false false) =>
+(λx.λy.((x y) true) false false) =>
+((false false) true) =>
+true
+
+therefore the 2 are equal
+
+
+============================= end of b =============================
+
+c
+FALSE
+i. (not false) =>
+(λx.((x false) true) false) =>
+((false false) true) =>
+true
+
+ii. (λx.(not (not (not x)))  false) =>
+(not (not (not false))) =>
+(not (not true)) =>
+(not false) => ... =>
+true
+
+therefore the two are equal
+
+-----
+
+
+TRUE
+i. (not true) =>
+(λx.((x false) true) true) =>
+((true false) true) => ...
+false
+
+ii. (λx.(not (not (not x))) true) =>
+(not (not (not true))) =>
+(not (not false)) =>
+(not true) => ... =>
+false
+
+therefore the two are qual
+
+
+============================= end of c =============================
+
+d
+FALSE FALSE
+i. (implies false false) =>
+(λx.λy.((x y) true) false false) =>
+((false false) true) =>
+true
+
+ii. ((λx.y.(not (and x (not y))) false) false) =>
+(not (and false (not false))) =>
+(not (and false true)) => ... =>
+(not false) => true
+
+therefore the 2 is equal
+
+-----
+
+TRUE TRUE
+i. (implies true true) =>
+(λx.λy.((x y) true) true true) =>
+((true true) true) =>
+true
+
+ii. ((λx.y.(not (and x (not y))) true) true) =>
+(not (and true (not true))) =>
+(not (and true false)) => ... =>
+(not false) => true
+
+therefore the 2 is equal
+
+-----
+
+TRUE FALSE
+i. (implies true false) =>
+(λx.λy.((x y) true) true false) =>
+((true false) true) =>
+false
+
+ii. ((λx.y.(not (and x (not y))) true) false) =>
+(not (and true (not false))) =>
+(not (and true true)) => ... =>
+(not true) => false
+
+therefore the 2 side is equal
+
+-----
+
+FALSE TRUE
+i. (implies false true) =>
+(λx.λy.((x y) true) false true) =>
+((false true) true) =>
+true
+
+
+ii. ((λx.y.(not (and x (not y))) false) true) =>
+(not (and false (not true))) =>
+(not (and false false)) => ... =>
+(not false) => true
+
+therefore the 2 side is equal.
+
+
+
+============================= end of d =============================
+
+e
+TRUE TRUE
+i. (equiv true true) =>
+((λx.λy.((x y) ((y false) true)) true) true) =>
+((true true) ((true false) true)) =>
+((true true) false ) ->
+true
+
+ii. ((λx.λy.(and (implies x y) (implies y x)) true) true) =>
+(and (implies true true) (implies true true)) =>
+(and true true) => ...
+true
+
+therefore the 2 sides are equal
+
+-----
+
+FALSE FALSE
+
+i. (equiv false false) =>
+((λx.λy.((x y) ((y false) true)) false) false) =>
+((false false) ((false false) true)) =>
+((false false) true ) ->
+true
+
+
+ii. ((λx.λy.(and (implies x y) (implies y x)) false) false) =>
+(and (implies false false) (implies false false)) =>
+(and true true) => ...
+true
+
+therefore the two sides is equal
+
+-----
+
+FALSE TRUE
+i. (equiv false true) =>
+((λx.λy.((x y) ((y false) true)) false) true) =>
+((false true) ((true false) true)) =>
+((false true) false ) ->
+false
+
+ii. ((λx.λy.(and (implies x y) (implies y x)) false) true) =>
+(and (implies false true) (implies true false)) =>
+(and true false) => ...
+false
+
+therefore the two side are equal
+
+
+-----
+
+TRUE FALSE
+i. (equiv true false) =>
+((λx.λy.((x y) ((y false) true)) true) false) =>
+((true false) ((false false) true)) =>
+((true false) true ) ->
+false
+
+ii. ((λx.λy.(and (implies x y) (implies y x)) true) false) =>
+(and (implies true false) (implies false true)) =>
+(and false true) => ...
+false
+
+therefore the 2sides are equal
+
+============================= end of e =============================
+
+
+
+3.4 show that
+λx.(succ (pred x))
+
+and
+
+λx.(pred (succ x))
+
+are equivalent for arbitrary nonzero integer args
+explain why they are not equivalent for a zero argument
+
+answer:
+zero:: λx.λ
+succ:: λn.λs.((s false) n)
+pred::
+
+and lets take the numebr one as example, we can define it as
+λn.λs((s false) n)
+
 
 |#
