@@ -1,0 +1,6 @@
+#lang simply-scheme
+
+(define (downup wd)
+  0
+  )
+(downup 'ringo)

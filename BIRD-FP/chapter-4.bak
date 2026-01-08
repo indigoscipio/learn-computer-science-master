@@ -1,0 +1,11 @@
+#lang racket
+
+; convert2:: number -> string
+(define (convert2 n)
+  ...
+  )
+
+; digits2:: number -> string
+(define (digits2 n)
+  ...
+  )

@@ -1,0 +1,70 @@
+#lang simply-scheme
+
+(define (downup wd)
+  0
+  )
+(downup 'ringo)
+
+(define (my-downup wd)
+  (cond [(= (count wd ) 1) (se wd)]
+        [else (se wd (my-downup (bl wd)) wd) ]
+        )
+  )
+(my-downup 'o)
+(my-downup 'banana)
+(se 'abc (se 'bc (se 'c '() 'c) 'bc) 'abc)
+
+(define (pigl wd)
+  (cond [(member? (first wd) 'aiueo) (word wd 'ay)]
+        [else (pigl (word (bf wd) (first wd)) )])
+  )
+
+
+; wd:: word -> sentence
+(define (explode wd)
+  (cond [(empty? wd) '()]
+        [else (cons (first wd) (explode (bf wd)))])
+  )
+(explode 'dynamite)
+
+(define (letter-pairs wd)
+  (cond
+    [(< (count wd) 2) '()]
+    [else (cons (word (first wd) (first (bf wd))) (letter-pairs (bf wd) ) ) ])
+  )
+(letter-pairs 'george)
+
+; =======================
+; exercise
+; 11.1 Write downup4 using only the word and sentence primitive procedures.
+; (se wd (downup3 (bl wd)) wd)
+
+#|
+11.2
+8.12]* When you teach a class, people will get distracted if you say "um" too many times. Write a count–ums 
+that counts the number of times "um" appears in a sentence:
+|#
+(define (count-ums wd)
+  (cond [(null? wd) 0]
+        [(equal? (first wd) 'um) (+ 1 (count-ums (bf wd)))]
+        [else (count-ums (bf wd))])
+  )
+(count-ums '(today um we are going to um talk about the combining um method))
+
+#|
+11.3 [8.13] Write a procedure phone–unspell that takes a spelled version of a phone number, such as POPCORN, 
+and returns the real phone number, in this case 7672676. You will need a helper procedure that translates a single 
+letter into a digit:
+|#
+
+(define (unspell–letter letter)
+  (cond ((member? letter 'abc) 2)
+        ((member? letter 'def) 3)
+        ((member? letter 'ghi) 4)
+        ((member? letter 'jkl) 5)
+        ((member? letter 'mno) 6)
+        ((member? letter 'prs) 7)
+        ((member? letter 'tuv) 8)
+        ((member? letter 'wxy) 9)
+        (else 0)))
+
