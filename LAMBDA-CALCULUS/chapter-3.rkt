@@ -703,12 +703,139 @@ are equivalent for arbitrary nonzero integer args
 explain why they are not equivalent for a zero argument
 
 answer:
-zero:: λx.λ
-succ:: λn.λs.((s false) n)
-pred::
+so here essentially the 1st one it extracts the sucessor then find the pred
+and the 2nd one it finds sucessor and find the pred
 
-and lets take the numebr one as example, we can define it as
-λn.λs((s false) n)
+so if we have nonzero number like 2
+(succ 2) = 3 => (pred 3) = 2
+(pred 2) = 1 => (succ 1) => 2
+so the result should be the same 
+
+
+let n = 1
+1st one
+(λx.(succ (pred x)) one) =>
+(succ (pred one)) =>
+(succ (λn.(((iszero n) zero) (n false))  one)) =>
+(succ (((iszero one) zero) (one false)) ) => ... =>
+
+(iszero one) =>
+(one true) ->
+(λs.((s false) zero) true) =>
+((true false) zero)  =>
+false
+
+( (false zero) (one false)) ) =>
+(one false) =>
+(λs.((s false) zero) false) =>
+((false false) zero) =>
+zero
+
+(succ zero) =>
+( λn.λs.((s false) n) zero)
+λs.((s false) zero) =>
+one
+
+-----
+
+2nd one
+(λx.(pred (succ x)) one) =>
+(pred (succ one)) =>
+(pred (λn.λs.((s false) n) one)) =>
+(pred λs.((s false) one)) =>
+(λn.(((iszero n) zero) (n select-second))  λs.((s false) one)) =>
+(((iszero λs.((s false) one)) zero) (λs.((s false) one) select-second)) =>
+
+left
+( (iszero λs.((s false) one)) zero) =>
+
+(λn.(n true) λs.((s false) one)) =>
+(λs.((s false) one) true) =>
+((true false) one) =>
+false
+
+(false zero) =>
+false
+
+((false zero) (two select-second)) =>
+ (two select-second) =>
+(λs.((s false) one) select-second) =>
+((select-second false) one) =>
+one
+
+---
+
+
+iszero:: λn.(n true)
+zero:: λx.x
+succ:: λn.λs.((s false) n)
+pred:: λn.(((iszero n) zero) (n select-second)) 
+one:: (succ zero) =>
+(λn.λs.((s false) n) zero) =>
+λs.((s false) zero)
+
+
+now with n = 0
+
+λx.(succ (pred x))
+pred 0 = 0 -> succesor 0 = 1
+
+λx.(pred (succ x))
+succ 0 = 1 -> pred 1 = 0
+
+successor wraps,
+pred unwraps
+
+1st one
+(λx.(succ (pred x)) zero) =>
+(succ (pred zero)) =>
+(succ (λn.(((iszero n) zero) (n select-second)) zero) ) =>
+
+(λn.(((iszero n) zero) (n select-second)) zero) =>
+
+(((iszero zero) zero) (zero select-second)) =>
+
+((iszero zero) zero)  =>
+((λn.(n true) zero) zero) =>
+((zero true)  zero) =>
+(( λx.x true)  zero) =>
+(true zero)
+
+((true zero) (zero select-second)) =>
+zero
+
+(succ zero) =>
+one
+
+-----
+
+2nd part
+(λx.(pred (succ x)) zero) =>
+(pred (succ zero)) =>
+(pred (λn.λs.((s false) n) zero)) =>
+
+right side
+λs.((s false) zero) =>
+one
+
+(pred one) =>
+(λn.(((iszero n) zero) (n select-second)) one) =>
+(((iszero one) zero) (one select-second)) =>
+
+we know one is not zero so
+(iszero one) =>
+(one true) =>
+(λs.((s false) zero) true) =>
+((true false) zero) =>
+false
+
+((false zero) (one select-second)) =>
+((λf.λs.s zero) (one select-second)) =>
+(λs.s (one select-second)) =>
+(one select-second) =>
+(λs.((s false) zero) select-second) =>
+((false false) zero)  =>
+zero
 
 
 |#

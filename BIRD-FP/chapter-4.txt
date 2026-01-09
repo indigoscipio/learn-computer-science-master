@@ -1,2 +1,20 @@
 Examples
 
+Recursion
+bounded - keep doing it with a fixed number of time
+-process each el of array
+
+unbounded - keep doing it until a condition is met
+- filing system, nested tree, etc
+
+unbounded > bounded
+boundes is a weaker form of unbounded
+
+imperative
+use counter/iteration
+
+functional
+repeated function calls
+
+primitive=  bounded
+general = unbounded

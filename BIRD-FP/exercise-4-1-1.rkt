@@ -98,3 +98,53 @@
     )
   )
 (convert6 987508)
+
+; ============================================================================
+
+;4.1.1
+; modify the solution so that a full spot char is printed after a number
+
+(define (convert-with-full-stop n)
+  (append (convert6 n) (list 'full-stop))
+  )
+
+;4.1.2
+(define (digits9 n)
+  (cons (quotient n 1000000) (remainder n 1000000))
+  )
+
+; where m is a number between 1 - 999
+; and r is an umber between 0 - 999999
+(define (combine9 m r)
+  (cond [(= m 0) (convert6 r)]
+        [(> m 0) (if (= r 0)
+                     (append (convert6 m) (list 'million))
+                     (append (convert6 m) (list 'million) (link r) (convert6 r) )
+                     )])
+  )
+(combine9 6000 548548)
+
+(define (convert9 n)
+  (let ((r (cdr (digits6 n)))
+        (m (car (digits6 n)))
+        )
+    (combine6 m r)
+    )
+  )
+
+(define (convert n)
+  (if (negative? n)
+      (append (list 'minus) (convert6 (abs n)))
+      (convert6 n)
+      )
+  )
+(convert 584335)
+
+;4.1.4
+; 1 pound = 100 pence
+
+
+(define (digits2-curr)
+ (cond [
+        [])
+  )
