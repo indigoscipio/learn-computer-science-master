@@ -140,11 +140,43 @@
   )
 (convert 584335)
 
+; ================================
+
 ;4.1.4
 ; 1 pound = 100 pence
 
 
-(define (digits2-curr)
- (cond [
-        [])
+; given an integer (pence), splits money into pound and pence
+(define (split-money pence)
+  (cons (quotient pence 100) (remainder pence 100))
   )
+(split-money 125) ; 1 pound and 25 pence
+(split-money 2251) ; 20 pound and 51 pence
+
+(define (unit-label n singular plural)
+  (if (= n 1) (list singular) (list plural)))
+
+; given a money in pence, translates into english language
+(define (convert-money amount)
+  (let* ((pounds (car (split-money amount)))
+        (pences (cdr (split-money amount)))
+        )
+    (cond [(= pounds 0) (if (> 1 pences)
+                            (append (convert6 pounds) '(pences))
+                            (append (convert6 pounds) '(pence)))]
+          [(= pences 0) (append (convert6 pences) '(pounds))]
+          [else (append (convert6 pounds)
+                        (unit-label amount 'pound 'pounds)
+                        '(and)
+                        (convert6 pences)
+                        (unit-label amount 'pence 'pences)
+                        ) ]
+          )
+    )
+  )
+(convert-money 456789)
+
+
+#|
+
+|#
