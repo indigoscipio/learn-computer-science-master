@@ -3,13 +3,13 @@
 #|
 Exercises 
 of bigits zs, 
-4.2.1 Define a function absint so that if number z is represented by the list 
+4.2.1 Define a function absint so that if number x is represented by the list 
 then: 
-z = absint zs 
+x = absint xs 
 Check that 
-absint ([0] * zs) = absint zs 
+absint ([0] * xs) = absint zs 
 Hence justify the equation: 
-absint (strep zs) = absint zs 
+absint (strep xs) = absint zs 
 where strep returns the standard representation of a number.
 
 ;
@@ -19,5 +19,157 @@ lets just st normal base 10 instead of bigits to simplify
 so if we have xs = [1,2,3]
 
 x = absint [1,2,3]??
+
+|#
+
+; list-of-x -> number
+(define (absint b num-list)
+  (foldl (λ (digit acc) (+ (* acc b) digit) ) 0 num-list)
+  ) ;assume 10 is the base for now
+
+(absint 10 '(1 2 3)) ; with base 10 should be
+; 100 + 20 + 3 => 123
+; base case a = number
+(+ (* 0 10) 1)
+(+ (* 1 10) 2)
+
+;(+ (* (+ (* (+ (* 0 10) 1) 10) 2) 10) 3)
+
+;justification: absint use a shift and add logic
+;coz the initial acc is 0 any number with leading zero will simply be 0 * b + 0 = 0
+
+(absint 10 '(0 0 0 1 2 3))
+
+#|
+which is the same because strep removes leading zero until hits nonzero digit or [0]
+it contributes nothing
+|#
+
+
+; ===========================
+; 4.2.2
+; justify the equation vless xs ys = (absint xs < absint ys)
+
+#|
+ok let so vless takes 2 list
+then checks if absint xs < absint ys
+
+lets start with simple example
+xs = [5]
+ys = [1,0]
+
+absint xs => 5
+absint ys => 10
+
+5 < 10 ? true
+
+since absint always return a math representation of number list then its true as long as
+xs repsent smaller number
+
+
+
+same length:
+xs = [1,2], ys = [3,4]
+just compare, is 1st one smaller?
+
+|#
+
+
+;==================================
+#|
+4.2.3
+is it the case that negate = vsub[0]?
+
+answer:
+negation is the same as subtraction from zero since mathematicaly
+-x = 0 - x
+
+negating: [-2,-6,-9]
+subtracting from zero [0-2, 0-6,0-9]
+
+|#
+
+; =============================
+
+#|
+4.2.4 Suggest a possible representation for signed-magnitude numbers. Re
+define vadd and vsub to work with this representation. 
+
+siign numbers = number that includes a sign (pos or neg)
+unsigned = zero or positive
+
+vadd = (sign, magnitude)
+eg ('neg, '(1 2 3))
+a = (s1,m1)
+b = (s2,m2)
+
+if the sign is the same, just add them
+if its different, find which magnitude is bigger, subtract bigger - smallest, negate at the end
+
+|#
+
+; ====================================
+
+#|
+4.2.5 Suppose inv is a function which converts a string of digit characters 
+to an element of mnt. We can. define inv by: 
+inv = pack · map digit 
+where digit converts a digit character to a decimal digit, and pack converts 
+a list of decimal digits to an element of mnt. Define digit. Using foldl and 
+vadd, define pack. 
+|#
+
+; char -> number
+(define (digit char)
+  (- (char->integer char) (char->integer #\0))
+  )
+(digit #\5)
+
+#|
+4.2.7 Can foldl be used instead of foldll in the definition of v
+mul?
+
+answer:
+
+foldr is typically used because it allows us to process the "units" (the least significant bigits) and move toward higher powers,
+|#
+
+
+;==================================
+
+#|
+4.2.8 Is O (o with cross symbol), where: 
+xs O ys = vadd (xs ++ [0]) ys 
+an associative operator? Can foldll be replaced by foldrl in the definition of vmul?
+
+the operation is not asosciative therefore you cant change foldr with foldl vice versa
+
+4.2.9 Define vmul to work with negative as well as positive arguments, as
+suming signed-magnitude representation.
+
+1. find abs value of the magnitude
+2. determine the two signs
+
+4.2.10
+precalculate or store the length fo ys variable using let
+inside let define the recursive function
+
+4.2.11
+supose y and b are integers with 1 <= y < b. prove that
+
+b div 2 <= y * (b div (y + 1)) < b
+
+answer:
+lets start with basic examples
+let y = 1, b = 2
+2 div 2 <= 1 * (2 div (1 + 1)) < 2
+
+1 <= 1 * 2 div 2 < b
+1 <= 1 * 1 < 2
+1 <= 1 < 2
+
+since y >= 1 and y < b
+b div 2 is always smaller than b
+and the middle one is "between" value
 
 |#
