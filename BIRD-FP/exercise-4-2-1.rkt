@@ -173,3 +173,34 @@ b div 2 is always smaller than b
 and the middle one is "between" value
 
 |#
+
+; a text is a list of chars
+
+; a line is a list of characters not containing a newling char (#\enter, #\n)
+; '(hello),'(world)
+; or an empty list '()
+
+(define (is-newline? char)
+  (equal? char #\newline)
+  )
+(is-newline? #\newline)
+
+; list-of-char-> list-of-lines
+(define (lines xs)
+  ; if c is not a newline char, make a new list
+  ; else put the char into the current list
+ (let ((result (foldr (λ (char acc) (if (is-newline? char)
+                       (cons '() acc)
+                       (cons (cons char (first acc)) (cdr acc))
+                       ) ) '(()) (string->list xs))))
+   (map (λ (line) (list->string line)) result)
+   )
+  )
+
+;(op #\b (op #\newline (op #\a '(()) )))
+(lines "this is a
+text
+") ; should return '("this is a","text","")
+(lines "this is a text")
+
+;;words: line -> list-of-word
