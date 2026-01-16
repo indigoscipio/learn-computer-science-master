@@ -265,3 +265,106 @@ same number of letters as the word in the corresponding position in the second s
 > (same–shape? '(the fool on the hill) '(and your bird can sing))
 #F
 |#
+
+; sentence sentence -> boolean
+(define (same-shape? se1 se2)
+  ; recurse on se1
+  ; first, compare the word lenghth of se1 and se2, if its not equal, return false
+  ; if true, then check each letter count for each word
+  (cond [(and (empty? se1) (empty? se2)) #t] ;no more words to check, return true
+        [(or (empty? se1) (empty? se2)) #f]
+        [(= (count (first se1)) (count (first se2))) (same-shape? (bf se1) (bf se2))]
+        [else #f]
+        )
+  )
+; maybe i'm  overcomplicating this?
+(same-shape? '(the foot on the hill) '(you like me too much)) ;should return #t
+(same-shape? '(the foot on the hill) '(and bird can sing)) ;should return #f
+
+; ---------------------------------------------------
+
+#|
+14.15 Write merge, a procedure that takes two sentences of numbers as arguments. Each sentence must consist of 
+numbers in increasing order. Merge should return a single sentence containing all of the numbers, in order. (We'll use 
+this in the next chapter as part of a sorting algorithm.)
+> (merge '(4 7 18 40 99) '(3 6 9 12 24 36 50))
+(3 4 6 7 9 12 18 24 36 40 50 99)
+
+|#
+; sentence sentence -> sentence
+(define (merge se1 se2)
+  ;recurse on both se1 and se2
+  ; if x < y, put x in front of the list and recurse on se1
+  ; if y < x, put y in front of the list and recurse on se2
+  (cond [(empty? se1) se2]
+        [(empty? se2) se1]
+        [(< (first se1) (first se2)) (se (first se1) (merge (bf se1) se2) )]
+        [else (se (first se2) (merge se1 (bf se2)) )]
+        )
+  )
+; feels like im maybe overcomplicating it?
+(merge '() '(1 2 3)) ; just reutrn se2
+(merge '(1 2 3) '()) ; just reutrn se1
+(merge '() '()) ; reutrn ()
+(merge '(4 7 18 40 99) '(3 6 9 12 24 36 50)) ;should return (3 4 6 7 9 12 18 24 36 40 50 99)
+
+#|
+14.16 Write a procedure syllables that takes a word as its argument and returns the number of syllables in the 
+word, counted according to the following rule: the number of syllables is the number of vowels, except that a group of 
+consecutive vowels counts as one. For example, in the word "soaring," the group "oa" represents one syllable and the 
+vowel "i" represents a second one.
+Be sure to choose test cases that expose likely failures of your procedure. For example, what if the word ends with a 
+vowel? What if it ends with two vowels in a row? What if it has more than two consecutive vowels?
+(Of course this rule isn't good enough. It doesn't deal with things like silent "e"s that don't create a syllable ("like"), 
+consecutive vowels that don't form a diphthong ("cooperate"), letters like "y" that are vowels only sometimes, etc. If 
+you get bored, see whether you can teach the program to recognize some of these special cases.)
+|#
+
+; helper that detects vowel
+(define (is-vowel? char) (member? char 'aiueo))
+
+; helper that detects if a vowel is followed by another vowel
+(define (is-consc-vowels? wd)
+  0
+  )
+
+; so we know the rule
+; no of sy = no of vowels except group of consecutive vowels count as one
+; soaring -> oa = 1, i = 1, total = 2
+; lets try to approach this as simple as possible
+(define (syllables wd)
+  (cond [(empty? wd) 0]
+        [(empty? (bf wd)) (if (is-vowel? wd)
+                              1
+                              0
+                              )]
+        [ (not (is-vowel? (first wd))) (syllables (bf wd))] ; consonant case
+        [else (let ((curr-char (first wd))
+                    (next-char (first (bf wd)))
+                    )
+                (cond [(and (is-vowel? curr-char) (not (is-vowel? next-char)) ) (+ 1 (syllables (bf wd)))] ; end of group, count
+                      [else (syllables (bf wd))])
+                ) ] ;vowel case
+        )
+  )
+(syllables 'cat) ; 1
+(syllables 'apple) ;2
+(syllables 'banana) ; 3
+(syllables 'education) ; 4
+(syllables 'kwcgt) ;0
+
+
+; ================= PROJECT =====================
+
+(define base-digit '(one two three four five six seven eight nine))
+(define teens '(ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen))
+
+; number -> sentence
+; given a positive integer n, reutrn a sentence with that number spelled out in words
+(define (number-name n)
+  ; if its <= 9, use base digit
+  (cond [(<= n 9) (item n base-digit)]
+        [(<= n 19) (item (- n 9) teens)]
+        [else 8])
+  )
+(number-name 19)
