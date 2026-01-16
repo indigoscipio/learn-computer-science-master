@@ -86,7 +86,7 @@ def make_obj type value = λs.(s type value)
 or λtype.λvalue.λs.(s type value)
 where s is the selector
 
-def type obj = obj select_first
+def type obj = obj select_first or λobj.(obj select-first)
 def value obj = obj select_second
 def istype t obj = equal (type obj) t - the "bouncer"
 
@@ -98,11 +98,8 @@ if an operation receives error from previous step it should travel thrpugh
 def error_type = zero
 
 def MAKE_ERROR = make-obj error_type
-
-
-make_obj error_type ==
-λt.λv.λs.(s type value) error_type =>
-λv.λs.(s error_type value)
+λtype.λvalue.λs.(s type value) error_type =>
+λvalue.λs.(s error_type value)
 
 
 def ERROR = MAKE_ERROR error_type -> waiting for a value
@@ -228,6 +225,12 @@ Private function (add1) - everything here is assumed safe, does computation quic
 
 -----
 
+STATIC VS DYNAMIC
+dynamic - check as you go (execution time) - eg lisp
+static - catches before error happens (compilation time), chekc bfore program runs - eg c
+
+-----
+
 PATTERN MATCHING
 like a physical mold/template
 depends on the position of arugment, doesn't need complex logic
@@ -235,5 +238,229 @@ first match wins
 
 IS_TEN 10 = true
 IS_TEN X = false
+
+; =======================================
+
+5.1 evaluate fully the following expressions:
+a. ISBOOL 3
+b. ISNUMB FALSE
+c. NOT 1
+d. TRUE AND 2
+e. 2 + TRUE
+
+answer:
+a.
+we know the def isbool = istype bool_type
+λt.λobj.(equal (type obj) t) bool_type =>
+λobj.(equal (type obj) bool_type)
+
+and def ISBOOL B = MAKE_BOOL (isbool B)
+
+def MAKE_BOOL = make-obj bool_type
+λtype.λvalue.λs.(s type value) bool_type =>
+λvalue.λs.(s bool_type value)
+
+def 3 = SUCC 2
+
+so substitute
+MAKE_BOOL (isbool 3)
+
+focus on (isbool 3)
+(isbool 3) =>
+λobj.(equal (type obj) bool_type) 3 =>
+(equal (type 3) bool_type) => ... =>
+(equal numb_type bool_type) => ...
+false
+
+go back
+MAKE_BOOL false
+λvalue.λs.(s bool_type value) false =>
+λs.(s bool_type false
+
+-------
+
+b. ISNUMB FALSE
+we know the definition of the following
+def isnumb = istype numb_type
+def ISNUMB n = MAKE_BOOL (isnumb N)
+def istype t obj = equal (type obj) t // the "bouncer"
+or λt.λobj.(equal (type obj) t)
+def FALSE = MAKE_BOOL false => λs.(s bool_type false)
+
+so subtitute
+ISNUMB FALSE
+MAKE_BOOL (isnumb FALSE) =>
+here the FALSE is a typed version of the boolean
+inside (isnumb FALSE) =>
+istype numb_type FALSE =>
+λt.λobj.(equal (type obj) t) numb_type FALSE =>
+(equal (type FALSE) numb_type) => ...
+
+since type FALSE is a bool_type, we have
+(equal bool_type numb_type) =>
+false
+
+go back
+MAKE_BOOL false =>
+λvalue.λs.(s bool_type value) false =>
+λs.(s bool_type false)
+
+
+-------
+NOT 1
+
+we have the definitions
+def 1 = SUCC 0
+
+def NOT x =
+if isbool x
+then MAKE_BOOL (not(value x))
+else BOOL_ERROR
+
+def MAKE_BOOL = make-obj bool_type
+λtype.λvalue.λs.(s type value) bool_type =>
+λvalue.λs.(s bool_type value)
+
+
+we can substitute
+NOT 1 =>
+
+if isbool 1
+then MAKE_BOOL (not(value 1))
+else BOOL_ERROR =>
+
+focus on (isbool 1) =>
+λobj.(equal (type obj) bool_type) 1 =>
+(equal (type 1) bool_type) =>
+(equal ( λobj.(obj select-first) 1) bool_type )
+(equal (1 select-first) bool_type) =>
+
+
+since we know type 1 is a numb_type, therefore => ... =>
+(equal numb_type bool_type)
+this returns false
+now go back the the cond and reutrn BOOL_ERROR =>
+
+λs.(s error_type bool_type)
+
+-------
+d. TRUE AND 2
+
+we know the definitions
+
+def TRUE = MAKE_BOOL true
+λvalue.λs.(s bool_type value) true =>
+λs.(s bool_type true)
+
+def AND X Y
+if and (isbool x) (isbool y)
+then MAKE_BOOL (and (value x) (value y))
+else BOOL_ERROR
+
+now substitute
+
+AND TRUE 2 =>
+if and (isbool TRUE) (isbool 2)
+then MAKE_BOOL (and (value x) (value y))
+else BOOL_ERROR =>
+
+(isbool TRUE) =>
+λobj.(equal (type obj) bool_type) TRUE =>
+(equal (type true) bool_type) =>
+(equal ( λobj.(obj select-first) true) bool_type) =>
+(equal (true select-first) bool_type) =>
+(equal (λs.(s bool_type true) select-first) bool_type) =>
+(equal bool_type bool_type) => true
+
+(isbool 2) =>
+λobj.(equal (type obj) bool_type) 2 =>
+(equal (type 2) bool_type) => ... =>
+(equal (λobj.(obj select-first) 2) bool_type ) =>
+(equal (2 select-first)  bool_type ) => ... =>
+(equal numb_type bool_type) => false
+
+
+since we know isbool true is returns true
+and isbool 2 returns false,
+
+the else cause is run
+and return BOOL_ERROR =>
+λs.(s error_type bool_type)
+
+-------
+
+e. 2 + TRUE
+we know the definition of +
+
+
+def + X Y
+if both_numbs X Y
+then MAKE_NUMB (add (value x) (value y))
+else NUMB_ERROR
+
+def both_numbs X Y = and (isnumb X) (isnumb Y)
+
+substitute
+
+if both_numbs 2 TRUE
+then MAKE_NUMB (add (value 2) (value TRUE))
+else NUMB_ERROR
+
+run 1st check => both_numbs 2 TRUE =>
+
+and (isnumb X) (isnumb Y) =>
+and (isnumb 2) (isnumb TRUE) =>
+since we know true is not a type of numb, it will return
+and true false => false
+
+so back in the if, we go to the else case and reutrn NUMB_ERROR
+MAKE_ERROR numb_type =>
+
+def MAKE_ERROR = make-obj error_type
+λtype.λvalue.λs.(s type value) error_type =>
+λvalue.λs.(s error_type value)
+
+λs.(s error_type numb_type)
+
+end
+
+
+
+========================================
+
+5.2
+Signed numbers might be introduced as a new type with an extra 
+layer of ‘pairing’ so that the value of a number is preceded by a 
+boolean to indicate whether or not the number is positive or 
+negative:
+
+def signed_type = ...
+def SIGN_ERROR = MAKE_ERROR signed_type
+def POS = TRUE
+def NEG = FALSE
+def MAKE_SIGNED N SIGN = make_obj signed_type (make-obj SIGN N)
+
+so:
++<number> == MAKE_SIGNED <number> POS
+-<number> == MAKE_SIGNED <number> NED
+
+
+for exampel;
++4 == MAKE_SIGNED 4 POS
+-4 == MAKE_SIGNED 4 NEG
+
+not that there are two representations for 0:
++0 == MAKE_SIGNED 0 POS
+-0 == MAKE_SIGNED 0 NEG
+
+a. define a tester and selector functions for signed numbers:
+
+def issigned N = true if N is a signed number
+def ISSIGNED N = TRUE if N Is a signed number
+
+
+========================================
+
+
 
 |#
