@@ -228,3 +228,17 @@ text
   (null? line)
   )
 
+#|
+Exercises 
+4.3.1 Justify the claim that the operator EB used in the definition of unlines 
+is associative but does not possess an identity element.
+
+
+from prev chapter
+unlines [xs] = xs
+unlines ([xs] ++ xss) = xs OP unlines xss
+
+unlines '("hey" "there") => "hey\nthere\n"
+
+
+|#
