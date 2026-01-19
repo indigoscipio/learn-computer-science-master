@@ -457,10 +457,125 @@ a. define a tester and selector functions for signed numbers:
 
 def issigned N = true if N is a signed number
 def ISSIGNED N = TRUE if N Is a signed number
+def sign N = N's sign as untyped number
+def SIGN n = N's sign as typed number
+def sign_value N = N's value as unsigned number
+def VALUE n = N's value as signed number
+def sign_iszero N = true if N is 0
 
+show that your functions work for representaative positive
+and negative values and 0
+
+answer:
+
+ok lets jsut do simpel exmaple
+structure of -4 = (signed_type, [NEG, 4])
++4 = (signed_type, [POS,4])
+so N = (signed_type, [POS, N])
+
+lets start with issigned N
+we know previously from
+istype t obj = equal (type obj) t - the "bouncer"
+
+so issigned N should be simliar
+first, grab the label and
+
+issigned N = equal (type N) signed_type
+ISSIGNED N = MAKE_BOOL equal (type N) signed_type
+
+sign_value N = value (value n)
+VALUE N = MAKE_NUMB value (value n)
+
+sign N = type (value N) - just get either pos/neg
+SIGN N = MAKE_BOOL type (value N)
+
+sign_iszero N = iszero (value (value N))
+
+========================================
+quick reference
+def type obj = obj select_first or λobj.(obj select-first)
+def value obj = obj select_second or λobj.(obj select-second)
+def istype t obj = equal (type obj) t - the "bouncer"
+def pair a b = λs.(s a b)
+
+now trace an example
+
+-4
+sign_value 4
+value (value (signed_type, (NEG, 4)) =>
+value (λobj.(obj select-second) (signed_type, (NEG, 4)) =>
+value ((signed_type, (NEG, 4) select-second) ) => ... =>
+value (NEG, 4) => ... =>
+λobj.(obj select-second) (NEG, 4) => ...
+((NEG, 4) select-second) => ... by the definition of pair
+(λs.(s NEG 4) select-second) =>
+4
+
+-----
+
+sign -4
+type (value (signed_type, (NEG, 4)) =>
+type (λobj.(obj select-second) (signed_type, (NEG, 4))
+type ((signed_type, (NEG, 4) select-second) ) => ... =>
+type (NEG, 4) => ... =>
+λobj.(obj select-first) (NEG, 4) =>
+((NEG, 4) select-first) => ... => ... by defiinton of pair
+(λs.(s NEG 4) select-first) =>
+NEG
+
+-----
+
+sign_iszero? +0
+iszero (value (value (signed_type, (POS, 0)) )) => ...
+iszero (value (POS, 0)) => ... =>
+iszero (λobj.(obj select-second) (POS, 0)) =>
+iszero ((POS, 0) select-second) => ...
+iszero (λs.(s POS 0) select-second) => ... 
+iszero 0 => ...
+true
 
 ========================================
 
+b. define signed versions of ISZERO, SUCC and PRED:
+def SIGN_ISZERO N = ...
+def SIGN_SUCC N = ...
+def SIGN_PRED N = ...
 
+def SIGN_ISZERO N
+if (issigned N)
+then MAKE_BOOL (sign_iszero N) ;perform with untyped version
+else SIGN_ERROR
+
+def SIGN_SUCC N
+if (sign n)
+then MAKE_SIGNED (succ (sign_value n)) (sign n)
+else MAKE_SIGNED (pred (sign_value n)) (sign n)
+
+def SIGN_PRED N
+if (sign n)
+then MAKE_SIGNED (pred (sign_value n)) (sign n)
+else MAKE_SIGNED (succ (sign_value n)) (sign n)
+
+
+========================================
+c. define a signed version of "+"
+def SIGN_+ X Y = ...
+
+show your function works fo representative positive and negative values and 0
+
+answer:
+same sign - just add
+different sign - take sign of the larger one and subtract (subtract larger - smallest)
+zero - stays the same
+
+ill just do this roughly i dont wanna waste time in this
+jst get the logic right thats the most important
+
+def SIGN_+ X Y
+if (SAME_SIGN X Y) ;check if the same sign
+then (+ x y) ;just do the addition
+else if (> (x value) (y value)) ;extract the larger magnitude
+     then (- (x value) (y value) )
+     else (- (y value) (x value))
 
 |#
