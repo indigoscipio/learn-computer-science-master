@@ -313,21 +313,200 @@ ISSTRING (H::T) = ISCHAR H AND ISSTRING T
 
 #|
 ; EXERCISES
-6.4
+6.1
 define a concatenation function for linear lists whose elements are atoms of the same type
 
 |#
-
-(define (concat l1 l2)
-  ...
+; list-of-x -> list-of-x -> list-of-x
+(define (concat xs ys)
+  ;recurse on xs, ys is the result
+  (cond [(null? xs) ys]
+        [else (cons (car xs) (concat (cdr xs) ys) )]
+        )
   )
+'(concat '() '()) ; '()
+(concat '(1 2 3) '()) ; '(1 2 3)
+(concat '() '(1 2 3)) ; '(1 2 3)
+(concat '(1 2 3) '(4 5 6)) ;'(1 2 3 4 5 6)
+
+#|
+now to translate
+in λ calc, it goes something like this
+def concat xs ys
+if isnil xs
+then xs
+else cons (head xs) (concat (tail xs) ys)
+|#
 
 ; ==========================================================
 
 #|
+6.2
+(a) Write a function which indicates whether or not a list starts with 
+a sublist. For example: 
+STARTS "The" ’"The cat sat on the mat." => TRUE 
+STARTS ”A” "The cat sat on the mat.” => FALSE
+|#
+
+
+; main helper
+; list-of-chars list-of-chars -> boolean
+(define (starts-with1? l1 l2)
+  (cond [(empty? l1) #t]
+        [(empty? l2) #f]
+        [(eq? (car l1) (car l2)) (starts-with1? (cdr l1) (cdr l2))]
+        [else #f]
+        )
+  )
+
+;; starts-with:: list-of-x -> list-of-x -> boolean
+(define (starts-with? xs ys)
+  (let ((xs-chars (string->list xs))
+        (ys-chars (string->list ys))
+        )
+    (starts-with1? xs-chars ys-chars)    
+    )
+  )
+
+
+(starts-with? "A" "The cat sat on the mat.")
+(starts-with? "The" "The cat sat on the mat.")
+
+
+#|
+now to translate to λcalc
+def starts-with xs ys
+if isnil? xs
+then #t
+if isnil? ys
+then #f
+else if (equal? (head xs) (head ys))
+     then (starts-with (tail xs) (tail ys))
+     else #f
 
 |#
 
+;-----
+
+#|
+(b) Write a function which indicates whether or not a list contains a 
+given sublist. For example: 
+CONTAINS "the” "The cat sat on the mat.” => TRUE 
+CONTAINS ”the" "All cats sit on all mats.” => FALSE
+|#
+
+
+    
+; main helper; recurse on l1
+(define (contains1 l1 l2)
+  (cond [(empty? l2) #f]
+        [(starts-with1? l1 l2) #t]
+        [else (contains1 l1 (cdr l2))])
+  )
+
+(define (contains xs ys)
+  (let ((xs-chars (string->list xs))
+        (ys-chars (string->list ys)))
+    (contains1 xs-chars ys-chars) 
+    )
+  )
+(contains "the" "The cat sat on the mat.") ;t
+(contains "the" "All cats sit on all mats.") ;f
+
+#|
+translating to λ calculus
+def CONTAINS xs ys =
+if isnil ys then false
+elseif (start-with xs ys) then true
+else (contains xs (tail ys))
+|#
+
+;-----
+
+#|
+(c) Write a function which counts how often a sublist appears in 
+another list. For example: 
+COUNT ”at” ”The cat sat on the mat." =>... => 3
+|#
+
+
+;recurse on l2
+; list-of-x -> list-of-y -> number
+(define (count1 l1 l2)
+  (cond [(null? l2) 0]
+        [(starts-with1? l1 l2) (+ 1 (count1 l1 (cdr l2)))]
+        [else (count1 l1 (cdr l2))]
+        )
+  )
+
+(define (count xs ys)
+  (let ((xs-chars (string->list xs))
+        (ys-chars (string->list ys)))    
+    (count1 xs-chars ys-chars)
+    )
+  )
+(count "at" "The cat sat on the mat.") ;should return 3
+
+#|
+now the λcalc version
+def count xs ys
+if isnil? ys
+then zero
+else if (starts-with? xs ys) then (+ 1 (count xs (tail ys)))
+else (count xs (tail ys))
+|#
+
+;-----
+
+#|
+(d) Write a function which removes a sublist from the start of a list, 
+assuming that you know that the sublist starts the list. For 
+example: 
+REMOVE "The ” ”The cat sat on the mat." => ”cat sat on the mat.”
+|#
+
+(define (remove xs ys)
+  ; need to know the length of the sublist and drop the list by that amount
+  ; or maybe im overcomplicating this?
+  (let ((xs-chars (string->list xs))
+        (ys-chars (string->list ys)))
+    (define (remove1 l1 l2)
+      (cond [(null? l1) l2]
+            [else (remove1 (cdr l1) (cdr l2)) ]
+            )
+      )  
+    (remove1 xs-chars ys-chars)
+    )
+  )
+(remove "The" "The cat sat on the mat.") ; "cat sat on the mat."
+
+#|
+λcalc version
+
+def remove xs ys
+if isnil? xs
+then ys
+else (remove (tail xs) (tail ys))
+|#
+
+; -----
+
+#|
+(e) Write a function which deletes the first occurrence of a sublist in 
+another list. For example: 
+DELETE "sat" "The cat sat on the ma .” => "The cat on the mat.” 
+DELETE ”lay" ”The cat sat on the mat.” => "The cat sat on the mat.”
+|#
+
+(define (delete xs ys)
+    (let ((xs-chars (string->list xs))
+        (ys-chars (string->list ys)))
+      
+    (define (delete1 l1 l2)
+      )  
+    (delete1 xs-chars ys-chars)
+    )
+  )
 
 ; ==========================================================
 
