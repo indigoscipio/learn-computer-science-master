@@ -145,3 +145,107 @@ Do not reverse any words or sentences in your solution.
 (palindrome? '(flee to me remote control))
 
 ; ========================================
+
+#|
+15.3 Write a procedure substrings that takes a word as its argument. It should return a sentence containing all of 
+the substrings of the argument. A substring is a subset whose letters come consecutively in the original word. For 
+example, the word bat is a subset, but not a substring, of brat.
+|#
+
+; helper to find substring
+(define (subst wd)
+  (cond [(empty? wd) '()]
+        [else (se  wd (subst (bl wd)))])
+  )
+(subst 'power) ;'(p po pow powe power)
+(subst 'ower) ;'(o ow owe ower)
+
+; word -> sentence
+(define (substring wd)
+  (cond [(empty? wd) '()]
+        [else (se (subst wd) (substring (bf wd)) )]
+        )
+  )
+(substring 'cat)
+
+; ========================================
+
+#|
+15.4 Write a predicate procedure substring? that takes two words as arguments and returns #t if and only if the 
+first word is a substring of the second. (See Exercise 15.3 for the definition of a substring.)
+Be careful about cases in which you encounter a "false start," like this:
+> (substring? 'ssip 'mississippi)
+#T
+and also about subsets that don't appear as consecutive letters in the second word:
+Page 244
+> (substring? 'misip 'mississippi)
+#F
+|#
+
+; helper that checks if next wd contains
+(define (starts-with? wd1 wd2)
+  (cond [(empty? wd1) #t]
+        [(empty? wd2) #f]
+        [(equal? (first wd1) (first wd2)) (starts-with? (bf wd1) (bf wd2))]
+        [else #f]
+        )
+  )
+(starts-with? 'mis 'mississippi)
+
+; word word -> boolean
+(define (substring? wd1 wd2)
+  ; scanning 'window'
+  ; maybe im' overcomplicating this?
+  (cond [(empty? wd1) #t]
+        [(empty? wd2) #f]
+        [(starts-with? wd1 wd2) #t]
+        [else (substring? wd1 (bf wd2))]
+        )
+  
+  )
+(substring? 'ssip 'mississippi)
+
+
+#|
+15.5 Suppose you have a phone number, such as 223-5766, and you'd like to figure out a clever way to spell it in 
+letters for your friends to remember. Each digit corresponds to three possible letters. For example, the digit 2 
+corresponds to the letters A, B, and C. Write a procedure that takes a number as argument and returns a sentence of all 
+the possible spellings:
+> (phone–spell 2235766)
+(AADJPMM AADJPMN ... CCFLSOO)
+(We're not showing you all 2187 words in this sentence.) You may assume there are no zeros or ones in the number, 
+since those don't have letters.
+Hint: This problem has a lot in common with the subsets example.
+|#
+
+; lookup list for num words
+(define num-sents '((A B C) (D E F) (G H I) (J K L) (M N O) (P Q R S) (T U V) (W X Y Z))
+  )
+
+; assume no zeroes or ones
+; helper that convers nm to possible letters
+(define (num->sent n)
+  (item (- n 1) num-sents)
+  )
+(num->sent 2) ;should return '(A B C)
+
+; word sentence -> sentence
+(define (prepend-every wd sent)
+  (cond [(empty? sent) '()]
+        [else (se (word wd (first sent)) (prepend-every wd (bf sent)))]
+        )
+  )
+(prepend-every 'g '())
+
+(define (phone-spell n)
+  (cond [(empty? n) (se "")]
+        [else (let* ((curr-num-sent (num->sent (first n)))
+                     (rest (phone-spell (bf n))))
+                (every (λ (char) (prepend-every char rest) ) curr-num-sent)
+                )]
+        )
+  )
+(phone-spell 3) ; (D E F)
+(phone-spell 23)
+
+(prepend-every 'd '(a b))
