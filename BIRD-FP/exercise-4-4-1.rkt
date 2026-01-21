@@ -47,9 +47,9 @@ display = layout . picture . trail . turtle
 ; turtlestate -> turtlestate
 (define (move state)
   (let* ((dir (turtle-state-dir state))
-        (pen (turtle-state-pen state))
-        (point (turtle-state-point state))
-        )
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
     (cond [(eq? dir 0) (turtle-state dir pen (cons (- (car point) 1) (cdr point)))] ; go up 1 pt
           [(eq? dir 1) (turtle-state dir pen (cons (car point) (+ 1 (cdr point))))] ; go right
           [(eq? dir 2) (turtle-state dir pen (cons (+ (car point) 1) (cdr point))) ]  ; go down
@@ -62,19 +62,19 @@ display = layout . picture . trail . turtle
 ; RIGHT/LEFT
 ; turtlestate->turtlestate
 (define (right state)
-    (let* ((dir (turtle-state-dir state))
-        (pen (turtle-state-pen state))
-        (point (turtle-state-point state))
-        )
+  (let* ((dir (turtle-state-dir state))
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
     (turtle-state (modulo (+ 1 dir) 4) pen point )
     )
   )
 
 (define (left state)
-    (let* ((dir (turtle-state-dir state))
-        (pen (turtle-state-pen state))
-        (point (turtle-state-point state))
-        )
+  (let* ((dir (turtle-state-dir state))
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
     (turtle-state (modulo (- dir 1) 4) pen point )
     )
   )
@@ -82,37 +82,74 @@ display = layout . picture . trail . turtle
 
 ; UP/DOWN
 (define (up state)
-    (let* ((dir (turtle-state-dir state))
-        (pen (turtle-state-pen state))
-        (point (turtle-state-point state))
-        )
+  (let* ((dir (turtle-state-dir state))
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
     (turtle-state dir #t point)
     )
   )
 
 (define (down state)
-    (let* ((dir (turtle-state-dir state))
-        (pen (turtle-state-pen state))
-        (point (turtle-state-point state))
-        )
+  (let* ((dir (turtle-state-dir state))
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
     (turtle-state dir #f point)
     )
   )
 (up state1)
 
+; ========================================
 
 ; 4.4.2
 ; Define a function (block k) which causes the turtle to trace a solid square of side k.
-
 ;repeat:: number command -> list-of-commands
 (define (repeat n cmd)
   (cond [(zero? n) '()] ;stop applying
         [else (cons cmd (repeat (- n 1) cmd)) ])
   )
-(repeat 3 down) ; move the pen down 3 pts
 
 
 ; number -> list-of-commands
 (define (block k)
- (move k)
+  (let ((row (repeat k move))
+        (pivot1 (list right move right))
+        (pivot2 (list left move left))
+        )
+
+    ; number -> list-of-commands
+    (define (block1 curr-n)
+      (cond [(zero? curr-n) '()] ;stop
+            [(<= curr-n 1) row]
+            [(even? curr-n) (append row pivot1 (block1 (- curr-n 1)))] ;curr-n is even, use pivot1
+            [else (append row pivot2 (block1 (- curr-n 1)))]; curr-n is odd, use pivot2
+            )
+      )
+    (block1 k)
+    )
   )
+
+; ========================================
+; 4.4.3 Define trail and layout.
+
+; state list-of-commands -> list-of-points
+(define (trail state cmds)
+  (foldr  (λ (cmd acc) (let* ((curr-state (car acc))
+                              (history (cdr acc))
+                              (next-state (cmd curr-state))
+                              (new-pt (turtle-state-point next-state))
+                              (old-pt (turtle-state-point curr-state))
+                              )
+                         (if (and (turtle-state-pen next-state)
+                                  (not (equal? old-pt new-pt))
+                                  )
+                             (cons next-state (cons new-pt history))
+                             (cons next-state history)
+                             )
+                         ))
+          (cons state '())
+          cmds)
+  )
+(trail (turtle-state 0 #t (cons 0 0)) (block 2))
+
