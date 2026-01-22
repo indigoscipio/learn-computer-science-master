@@ -227,7 +227,7 @@ Hint: This problem has a lot in common with the subsets example.
 (define (num->sent n)
   (item (- n 1) num-sents)
   )
-(num->sent 2) ;should return '(A B C)
+(num->sent 7) ;should return '(A B C)
 
 ; word sentence -> sentence
 (define (prepend-every wd sent)
