@@ -219,13 +219,13 @@ Hint: This problem has a lot in common with the subsets example.
 |#
 
 ; lookup list for num words
-(define num-sents '((A B C) (D E F) (G H I) (J K L) (M N O) (P Q R S) (T U V) (W X Y Z))
+(define num-sents '(() (A B C) (D E F) (G H I) (J K L) (M N O) (P Q R S) (T U V) (W X Y Z))
   )
 
 ; assume no zeroes or ones
 ; helper that convers nm to possible letters
 (define (num->sent n)
-  (item (- n 1) num-sents)
+  (item n num-sents)
   )
 (num->sent 7) ;should return '(A B C)
 
@@ -245,7 +245,76 @@ Hint: This problem has a lot in common with the subsets example.
                 )]
         )
   )
-(phone-spell 3) ; (D E F)
-(phone-spell 23)
+(phone-spell 4) ; (D E F)
+(phone-spell 34)
 
-(prepend-every 'd '(a b))
+#|
+prepend every A '(D E F) -> AD AE AF
+prepend eveyr B '(D E F) -> BD BE BF
+prepend every C '(D E F) -> CD CE CF
+|#
+
+#|
+15.6 Let's say a gladiator kills a roach. If we want to talk about the roach, we say "the roach the gladiator killed." But if 
+we want to talk about the gladiator, we say "the gladiator that killed the roach."
+People are pretty good at understanding even rather long sentences as long as they're straightforward: "This is the 
+farmer who kept the cock that waked the priest that married the man that kissed the maiden that milked the cow that 
+tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built." But even a 
+short nested sentence is confusing: "This is the rat the cat the dog worried killed." Which rat was that?
+Write a procedure unscramble that takes a nested sentence as argument and returns a straightforward sentence 
+about the same cast of characters:
+> (unscramble '(this is the roach the gladiator killed))
+(THIS IS THE GLADIATOR THAT KILLED THE ROACH)
+> (unscramble '(this is the rat the cat the dog the boy the
+                     girl saw owned chased bit))
+(THIS IS THE GIRL THAT SAW THE BOY THAT OWNED THE DOG THAT
+      CHASED THE CAT THAT BIT THE RAT)
+You may assume that the argument has exactly the structure of these examples, with no special cases like "that lay in 
+the house" or "that Jack built."
+|#
+
+; helper that removes 'the
+(define (remove wd sent)
+  (cond [(empty? sent) '()]
+        [(equal? wd (first sent)) (remove wd (cdr sent))]
+        [else (se (first sent) (remove wd (bf sent)))]
+        )
+  )
+
+; get the verbs after the last occurence of "the"
+(define (verbs sent)
+  (cond [(empty? sent) '()]
+        [(empty? (bl sent)) '()]
+        [(equal? (last (bl sent)) 'the) '()]; stop
+        [else (se (verbs (bl sent)) (last sent) ) ]
+        )
+  )
+(verbs '(this is the roach the gladiator killed)) ;'(killed)
+(verbs '(this is the rat the cat the dog the boy the girl saw owned chased bit)) ;(saw owned chased bit)
+
+
+
+; get the names before the last occurence of "the"
+(define (names sent)
+  (cond [(empty? sent) '()]
+        [(empty? (bf sent)) '()]
+        [(equal? (first sent) 'the) ]
+        )
+  )
+(names '(the roach the gladiator killed)) ;'((the roach) (the gladiator))
+(names '(the rat the cat the dog the boy the girl saw owned chased bit))
+;((the rat) (the cat) (the dog) (the boy) (the girl))
+
+
+; sentence -> sentence
+(define (unscramble sent)
+  ;lets try to get the logic fist
+  ; last occurence of the => becomes the first
+  ; when there is a "the", you add "that" afterward
+  ; the words after the last the is the verb. order it like it is
+  ; need: extract the person/enitty name after "the"
+  ; need: get the verbs after the last "the"
+  0
+  )
+(unscramble '(this is the roach the gladiator killed))
+(unscramble '(this is the rat the cat the dog the boy the girl saw owned chased bit) )
