@@ -311,3 +311,169 @@ ISSTRING (H::T) = ISCHAR H AND ISSTRING T
 
 ; ==========================================================
 
+#|
+
+COMPOSITE VALUES
+values that consistes of subvalues
+[<forename>,<surname>]
+[<item name>,<stock level>,<reorder level>]
+[[<forename>,<surname>],<address>,<n>]
+
+example: finding surname
+(define (nfind name l)
+  (cond [(null? l) '()]
+        [(equal? name (cadr (car l))) (car (car l))]
+        [else (nfind name (cdr l))]
+        )
+  )
+
+-----
+
+SELECTOR FUNCTIONS
+functions that selects things
+def FORENAME N = (head n)
+
+-----
+
+STRUCTURE MATCHING
+
+def FORENAME [F,S] = F
+def SURNAME [F,S] = S
+
+(define P '(5 10))
+(match P [(list x y) (+ x y)])
+
+(define point '(10 20 30))
+(define item '(a b c))
+(match item [(list a b c) a])
+(match point [(list x y z) (+ x y)])
+
+(define (ncount n names)
+  (match names
+    ['() 0]
+    [(cons (list f s) t) (if (equal? n f)
+                             (+ 1 (ncount n t))
+                             (ncount n t)
+                             )])
+  )
+(ncount 'linda '((linda linda) (linda grey) (linda hey)))
+
+-----
+
+LOCAL DEFINITIONS
+λ<name>.<body> <argument>
+
+let <name> = <argument>
+in <body>
+
+<body>
+where <name> = <argument>
+
+
+(define (split xxs)
+  (cond [(null? xxs) '(() ())]
+        [else (let* ((fst (car xxs))
+                     (fname (car (car xxs)))
+                     (sname (cadr (car xxs)))
+                     (split-rest (split (cdr xxs)))
+                     (first-names (car split-rest))
+                     (last-names (cadr split-rest))
+                     )
+                (list (cons fname first-names) (cons sname last-names) )
+                )]
+        )
+  )
+(split '((allan ape) (betty bat) (colin cat)))
+
+; with pattern matching
+(define (split-pm xxs)
+  (match xxs
+    ['() '(() ())]
+    [(cons (list f s) rest) (let ((result (split-pm rest)))
+                              (list (cons f (car result)) (cons s (cadr result)))
+                              ) ]
+    )
+  )
+(split-pm '((allan ape) (betty bat) (colin cat)))
+
+-----
+
+TREES
+EMPTY is a bt
+NODE ITEM L R is a bt
+if L is a bt and R is a bt
+
+def EMPTY = NIL
+def ISEMPTY = ISNIL
+def ITEM (NODE I L R) = I
+def LEFT (NODE I L R) = L
+def RIGHT (NODE I L R) = R
+
+ITEM EMPTY = TREE_ERROR
+LEFT EMPTY = TREE_ERROR
+RIGHT EMPTY = TREE_ERROR
+
+def ITEM EMPTY = LIST_ERROR
+or ITEM [I,L,R] = I
+
+-----
+
+ADD ITEM TO TREE
+TADD I EMPTY = NODE I EMPTY EMPTY
+TADD I (NODE NI L R) = NODE NI (TADD I L) R if <less> I NI
+TADD I (NODE NI L R) = NODE NI L (TADD I L) if NOT <less> I NI
+
+(struct bt (item left right) #:transparent)
+(define empty-bt '())
+(define bt1 (bt 1 '() '()))
+(define bt3 (bt 3 '() '()))
+(define bt2 (bt 2 bt1 bt3))
+ 
+(define (tadd item tree)
+ (cond [(null? tree) (bt item '() '())] ;empty bt, not found
+       [(< item (bt-item tree)) (bt (bt-item tree) (tadd item (bt-left tree)) (bt-right tree)) ]
+       [else (bt (bt-item tree) (bt-left tree) (tadd item (bt-right tree)))]
+       )
+  )
+(tadd 5 empty-bt)
+(tadd 5 bt1)
+(tadd 5 bt2)
+
+-----
+
+TRAVERSE TREE
+TRAVERSE (NODE I L R) = APPEND (TRAVERSE L) (I :: (TRAVERSE R))
+TRAVERSE EMPTY = []
+
+
+-----
+
+SEARCH TREE
+TFIND V EMPTY = FALSE
+TFIND V (NODE NV L R) = TRUE IF <equal> V NV
+TFIND V (NODE NV L R) = TFIND V L if <less> V NV
+TFIND V (NODE NV L R) = TFIND V R if NOT (<less> V NV)
+
+
+-----
+
+COMPOSITE TREE
+CTADDLIST '((mark monkey) (graham goat) (james jaguar) (david duck))
+
+-----
+
+
+CURRIED VS UNCURRIED
+barista analogy
+curried -> needs 2 things: f(x,y) -> result
+uncurried -> needs 1 thing, then 1 thing again: (f x) y or f x y
+
+---
+
+PARTIAL APPLICATION
+
+|#
+
+(define (traverse tree)
+...
+  )
