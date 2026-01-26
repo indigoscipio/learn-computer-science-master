@@ -468,12 +468,134 @@ barista analogy
 curried -> needs 2 things: f(x,y) -> result
 uncurried -> needs 1 thing, then 1 thing again: (f x) y or f x y
 
+def curry f x y = f [x,y]
+def uncurry = g [a,b] = g a b
+
 ---
 
 PARTIAL APPLICATION
+def istype t obj = equal t (type obj)
+def isbool = istype bool_type
+
+here isbool is a partial application thats waiting for the obj
 
 |#
 
-(define (traverse tree)
-...
+; ================================================================
+
+#|
+; exercise 7.1
+The time of day might be represented as a list with three integer fields for hours, minutes and seconds: 
+[<hours>,<minutes>,<seconds>]
+
+For example: 
+[17,35,42] == 17 hours 35 minutes 42 seconds 
+Note that: 
+24 hours == 0 hours 
+1 hour == 60 minutes 
+1 minute == 60 seconds
+
+(a) Write functions to convert from a time of day to seconds and 
+from seconds to a time of day. For example: 
+TOO_SECS [2,30,25] => 9025
+FROM_SECS 48975  => [13,36,151]
+
+answer:
+lets try to define the data structure first and then get the basic logic
+
+|#
+
+; a time of day is a list of number
+; where h = 0 - 24, h = 0 - 60, and m = 0 - 60
+(struct tod (h m s) #:transparent)
+(define tod1 (tod 2 30 25))
+
+;to-secs:: tod -> number
+(define (to-secs time-of-day)
+  ; convert the minute
+  ; convert the hour
+  ; add them with seconds
+  (let* ((hour (tod-h time-of-day))
+        (minute (tod-m time-of-day))
+        (second (tod-s time-of-day))
+        )
+    (+ (* hour 3600) (* minute 60) second)
+    )
   )
+
+;from-secs:: number -> tod
+(define (from-secs sec)
+  ; sec above 60? minute
+  ; sec above 3600? hour
+  (let* ((hour (quotient sec 3600))
+         (remaining-secs (- sec (* hour 3600)))
+         (minute (quotient remaining-secs 60))
+         (second (remainder remaining-secs 60))
+         )
+    (tod hour minute second)
+    )
+  )
+;(from-secs 48975)
+
+
+#|
+(b) Write a function which increments the time of day by one 
+second. For example: 
+TICK [15,27,18] => [15,27,19] 
+TICK [15,44,59] => [15,45,0]
+TICK [15,59,59] => [16,0,0] 
+TICK [23,59,59] => [0,0,0]
+|#
+
+(define (tick time-of-day)
+  (let* ((tod-in-secs (to-secs time-of-day))
+         (incremented-result (+ 1 tod-in-secs))
+         )
+    (from-secs (remainder incremented-result 86400))
+    )
+  )
+(tick (tod 15 27 18))
+(tick (tod 15 44 59))
+(tick (tod 15 59 59))
+(tick (tod 23 59 59))
+
+#|
+(c) In a shop, each transaction at a cash register is time stamped. 
+Given a list of transaction details, where each is a string followed 
+by a time of day, write a function which sorts them into ascending time order. For example:
+
+TSORT [["coffee",[1 2,1 9,571], 
+      [”bread”,[1 8,22,48]], 
+      [”orange iuice”,[10,12,35]], 
+      [”bananas”,[15,47,19]]] =>
+
+      [["orange juice",[10,12,35]], 
+      [”coffee",[12,19,57]], 
+      [”bananas",[1 5,47,1 9]] 
+      [”bread",[1 8,22,48]]] 
+
+answer: lets define the data structure first,
+then figure out the basic logic and sorting
+
+|#
+
+(struct transaction (name tod))
+(define t1 (transaction "coffee" (tod 12 19 57)))
+(define t2 (transaction "bread" (tod 18 22 48)))
+(define t3 (transaction "orange juice" (tod 10 12 35)))
+(define t4 (transaction "bananas" (tod 15 47 19)))
+
+(define (transaction-before? t1 t2)
+  
+  )
+
+(define (tsort xs)
+  (cond [(null? xs) '()]
+        [else (let ((fst-tsc-in-sec (to-secs (transaction-tod (first xs))))
+                    (rest tsort (cdr xs))
+                    )
+                ; not sure what sort i should use
+                fst-tsc-in-sec
+                )])
+  )
+(tsort (list t1 t2 t3 t4))
