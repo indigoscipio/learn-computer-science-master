@@ -1,348 +1,220 @@
 #lang racket
+(require 2htdp/image)
 
 #|
-Exercises 
-of bigits zs, 
-4.2.1 Define a function absint so that if number x is represented by the list 
-then: 
-x = absint xs 
-Check that 
-absint ([0] * xs) = absint zs 
-Hence justify the equation: 
-absint (strep xs) = absint zs 
-where strep returns the standard representation of a number.
+state -- (direction, pen, point) 
+direction -- num 
+pen -- bool 
+point -- (num,num) 
+command -- state -+ state
 
-;
-answer:
-lets just st normal base 10 instead of bigits to simplify
+direction
+north 0
+east 1
+south 2
+west 3
 
-so if we have xs = [1,2,3]
+move .. command 
+move (O,p,(x,y)) = (O,p,(x - l,y)) 
+move (l,p, (x, y)) = (l,p,(x,y + 1)) 
+move (2,p, (x, y)) = (2,p,(x + 1,y)) 
+move (3,p, (x,y)) = (3,p,(x,y-1)) 
 
-x = absint [1,2,3]??
+; turtle takes a command
+; and returns a state
+turtle :: [command] -> [state]
+turtle = scan applyto (0, false, (0,0))
+applyto x f = f x
+
+display:: [command] -> [char]
+display = layout . picture . trail . turtle
 
 |#
 
-; list-of-x -> number
-(define (absint b num-list)
-  (foldl (λ (digit acc) (+ (* acc b) digit) ) 0 num-list)
-  ) ;assume 10 is the base for now
+; =====================================
 
-(absint 10 '(1 2 3)) ; with base 10 should be
-; 100 + 20 + 3 => 123
-; base case a = number
-(+ (* 0 10) 1)
-(+ (* 1 10) 2)
+;; Directions: 0 (N), 1 (E), 2 (S), 3 (W)
+;; Pen: #t (down), #f (up)
+;; Point: (cons x y)
+(struct turtle-state (dir pen point) #:transparent)
+(define initial-state (turtle-state 0 #f (cons 0 0)))
+(define state1 (turtle-state 0 #f (cons 8 0)))
 
-;(+ (* (+ (* (+ (* 0 10) 1) 10) 2) 10) 3)
+;-------
 
-;justification: absint use a shift and add logic
-;coz the initial acc is 0 any number with leading zero will simply be 0 * b + 0 = 0
-
-(absint 10 '(0 0 0 1 2 3))
-
-#|
-which is the same because strep removes leading zero until hits nonzero digit or [0]
-it contributes nothing
-|#
-
-
-; ===========================
-; 4.2.2
-; justify the equation vless xs ys = (absint xs < absint ys)
-
-#|
-ok let so vless takes 2 list
-then checks if absint xs < absint ys
-
-lets start with simple example
-xs = [5]
-ys = [1,0]
-
-absint xs => 5
-absint ys => 10
-
-5 < 10 ? true
-
-since absint always return a math representation of number list then its true as long as
-xs repsent smaller number
-
-
-
-same length:
-xs = [1,2], ys = [3,4]
-just compare, is 1st one smaller?
-
-|#
-
-
-;==================================
-#|
-4.2.3
-is it the case that negate = vsub[0]?
-
-answer:
-negation is the same as subtraction from zero since mathematicaly
--x = 0 - x
-
-negating: [-2,-6,-9]
-subtracting from zero [0-2, 0-6,0-9]
-
-|#
-
-; =============================
-
-#|
-4.2.4 Suggest a possible representation for signed-magnitude numbers. Re
-define vadd and vsub to work with this representation. 
-
-siign numbers = number that includes a sign (pos or neg)
-unsigned = zero or positive
-
-vadd = (sign, magnitude)
-eg ('neg, '(1 2 3))
-a = (s1,m1)
-b = (s2,m2)
-
-if the sign is the same, just add them
-if its different, find which magnitude is bigger, subtract bigger - smallest, negate at the end
-
-|#
-
-; ====================================
-
-#|
-4.2.5 Suppose inv is a function which converts a string of digit characters 
-to an element of mnt. We can. define inv by: 
-inv = pack · map digit 
-where digit converts a digit character to a decimal digit, and pack converts 
-a list of decimal digits to an element of mnt. Define digit. Using foldl and 
-vadd, define pack. 
-|#
-
-; char -> number
-(define (digit char)
-  (- (char->integer char) (char->integer #\0))
-  )
-(digit #\5)
-
-#|
-4.2.7 Can foldl be used instead of foldll in the definition of v
-mul?
-
-answer:
-
-foldr is typically used because it allows us to process the "units" (the least significant bigits) and move toward higher powers,
-|#
-
-
-;==================================
-
-#|
-4.2.8 Is O (o with cross symbol), where: 
-xs O ys = vadd (xs ++ [0]) ys 
-an associative operator? Can foldll be replaced by foldrl in the definition of vmul?
-
-the operation is not asosciative therefore you cant change foldr with foldl vice versa
-
-4.2.9 Define vmul to work with negative as well as positive arguments, as
-suming signed-magnitude representation.
-
-1. find abs value of the magnitude
-2. determine the two signs
-
-4.2.10
-precalculate or store the length fo ys variable using let
-inside let define the recursive function
-
-4.2.11
-supose y and b are integers with 1 <= y < b. prove that
-
-b div 2 <= y * (b div (y + 1)) < b
-
-answer:
-lets start with basic examples
-let y = 1, b = 2
-2 div 2 <= 1 * (2 div (1 + 1)) < 2
-
-1 <= 1 * 2 div 2 < b
-1 <= 1 * 1 < 2
-1 <= 1 < 2
-
-since y >= 1 and y < b
-b div 2 is always smaller than b
-and the middle one is "between" value
-
-|#
-
-; a text is a list of chars
-
-; a line is a list of characters not containing a newling char (#\enter, #\n)
-; '(hello),'(world)
-; or an empty list '()
-
-(define (is-newline? char)
-  (equal? char #\newline)
-  )
-(is-newline? #\newline)
-
-; list-of-char-> list-of-lines
-(define (lines xs)
-  ; if c is not a newline char, make a new list
-  ; else put the char into the current list
- (let ((result (foldr (λ (char acc) (if (is-newline? char)
-                       (cons '() acc)
-                       (cons (cons char (first acc)) (cdr acc))
-                       ) ) '(()) (string->list xs))))
-   (map (λ (line) (list->string line)) result)
-   )
-  )
-
-;(op #\b (op #\newline (op #\a '(()) )))
-(lines "this is a
-text
-") ; should return '("this is a","text","")
-(lines "this is a text")
-
-; helper for words
-(define (is-whitespace? char)
-  (or (equal? char #\newline)
-      (equal? char #\space)
-      )
-  )
-
-;;words: line -> list-of-words, where words cannot be empty
-(define (words wd)
-  ; if c is not a newline char, make a new list
-  ; else put the char into the current list
-  (let ((result (foldr (λ (char acc) (if (is-whitespace? char)
-                             (cons '() acc) ;; remove the whitespace
-                             (cons (cons char (first acc)) (cdr acc)))) ; else put it in the acc
-           '(()) (string->list wd))))
-    (map list->string (filter (λ (list) (not (null? list)) ) result))
+; COMMANDS
+; MOVE
+; turtlestate -> turtlestate
+(define (move state)
+  (let* ((dir (turtle-state-dir state))
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
+    (cond [(eq? dir 0) (turtle-state dir pen (cons (- (car point) 1) (cdr point)))] ; go up 1 pt
+          [(eq? dir 1) (turtle-state dir pen (cons (car point) (+ 1 (cdr point))))] ; go right
+          [(eq? dir 2) (turtle-state dir pen (cons (+ (car point) 1) (cdr point))) ]  ; go down
+          [else (turtle-state dir pen (cons (car point) (- (cdr point) 1))) ] ; go left
+          )
     )
   )
-(words "this   is a line") ;should return '("this", "is", "a", "line")
-(words "line") ;should reutrn [line]
+(move state1)
 
-(define (empty-line? line)
-  (null? line)
+; RIGHT/LEFT
+; turtlestate->turtlestate
+(define (right state)
+  (let* ((dir (turtle-state-dir state))
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
+    (turtle-state (modulo (+ 1 dir) 4) pen point )
+    )
   )
 
+(define (left state)
+  (let* ((dir (turtle-state-dir state))
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
+    (turtle-state (modulo (- dir 1) 4) pen point )
+    )
+  )
+(left state1)
+
+; UP/DOWN
+(define (up state)
+  (let* ((dir (turtle-state-dir state))
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
+    (turtle-state dir #t point)
+    )
+  )
+
+(define (down state)
+  (let* ((dir (turtle-state-dir state))
+         (pen (turtle-state-pen state))
+         (point (turtle-state-point state))
+         )
+    (turtle-state dir #f point)
+    )
+  )
+(up state1)
+
+; ========================================
+
+; 4.4.2
+; Define a function (block k) which causes the turtle to trace a solid square of side k.
+;repeat:: number command -> list-of-commands
+(define (repeat n cmd)
+  (cond [(zero? n) '()] ;stop applying
+        [else (cons cmd (repeat (- n 1) cmd)) ])
+  )
+
+
+; number -> list-of-commands
+(define (block k)
+  (let ((row (repeat k move))
+        (pivot1 (list right move right))
+        (pivot2 (list left move left))
+        )
+
+    ; number -> list-of-commands
+    (define (block1 curr-n)
+      (cond [(zero? curr-n) '()] ;stop
+            [(<= curr-n 1) row]
+            [(even? curr-n) (append row pivot1 (block1 (- curr-n 1)))] ;curr-n is even, use pivot1
+            [else (append row pivot2 (block1 (- curr-n 1)))]; curr-n is odd, use pivot2
+            )
+      )
+    (block1 k)
+    )
+  )
+
+; ========================================
+; 4.4.3 Define trail and layout.
+
+; state list-of-commands -> list-of-points
+(define (trail state cmds)
+  (let ((result (foldr  (λ (cmd acc) (let* ((curr-state (car acc))
+                                            (history (cdr acc))
+                                            (next-state (cmd curr-state))
+                                            (new-pt (turtle-state-point next-state))
+                                            (old-pt (turtle-state-point curr-state))
+                                            )
+                                       (if (and (turtle-state-pen next-state)
+                                                (not (equal? old-pt new-pt))
+                                                )
+                                           (cons next-state (cons new-pt history))
+                                           (cons next-state history)
+                                           )
+                                       ))
+                        (cons state '())
+                        cmds)))
+    (cdr result)
+    )
+  )
+
+(define sample-coordinates (trail (turtle-state 0 #t (cons 0 0)) (block 2)));'((0 . 1) (-1 . 1) (-2 . 1) (-2 . 0) (-1 . 0))
+; list-of-coordinates -> list-of-string
+(define (layout coordinates)
+  (let* ((x-coordinates (map (λ (c) (car c)) coordinates))
+         (y-coordinates (map (λ (c) (cdr c)) coordinates))
+         (min-x (apply min x-coordinates))
+         (max-x (apply max x-coordinates))
+         (min-y (apply min y-coordinates))
+         (max-y (apply max y-coordinates))
+         (rows (range min-y (+ 1 max-y)))
+         (cols (range min-x (+ 1 max-x)))
+         (result-strings (map (λ (r) (map (λ (c) (if (member (cons c r) coordinates) #\# #\space)) cols)
+                                ) rows))
+         )
+    (map list->string result-strings)
+    )
+  )
+sample-coordinates
+(layout sample-coordinates)
+;(display (string-join (layout sample-coordinates) "\n"))
+
+
 #|
-Exercises 
-4.3.1 Justify the claim that the operator OP used in the definition of unlines 
-is associative but does not possess an identity element.
+4.4.4 Assuming there are n points, representing a continuous trail, estimate 
+the worst case time complexity of bitmap as a function of n (Le. say whether 
+the number of steps required is proportional to n, n2 , n3, or whatever). (Hint: 
+Think of a simple trail for which the algorithm is at its worst and hence put 
+bounds on the lengths of xran and yran.)
 
 answer:
-lets try to udnerstand this
-we have this from prev chapter
-unlines [xs] = xs
-unlines ([xs] ++ xss) = xs OP unlines xss
+grid dimension is n x n
+total grid cells = n^2
+work per cell = n
+total complexity = n^2 . n = n^3
 
-small example
-("hey" OP "there") OP "friend" => "hey\nthere\nfriend\n"
-("hey" OP (there" OP "friend") => "hey\nthere\nfriend\n"
-which is associative
-
-now to find that it does not have identity element
-s OP e = s
-e OP s = e
-
-lets try usign "" as identiy e
-lset s = "hey"
-
-"s" OP "" => "s\n"
-"" OP "S" => "\ns"
-which is different and not equal to its origianl
-coz in the operation everytime we see empty line we have to add "\n"
-
-----------
-
-4.3.2
-verify the following equations
-unlines [xs] = xs (unlines.1)
-unlines ([xs] ++ xss) = xs OP unlines xss (lines.2)
-
-linss [] = a (lines.1)
-lines ([x] ++ xs) = x OP lines xs (liens.2)
-
-answer
-lets try with a simple example
-
-unlines [xs] = xs
-suppose xs = ["hey","there","friend"]
-unlines [["hey","there","friend"]] => ["hey" , 'there' , 'friend']
-
------
-
-unlines [xs] ++ xss = xs OP unlines xss
-
-LHS
-xs = "hey"
-xxs = '("there")
-result = "hey\nthere"
-
-RHS
-xs = "hey"
-unlines xss = unlines '("there")
-"hey" OP "there" =>
-"heynthere"
-
-
------
-
-lines [] = a (lines.1)
-where a is the base case '()
-
-since lines looks for \n characters
-in the empty list it doesn't contain anything
- => just reutrn an empty list
-
------
-
-lines ([x] ++ xs) = x OP lines xs (liens.2)
-
-========================
-
-4.3.3 Suppose we adopt the convention that a newline character is a termi
-nator for lines, rather than a separator. Redefine unlines to take account of 
-this decision and repeat the derivation of the new version of lines. 
-
-unlines [xs] = xs ++ "\n"
-
-|#
-
-(define (lines-terminator xs)
-  (foldr (λ (char acc)
-           (if (char=? char #\newline)
-               (cons "" acc)
-               (cons (string-append (string char) (car acc)) 
-                     (cdr acc))))
-         '() ;; Start with an empty list (0 lines)
-         (string->list xs)))
-(lines-terminator "A
-B
-
-")
-
-
-#|
-4.3.4 Give an example to show that unwords . words is a partial function.
-" hello" -> '("hello") -> "hello" so its missing the space at the begning it seems
-it does t know wehere the space location
 |#
 
 
 #|
-4.3.5 Show that the greedy algorithm minimises the number of lines. As 
-a fairly difficult additional exercise, show that the greedy algorithm also 
-minimises the function waste, where 
-waste m lines = sum [m - #unwords ws I ws f 
-lines]
-
-suppose m =10
-words = ["the", "quick", "fox"]
-
-greedy picks the quick
-non greedy
+4.4.5 Define a function boolstr which converts each truth-value to a suitable 
+string of characters, and hence define symbolise. 
 |#
+
+; boolean ->string
+(define (boolstr bool)
+  (if bool "X" " ")
+  )
+
+(define (symbolise xxs)
+  (string-join (map (λ (r) (string-append* (map (λ (c) (boolstr c)) r)) ) xxs) "#\n")
+  )
+(symbolise '((#t #f) (#f #t)))
+
+
+#|
+
+|#
+
+(define (remdups xxs)
+  )
+
+(remdups '((0 . 0) (1 . 0) (2 . 0))) ;no duplicates
+(remdups '((0 . 0) (0 . 0) (1 . 1) (1 . 1))) ;adjacent
+(remdups '((0 . 0) (5 . 5) (0 . 0))) ;non-adjacent

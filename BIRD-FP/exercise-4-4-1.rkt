@@ -135,21 +135,110 @@ display = layout . picture . trail . turtle
 
 ; state list-of-commands -> list-of-points
 (define (trail state cmds)
-  (foldr  (λ (cmd acc) (let* ((curr-state (car acc))
-                              (history (cdr acc))
-                              (next-state (cmd curr-state))
-                              (new-pt (turtle-state-point next-state))
-                              (old-pt (turtle-state-point curr-state))
-                              )
-                         (if (and (turtle-state-pen next-state)
-                                  (not (equal? old-pt new-pt))
-                                  )
-                             (cons next-state (cons new-pt history))
-                             (cons next-state history)
-                             )
-                         ))
-          (cons state '())
-          cmds)
+  (let ((result (foldr  (λ (cmd acc) (let* ((curr-state (car acc))
+                                            (history (cdr acc))
+                                            (next-state (cmd curr-state))
+                                            (new-pt (turtle-state-point next-state))
+                                            (old-pt (turtle-state-point curr-state))
+                                            )
+                                       (if (and (turtle-state-pen next-state)
+                                                (not (equal? old-pt new-pt))
+                                                )
+                                           (cons next-state (cons new-pt history))
+                                           (cons next-state history)
+                                           )
+                                       ))
+                        (cons state '())
+                        cmds)))
+    (cdr result)
+    )
   )
-(trail (turtle-state 0 #t (cons 0 0)) (block 2))
 
+(define sample-coordinates (trail (turtle-state 0 #t (cons 0 0)) (block 2)));'((0 . 1) (-1 . 1) (-2 . 1) (-2 . 0) (-1 . 0))
+; list-of-coordinates -> list-of-string
+(define (layout coordinates)
+  (let* ((x-coordinates (map (λ (c) (car c)) coordinates))
+         (y-coordinates (map (λ (c) (cdr c)) coordinates))
+         (min-x (apply min x-coordinates))
+         (max-x (apply max x-coordinates))
+         (min-y (apply min y-coordinates))
+         (max-y (apply max y-coordinates))
+         (rows (range min-y (+ 1 max-y)))
+         (cols (range min-x (+ 1 max-x)))
+         (result-strings (map (λ (r) (map (λ (c) (if (member (cons c r) coordinates) #\# #\space)) cols)
+                                ) rows))
+         )
+    (map list->string result-strings)
+    )
+  )
+sample-coordinates
+(layout sample-coordinates)
+;(display (string-join (layout sample-coordinates) "\n"))
+
+
+#|
+4.4.4 Assuming there are n points, representing a continuous trail, estimate 
+the worst case time complexity of bitmap as a function of n (Le. say whether 
+the number of steps required is proportional to n, n2 , n3, or whatever). (Hint: 
+Think of a simple trail for which the algorithm is at its worst and hence put 
+bounds on the lengths of xran and yran.)
+
+answer:
+grid dimension is n x n
+total grid cells = n^2
+work per cell = n
+total complexity = n^2 . n = n^3
+
+|#
+
+
+#|
+4.4.5 Define a function boolstr which converts each truth-value to a suitable 
+string of characters, and hence define symbolise. 
+|#
+
+; boolean ->string
+(define (boolstr bool)
+  (if bool "X" " ")
+  )
+
+(define (symbolise xxs)
+  (string-join (map (λ (r) (string-append* (map (λ (c) (boolstr c)) r)) ) xxs) "#\n")
+  )
+(symbolise '((#t #f) (#f #t)))
+
+
+#|
+4.4.6 Bearing in mind that duplicate values in a sorted list are adjacent, 
+construct a definition of remdups for removing duplicate elements. (Hint: 
+Use a list comprehension in conjunction with the standard function zip.) For 
+what kind of turtle trails would it be sensible to apply remdups before, as 
+well as after, sorting? 
+|#
+
+(define (remdups xxs)
+  (cond [(empty? xxs) '()]
+        [(empty? (cdr xxs)) xxs]; just reutnr the last one
+        [else (let ((fst (first xxs))
+                    (sec (first (cdr xxs)))
+                    )
+                (if (equal? fst sec)
+                    (remdups (cdr xxs))
+                    (cons fst (remdups (cdr xxs)) )
+                    )
+                )])
+  )
+
+(remdups '((0 . 0) (1 . 0) (2 . 0))) ;no duplicates, return as it is
+(remdups '((0 . 0) (0 . 0) (1 . 1) (1 . 1))) ;adjacent, return '((0 . 0) (1 . 1))
+(remdups '((0 . 0) (5 . 5) (0 . 0))) ;non-adjacent, return as it is
+
+#|
+before sorting - remove the stutter - optimize for memory
+after sorting - remove the crossovers - optimize for accuracy
+|#
+
+#|
+4.4.7 Estimate the increase in efficiency by using fastbitmap rather than 
+bitmap.
+|#
