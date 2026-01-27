@@ -241,4 +241,29 @@ after sorting - remove the crossovers - optimize for accuracy
 #|
 4.4.7 Estimate the increase in efficiency by using fastbitmap rather than 
 bitmap.
+
+bitmap : n^3
+fastbitmap : just do the sorting and check linearly, so n log n
 |#
+
+
+#|
+a picture is a list of characters
+; outerlist - height
+; inner list - width
+
+Exercises 
+4.5.1 Show that: 
+lframe (m, n) p = ..L 
+if m = height p or n = width p. Redesign lfmme so that these cases are 
+allowed.
+
+The code calculates n - w, which becomes $10 - 10 = 0$.It then calls empty (h, 0).
+empty (h, w) = copy h (copy w ' '), if h > 0 and w > 0
+
+if n = w then n - w = 0
+
+|#
+
+(struct picture (mn yr fd ml))
+
