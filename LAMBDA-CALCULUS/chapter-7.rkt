@@ -579,23 +579,174 @@ then figure out the basic logic and sorting
 
 |#
 
-(struct transaction (name tod))
+(struct transaction (name tod) #:transparent)
 (define t1 (transaction "coffee" (tod 12 19 57)))
 (define t2 (transaction "bread" (tod 18 22 48)))
 (define t3 (transaction "orange juice" (tod 10 12 35)))
 (define t4 (transaction "bananas" (tod 15 47 19)))
 
 (define (transaction-before? t1 t2)
-  
+  (let ((time-of-day1 (transaction-tod t1))
+        (time-of-day2 (transaction-tod t2))
+        )
+    (< (to-secs time-of-day1) (to-secs time-of-day2) )
+    )
   )
+(transaction-before? t1 t2)
+
+; transaction list-of-transactions
+(define (insert x xs)
+  (let ((x-transaction-tod-in-secs (to-secs (transaction-tod x))))
+    (cond [(empty? xs) (list x)]
+          [else (let* ((fst (car xs))
+                       (fst-transaction-tod-in-secs (to-secs (transaction-tod fst)))
+                       )
+                  (if (< x-transaction-tod-in-secs fst-transaction-tod-in-secs)
+                      (cons x xs) ;put it
+                      (cons (car xs) (insert x (cdr xs)) ) ;exclude it
+                      )
+                  )]
+          )
+    )
+  )
+;(insert t1 (list t2 t3 t4))
 
 (define (tsort xs)
   (cond [(null? xs) '()]
-        [else (let ((fst-tsc-in-sec (to-secs (transaction-tod (first xs))))
-                    (rest tsort (cdr xs))
+        [else (let* ((fst (car xs))
+                    (rest (tsort (cdr xs)))
                     )
-                ; not sure what sort i should use
-                fst-tsc-in-sec
+                (insert fst rest)
                 )])
   )
 (tsort (list t1 t2 t3 t4))
+
+; ============================================
+
+#|
+
+7.2
+a. write a function which compares two integer binary trees
+b. write a function which indicates wheter or not one integer binary tree contains another as subtree
+c. write a function which traverses a binary tree to produce a list of node values in descending order
+
+answer:
+lets try to define the data structure first and then get the basic logic of the tree 
+
+|#
+
+; PART A
+; a BT is one of the following
+; '(), or
+; (number BT BT) - value left right
+
+(struct bt (value left right) #:transparent)
+(define bt1 (bt 5 '() '()))
+(define bt2 (bt 10 '() '()))
+(define bt3 (bt 7 bt1 bt2))
+
+; compare-bt:: bt bt -> boolean
+(define (bt-equal? t1 t2)
+  ; case: both are empty - equal
+  ; case: one of them is empty - not equal
+  ; case: nested/have child
+  (cond [(and (null? t1) (null? t2)) #t]
+        [(or (null? t1) (null? t2)) #f]
+        [else (if (equal? (bt-value t1) (bt-value t2))
+                  (and (bt-equal? (bt-left t1) (bt-left t2))
+                       (bt-equal? (bt-right t1) (bt-right t2))
+                       )
+                  #f
+                  ) ] ;check the node value
+        )
+  )
+(bt-equal? bt1 bt1) ;identical, should return true
+(bt-equal? bt1 bt2) ;should return false
+(bt-equal? bt3 bt1) ;compare with nested
+
+
+
+; ============================================
+
+; PART B
+; bt-search:: bt bt -> boolean
+(define (contains-subtree? target-tree tree)
+  ; case: root value doesn't match - keep checking the L/R children
+  ; case: tree is empty - not found
+  (cond [(null? target-tree) #t] ;vacuously true
+        [(null? tree) #f]
+        [(bt-equal? target-tree tree) #t] ;match
+        [else (or (contains-subtree? target-tree (bt-left tree))
+                  (contains-subtree? target-tree (bt-right tree)) )]
+        )
+  )
+(contains-subtree? bt2 bt3) ;shold return true
+(contains-subtree? bt1 bt2) ;should return false
+
+; ============================================
+
+; PART C
+; bt-traverse:: bt -> list-of-x
+(define (bt-traverse tree)
+  #|
+  ; tree is empty? just cons it (first value = biggest)
+  ; go as far right as possible, check curr node, go left
+  (cond [(null? tree) '()]
+        [else (append (bt-traverse (bt-right tree))
+                      (list (bt-value tree))
+                      (bt-traverse (bt-left tree))) ])
+  |#
+
+  ; accumulator style, helper
+  (define (loop t result)
+    (cond [(null? t) result]
+          [else (loop (bt-right t)
+                      (loop (bt-left t) (cons (bt-value t) result))) ])
+    )
+  (loop tree '())
+
+  )
+(bt-traverse bt3)
+
+#|
+7.3
+
+7.3 
+Strictly bracketed integer arithmetic expressions: 
+<expression> ::= (<expression> + <expression>) | 
+(<expression> + <expression>) l 
+186 
+INTRODUCTION TO FUNCTIONAL PROGRAMMING 
+(<expression> + <expression>) l 
+(<expression> + <expression>) 1 
+<number> 
+might be represented by a nested list structure so: 
+(<expression1> + <expression2>) == 
+[<expression1 >,"+”,<expression2>] 
+(<expression1> — <expression2>) == 
+[<expression1 >,”-”,<expression2>] 
+(<expression1> * <expression2>) == 
+[<expression1 >,”*",<expression2>] 
+(<expression1> / <expression2>) == 
+[<expression1 > ,"/",<expression2>] 
+<number> == <number> 
+For example: 
+3 == 
+(3 
+* 
+4) == [3,II*II,4] 
+((3 * 4) - 5) == [[3."*".4].”-".5] 
+((3 * 4) — (5 + 6)) == [[3."*”.4].”-".[5."+".6]] 
+Write a function which evaluates a nested list representation of an 
+arithmetic expression. For example: 
+EVAL 3 => 
+=> 3 
+EVAL [3,"*",4] => 
+=> 12 
+EVAL [[3,"*",4],"—",5] => 
+=> 7 
+EVAL [[3,"*",4],"—",[5,”+",6]] => 
+=> 11
+
+
+|#
