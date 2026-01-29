@@ -29,6 +29,216 @@
         (else #f)))
 (match? '(!) '(hey 1))
 
+
+(define (match pattern sent)
+  (match–using–known–values pattern sent '()))
+(define (match–using–known–values pattern sent known–values)
+  (cond ((empty? pattern)
+         (if (empty? sent) known–values 'failed))
+        ((special? (first pattern))
+         (let ((placeholder (first pattern)))
+           (match–special (first placeholder)
+                          (bf placeholder)
+                          (bf pattern)
+                          sent
+                          known–values)))
+        ((empty? sent) 'failed)
+        ((equal? (first pattern) (first sent))
+         (match–using–known–values (bf pattern) (bf sent) known–values))
+        (else 'failed)))
+(define (special? wd)
+  (member? (first wd) '(* & ? !)))
+(define (match–special howmany name pattern–rest sent known–values)
+  (let ((old–value (lookup name known–values)))
+    (cond ((not (equal? old–value 'no–value))
+           (if (length–ok? old–value howmany)
+               (already–known–match
+                old–value pattern–rest sent known–values)
+               'failed))
+          ((equal? howmany '?)
+           (longest–match name pattern–rest sent 0 #t known–values))
+          ((equal? howmany '!)
+           (longest–match name pattern–rest sent 1 #t known–values))
+          ((equal? howmany '*)
+           (longest–match name pattern–rest sent 0 #f known–values))
+          ((equal? howmany '&)
+           (longest–match name pattern–rest sent 1 #f known–values)))))
+
+(define (length–ok? value howmany)
+  (cond ((empty? value) (member? howmany '(? *)))
+        ((not (empty? (bf value))) (member? howmany '(* &)))
+        (else #t)))
+(define (already–known–match value pattern–rest sent known–values)
+  (let ((unmatched (chop–leading–substring value sent)))
+    (if (not (equal? unmatched 'failed))
+        (match–using–known–values pattern–rest unmatched known–values)
+        'failed)))
+(define (chop–leading–substring value sent)
+  (cond ((empty? value) sent)
+        ((empty? sent) 'failed)
+        ((equal? (first value) (first sent))
+         (chop–leading–substring (bf value) (bf sent)))
+        (else 'failed)))
+(define (longest–match name pattern–rest sent min max–one? known–values)
+  (cond ((empty? sent)
+         (if (= min 0)
+             (match–using–known–values pattern–rest
+                                       sent
+                                       (add name '() known–values))
+             'failed))
+        (max–one?
+         (lm–helper name pattern–rest (se (first sent))
+                    (bf sent) min known–values))
+        (else (lm–helper name pattern–rest
+                         sent '() min known–values))))
+(define (lm–helper name pattern–rest
+                   sent–matched sent–unmatched min known–values)
+  (if (< (length sent–matched) min)
+      'failed
+      (let ((tentative–result (match–using–known–values
+                               pattern–rest
+                               sent–unmatched
+                               (add name sent–matched known–values))))
+        (cond ((not (equal? tentative–result 'failed)) tentative–result)
+              ((empty? sent–matched) 'failed)
+              (else (lm–helper name
+                               pattern–rest
+                               (bl sent–matched)
+                               (se (last sent–matched) sent–unmatched)
+                               min
+                               known–values))))))
+
+(define (lookup name known–values)
+  (cond ((empty? known–values) 'no–value)
+        ((equal? (first known–values) name)
+         (get–value (bf known–values)))
+        (else (lookup name (skip–value known–values)))))
+
+(define (get–value stuff)
+  (if (equal? (first stuff) '!)
+      '()
+      (se (first stuff) (get–value (bf stuff)))))
+(define (skip–value stuff)
+  (if (equal? (first stuff) '!)
+      (bf stuff)
+      (skip–value (bf stuff))))
+(define (add name value known–values)
+  (if (empty? name)
+      known–values
+      (se known–values name value '!)))
+
 #|
 EXERCISE 16
+16.1 Design and test a pattern that matches any sentence
+containing the word C three times (not necessarily next to each other).
 |#
+(match '(*start me *end) '(love me do))
+(match '(*first c *sec c *third c *fourth) '(1 5 7 8 c something c something c 54))
+
+#|
+16.2 Design and test a pattern that matches a sentence consisting of two copies of a smaller sentence, such as 
+(a b a b).
+|#
+(match '(*part *part) '(hey you hey you))
+
+#|
+16.3 Design and test a pattern that matches any sentence of no more than three words
+|#
+(match '(!wd !wd !wd) '(hey you hey you))
+
+#|
+16.4 Design and test a pattern that matches any sentence of at least three words
+|#
+(match '(!wd !wd &wd) '(hey you hey you)) ;fail
+
+#|
+16.5 Show sentences of length 2, 3, and 4 that match the pattern
+(*X *Y *Y *X)
+|#
+(match '(*X *Y *Y *X) '(biscuit biscuit)) ; length2
+(match '(*X *Y *Y *X) '(sea sea)) ; length3 cannot match the pattern coz its inbetween
+(match '(*X *Y *Y *X) '(sea biscuit biscuit sea)) ; length4
+
+#|
+16.6 Show sentences of length 2, 3, and 4 that match the pattern
+(*X *Y &Y &X)
+For each length, if no sentence can match the pattern, explain why not.
+|#
+(match '(*X *Y &Y &X) '(hello world)) ; length2 impossible, needs at lesat 4
+(match '(*X *Y &Y &X) '(hello hello hello)) ; length3impossible
+(match '(*X *Y &Y &X) '(hello world world hello)) ; length4
+
+#|
+16.7 List all the sentences of length 6 or less, starting with a b a, that match the pattern
+(*X *Y *Y *X)
+|#
+(match '(*X *Y *Y *X) '(a b a b))
+(match '(*X *Y *Y *X) '(b a b a))
+(match '(*X *Y *Y *X) '(a b a a b a))
+(match '(*X *Y *Y *X) '(a b b a))
+
+#|
+16.8
+explain how longest-match handles empty sentence
+
+
+(define (longest–match name pattern–rest sent min max–one? known–values)
+  (cond ((empty? sent)
+         (if (= min 0)
+             (match–using–known–values pattern–rest
+                                       sent
+                                       (add name '() known–values))
+             'failed))
+        (max–one?
+         (lm–helper name pattern–rest (se (first sent))
+                    (bf sent) min known–values))
+        (else (lm–helper name pattern–rest
+                         sent '() min known–values))))
+
+if it was given an empty sentnece, goes into another if case and checks if the min arg is 0
+depoending on the min value kt calls match using known values else its failed
+
+|#
+
+
+#|
+16.9 Suppose the first cond clause in match–using–known–values were
+((empty? pattern) known–values)
+
+Give an example of a pattern and sentence for which the modified program
+would give a different result from the original
+
+answer; if the pattern is empty but theres still a sentence left to check then it would give idferent result
+
+'(match '() '(hello world)) ; there is no known value exist
+|#
+(match '() '(hello world))
+
+#|
+16.10 What happens if the sentence argument—not the pattern—contains the word * somewhere?
+answer: it seems the code still works coz we treat the pattern input seperately from the
+sentence input. the * is treated not as a patternso its seperate
+|#
+(match '(*all *u) '(this ***is an example * * of something *))
+
+#|
+16.11 For each of the following examples, how many match–using–known–values little people are required?
+a (match '(from me to you) '(from me to you))
+b (match '(*X *Y *X) '(a b c a b))
+c (match '(*X *Y *Z) '(a b c a b))
+d (match '(*X hey *Y bulldog *Z) '(a hey b bulldog c))
+e (match '(*x a b c d e f) '(a b c d e f))
+f (match '(a b c d e f *x) '(a b c d e f))
+
+answer:
+a
+1. comprare from - from (equal? first pattern) (first sent)) - recurse
+2. me = me = recurse
+3. to = to = recurse
+4. you = you - recurse
+5. '() = '() - end, match
+
+
+
+|#
+
