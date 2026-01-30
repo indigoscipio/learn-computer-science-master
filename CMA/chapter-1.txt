@@ -1,0 +1,4 @@
+summary
+- c was initally built for unix development
+- before this unix was written in assembly
+
