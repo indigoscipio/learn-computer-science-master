@@ -58,4 +58,48 @@ give an illusion its running simultaneousy when alt tab
 
 when you run a program it's always being copied to RAM/memory first
 
+
+CACHE
+register - can only hold 1/2 . . technicaly register has memory 
+l1/l2 - tmeporary memory - exist to   addres the memory/cpu gap
+main memory - library
+disk - warehouse/storage
+
+THE MEMORY PYRAMID
+register 
+l1/l2
+memory
+disk
+internet/server
+
+caching - each level acts as a "room" for level below it.
+
+-----
+
+OS ABSTRACTION - OS IS THE ULTIMATE MANAGER
+File (abstraction for i/o) - sees all device as simple bytes instead of differentiating
+VM  - os tricks program beleive it has entire memory of computer to itself. it hides the fact
+other programs are using it
+Processes - proc + mem + i/o, creates illustion your program is the only thing running
+
+-----
+PROCESSES
+it's a way to give all program its own private universe
+cpu juggles each program so incredibly fast it doesn't even realize its switching 
+gives an illustion that the program is the only one runing on the system  
+the program actually uses proc, memory, and I/O
+
+this juggling process is called context switch
+alt tab but more low level work
+
+conssits of multiple processes usually
+
+-----
+
+VM
+- ram is just a cache for the disk
+- each program when runs has its own virtual address space
+- with the power of MMU
+- when ram is out of space it uses hard drive, gives an illusion
+
 */

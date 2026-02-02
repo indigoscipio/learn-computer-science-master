@@ -1,0 +1,10 @@
+
+binary values - presence vs absence
+as it is it doesn't mean anything
+but when its given context it changes the meaning
+
+unsigned encoding
+floating point encoding
+twos compomemnt encoding
+
+computer arithmetic does not equal real math
