@@ -20,7 +20,8 @@
   
 (define ma1 (caml 2))
 
-; ============================
+; ====================================
+; THE PARSER
 
 (define-type ArithC
   [numC (n : number)]
@@ -29,23 +30,9 @@
   )
 
 (define (parse [s : s-expression]) : ArithC
-  ; is it a number?
-  ; is it a list?
-  ; is it other?
   (cond [(s-exp-number? s) (numC (s-exp->number s))]
         [(s-exp-list? s) (let* ((ls (s-exp->list s))
                                 (fst (s-exp->symbol (first ls))))
-
-                           #|
-                           ; with cond
-                           (cond [(symbol=? fst '+) (plusC (parse (second ls))
-                                                           (parse (third ls)))]
-                                 [(symbol=? fst '*) (multC (parse (second ls))
-                                                           (parse (third ls)))]
-                                 [else (error 'parse "invalid list")]
-                                 ) |#
-                           
-                           ; with case
                            (case fst
                              [(+) (plusC (parse (second ls)) (parse (third ls)))]
                              [(*) (multC (parse (second ls)) (parse (third ls)))]
@@ -60,6 +47,17 @@
 (parse '(+ (* 2 3) 5))
 (parse '(+ (* 1 2) (+ 2 3)))
 
+; ====================================
+; THE INTERPRETER
+(define (interp [a : ArithC]) : number
+  (type-case ArithC a
+    [numC (n) n]
+    [plusC (l r) (+ (interp l) (interp r))]
+    [multC (l r) (* (interp l) (interp r))]
+    )
+  )
+(interp (numC 8))
+(interp (plusC (numC 1) (numC 3)))
 
 #|
 exercise
