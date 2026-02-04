@@ -7,11 +7,13 @@ Write a program that declares several int and float variables—without initializi
 
 
 int main(void){
-    int myInt;
-    float myFloat;
 
-    printf("%f\n", myFloat);
-    printf("%d", myInt);
+    printf("        *\n");
+    printf("       *\n");
+    printf("      *\n");
+    printf("*    *\n");
+    printf(" *  *\n");
+    printf("  * \n");
 
     return 0;
 }
