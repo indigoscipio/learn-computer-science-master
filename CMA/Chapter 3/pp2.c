@@ -20,12 +20,21 @@ Allow dollar amounts up to$9999.99. Hint: Use tabs to line up the columns.
 */
 
 int main(void){
-    int m,d,y;
+    int item_number,m,d,y;
+    float unit_price;
 
-    printf("Please enter your date (mm/dd/yyyy): \n" );
+    printf("Please enter your item numer: \n" );
+    scanf("%d",&item_number);
+
+    printf("Please enter your unit price: \n" );
+    scanf("%f",&unit_price);
+
+    printf("Please enter your purchase date (mm/dd/yyyy): \n" );
     scanf("%d/%d/%d",&m,&d,&y);
 
-    printf("You entered the date: %.4d%.2d%.2d",y,m,d);
+    printf("Item\tUnit\t\tPurchase\n",y,m,d);
+    printf("\tPrice\t\tDate\n");
+    printf("%d\t$%7.2f\t%02d/%02d/%04d\n",item_number,unit_price,m,d,y);
 
 
     return 0;
