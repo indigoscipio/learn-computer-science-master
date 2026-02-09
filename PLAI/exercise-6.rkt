@@ -28,13 +28,22 @@
   [idC (s : symbol)]
   [plusC (l : ExprC) (r : ExprC)]
   [multC (l : ExprC) (r : ExprC)]
-  [appC (f : symbol) (a : ExprC)]
+  [appC (f : ExprC) (a : ExprC)]
+  [fdC (name : symbol) (arg : symbol) (body : ExprC)]
   )
 (fdC 'double 'x (plusC (idC 'x) (idC 'x)))
 (fdC 'quadruple 'x (appC 'double (appC 'double (idC 'x))))
 (fdC 'const5 '_ (numC 5))
 
+; BINDING
+(define-type Binding
+  [bind (name : 'symbol) (value : number)]
+  )
+(bind 'x 5)
 
+(define-type-alias Env (listof Binding))
+(define mt-env empty)
+(define extend-env cons)
 
 ; ====================================
 #|
@@ -105,19 +114,40 @@
   )
 (subst (numC 7) 'n (plusC (idC 'n) (multC (numC 2) (idC 'n))))
 
- 
+
+; LOOKUP
+(define (lookup [s : symbol] [env : Env]) : number
+  ; case: environment is empty, return false
+  ; for each binding, check if it matches s
+  ; if so, return the value
+  (cond [(empty? env) (error 'lookup "lookup not found")]
+        [else (let ((fst-binding (first env)))
+                (if (equal? (bind-name fst-binding) s)
+                    (bind-value fst-binding)
+                    (lookup s (rest env))
+                    )
+                )]
+        )
+  )
 
 ; THE INTERPRETER
-(define (interp [e : ExprC] [fds : (listof FunDefC)]) : number
+(define (interp [e : ExprC] [env : Env] [fds : (listof FunDefC)]) : number
   (type-case ExprC e
     [numC (n) n]
-    [plusC (l r) (+ (interp l fds) (interp r fds))]
-    [multC (l r) (* (interp l fds) (interp r fds))]
-    [idC (_) (error 'interp "shouldn't get here")]
-    [appC (f a) (let* ((evaluated-arg (interp a))
-                       (fd (get-fundef f fds)))
-                  (interp (subst (numC a) (fdC-arg fd) (fdC-body fd)) fds)
+    [plusC (l r) (+ (interp l env fds) (interp r env fds))]
+    [multC (l r) (* (interp l env fds) (interp r env fds))]
+    [idC (s) (lookup s env)]
+    [appC (f a) (let* ((fd (get-fundef f fds)))
+                  (interp (fdC-body fd)
+                          (extend-env (bind (fdC-arg fd) (interp a env fds)) mt-env)
+                          fds)
                   )]
+    #|
+    [appC (f a) (let* ((evaluated-arg (interp a fds))
+                       (fd (get-fundef f fds)))
+                  (interp (subst (numC evaluated-arg) (fdC-arg fd) (fdC-body fd)) fds)
+                  )]
+    |#
     )
   )
 ;(interp (numC 8))
@@ -125,7 +155,7 @@
 (define double-def 
   (fdC 'double 'x (plusC (idC 'x) (idC 'x))))
 (define my-functions (list double-def))
-(interp (appC 'double '()))
+
 
 
 #|
