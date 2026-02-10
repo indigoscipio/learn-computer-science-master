@@ -14,13 +14,6 @@
   [uminusS (e : ArithS)]
   )
 
-; FUNCTIONS
-; argument names must be unique withn a single fundef
-(define-type FunDefC
-  ; function definiton takes the name, the arg, and the body
-  [fdC (name : symbol) (arg : symbol) (body : ExprC)]
-  )
-
 ; EXPRESSION
 ; identifier is just the name
 (define-type ExprC
@@ -29,7 +22,8 @@
   [plusC (l : ExprC) (r : ExprC)]
   [multC (l : ExprC) (r : ExprC)]
   [appC (f : ExprC) (a : ExprC)]
-  [fdC (name : symbol) (arg : symbol) (body : ExprC)]
+  ;[fdC (name : symbol) (arg : symbol) (body : ExprC)]
+  [lamC (arg : symbol) (body : ExprC)]
   )
 
 ; BINDING
@@ -45,7 +39,8 @@
 ; can be eithera function or a number
 (define-type Value
   [numV (n : number)]
-  [funV (name : symbol)(arg : symbol)(body: ExprC)]
+  [closV (arg : symbol) (body : ExprC) (env : Env)]
+  ;[funV (name : symbol)(arg : symbol)(body : ExprC)]
   )
 
 ; ====================================
@@ -92,29 +87,15 @@
 ; ====================================
 
 ; NUM ARITHMETIC
-(define (num+ [l : Value] [r : Value] : Value)
-  (cond [(and (numV? l) (numV? r)) (numV (+ (numV-n l) (numV-n r)) ) ]
-        [else (error "not a number")]
-        )
-  )
+(define (num+ [l : Value] [r : Value]) : Value
+  (cond [(and (numV? l) (numV? r))(numV (+ (numV-n l) (numV-n r)))]
+    [else (error 'num+ "one argument was not a number")]))
 
-(define (num* [l : Value] [r : Value] : Value)
+(define (num* [l : Value] [r : Value]) : Value
   (cond [(and (numV? l) (numV? r)) (numV (* (numV-n l) (numV-n r)) ) ]
-        [else (error "not a number")]
+        [else (error 'num* "not a number")]
         )
   )
-
-
-; GET FUNDEF
-; symbol (listof fundefc) -> FunDefC
-(define (get-fundef [s : symbol] [fds : (listof FunDefC)]) : FunDefC
-    (cond [(empty? fds) (error 'get-fundef "function definition not found")]
-          [(equal? s (fdC-name (first fds))) (first fds)]
-          [else (get-fundef s (rest fds))])
-  )
-(get-fundef 'double (list (fdC 'double 'x (plusC (idC 'x) (idC 'x)))
-                          (fdC 'quadruple 'x (appC 'double (appC 'double (idC 'x))))
-                          (fdC 'const5 '_ (numC 5))))
 
 ; SUBST
 ; ExprC symbol ExprC -> ExprC
@@ -127,6 +108,7 @@
     [appC (f a) (appC f (subst what for a))]
     [plusC (l r) (plusC (subst what for l) (subst what for r)) ]
     [multC (l r) (multC (subst what for l) (subst what for r))]
+    [fdC (n a b) (numC 5)]
     )
   )
 (subst (numC 7) 'n (plusC (idC 'n) (multC (numC 2) (idC 'n))))
@@ -148,8 +130,8 @@
 (define (interp [e : ExprC] [env : Env] ) : Value
   (type-case ExprC e
     [numC (n) (numV n)]
-    [plusC (l r) (+ (interp l env fds) (interp r env fds))]
-    [multC (l r) (* (interp l env fds) (interp r env fds))]
+    [plusC (l r) (num+ (interp l env) (interp r env))]
+    [multC (l r) (num* (interp l env) (interp r env))]
     [idC (n) (lookup n env)]
  
     [appC (f a) (local ([define fd (interp f env)])
@@ -159,14 +141,13 @@
                                       mt-env)))
           ]
 
-    [fdC (n a b) (funV n a b)]
+    [lamC (a b) (closV a b env)]
     )
   )
 ;(interp (numC 8))
 ;(interp (plusC (numC 1) (numC 3)))
 (test (interp (plusC (numC 10) (appC (fdC 'const5 '_ (numC 5)) (numC 10)))
-mt-env)
-(numV 15))
+mt-env)(numV 15))
 
 
 

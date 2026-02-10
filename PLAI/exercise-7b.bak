@@ -14,13 +14,6 @@
   [uminusS (e : ArithS)]
   )
 
-; FUNCTIONS
-; argument names must be unique withn a single fundef
-(define-type FunDefC
-  ; function definiton takes the name, the arg, and the body
-  [fdC (name : symbol) (arg : symbol) (body : ExprC)]
-  )
-
 ; EXPRESSION
 ; identifier is just the name
 (define-type ExprC
@@ -103,18 +96,6 @@
         [else (error "not a number")]
         )
   )
-
-
-; GET FUNDEF
-; symbol (listof fundefc) -> FunDefC
-(define (get-fundef [s : symbol] [fds : (listof FunDefC)]) : FunDefC
-    (cond [(empty? fds) (error 'get-fundef "function definition not found")]
-          [(equal? s (fdC-name (first fds))) (first fds)]
-          [else (get-fundef s (rest fds))])
-  )
-(get-fundef 'double (list (fdC 'double 'x (plusC (idC 'x) (idC 'x)))
-                          (fdC 'quadruple 'x (appC 'double (appC 'double (idC 'x))))
-                          (fdC 'const5 '_ (numC 5))))
 
 ; SUBST
 ; ExprC symbol ExprC -> ExprC
