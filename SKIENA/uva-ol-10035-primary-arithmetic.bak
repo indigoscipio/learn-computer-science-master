@@ -1,0 +1,14 @@
+#lang racket
+
+; n = 1953
+(define n 1953)
+(remainder n 8)
+
+; n = 244
+(remainder (quotient n 8) 8)
+
+; n = 30
+(remainder  8)
+
+; n = 3
+(remainder 3 8)
