@@ -59,8 +59,14 @@ int main(void){
 
     /*
     PART D
-
+    1st line i = 7
+    2nd line, mulitpler operations -> do the prefix decrease, then mult, then sum at the end
+    so j = 3 + (6*2) -> 3 + 12 -> 15
+    3rd line -> i = 6 and j = 15 so "6, 15"
     */
+    i = 7;
+    j = 3 + --i * 2;
+    printf("%d %d", i, j);
 
     return 0;
 }
