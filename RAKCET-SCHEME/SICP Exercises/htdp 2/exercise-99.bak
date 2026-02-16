@@ -1,0 +1,155 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-99) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define WORLD-WIDTH 200)
+(define WORLD-HEIGHT 300)
+(define UFO-SIZE 15)
+(define TANK-WIDTH 30)
+(define TANK-HEIGHT 10)
+(define MISSLE-WIDTH 5)
+(define MISSLE-HEIGHT 10)
+(define SCENE (rectangle WORLD-WIDTH WORLD-HEIGHT "outline" "black"))
+(define UFO (triangle UFO-SIZE "solid" "red"))
+(define TANK (rectangle TANK-WIDTH TANK-HEIGHT "solid" "green"))
+(define MISSLE (rectangle MISSLE-WIDTH MISSLE-HEIGHT "solid" "black"))
+(define HIT-THRESHOLD 10)
+
+
+; A UFO is a Posn. 
+; interpretation (make-posn x y) is the UFO's location 
+; (using the top-down, left-to-right convention)
+
+; A Tank is a structure:
+;   (make-tank Number Number). 
+; interpretation (make-tank x dx) specifies the position:
+; (x, HEIGHT) and the tank's speed: dx pixels/tick
+(define-struct tank [loc vel])
+(define tank-sample (make-tank 25 3))
+
+; A Missile is a Posn. 
+; interpretation (make-posn x y) is the missile's place
+
+(define-struct aim [ufo tank] )
+(define-struct fired [ufo tank missle])
+(define aim-sample (make-aim (make-posn 100 250) (make-tank 20 -3)))
+(define fired-sample (make-fired (make-posn 100 50) (make-tank 20 -3) (make-posn 100 35)))
+
+; Tank Image -> Image 
+; adds t to the given image im
+(define (render-tank t img)
+  (place-image TANK (tank-loc t) (- WORLD-HEIGHT (/ TANK-HEIGHT 2)) img)
+  )
+
+; UFO Image -> Image
+; adds u to the tiven image img
+(define (render-ufo u img)
+  (place-image UFO (posn-x u) (posn-y u) img)
+  )
+
+; Missile Image -> Image 
+; adds m to the given image im
+(define (render-missle m img)
+  (place-image MISSLE (posn-x m) (posn-y m) img))
+
+; A SIGS is one of: 
+; – (make-aim UFO Tank)
+; – (make-fired UFO Tank Missile)
+; interpretation represents the complete state of a 
+; space invader game
+
+;Euclidian distance calculation
+(define (distance x1 y1 x2 y2)
+ (sqrt (+ (sqr (- x1 x2)) (sqr (- y1 y2))))
+  )
+
+;Number -> Number
+;produces a number in the interval [0,n)
+(define (generate-random-num n)
+  (random n)
+  )
+(generate-random-num 8)
+
+
+;SpaceInvader -> SpaceInvader
+;this function is called every clock tick to determine which position the obejcts move
+; it consumes an element of SIGS and produces another one.
+(define (move-proper si delta)
+  
+  ;if ufo does not reach bottom of the screen, keep moving
+  (cond
+    [(aim? si) (make-aim (make-posn (+ (posn-x (aim-ufo si)) delta) (posn-y (aim-ufo si)) )
+                         (make-tank (tank-loc) (tank-vel) )
+                         )
+                         
+                         ]
+   ; [(fired? si) (make-fired ()
+   ;                          ()
+    ;                         ())]
+    [else si]
+    )
+  
+
+  ;if rocket hits ufo, stop moving
+  )
+(move-proper aim-sample 5)
+
+(define (move si)
+  (move-proper si (generate-random-num 50))
+  )
+
+
+
+(define (render si)
+  (cond [(aim? si) (render-tank (aim-tank si) (render-ufo (aim-ufo si) SCENE))]
+        [(fired? si) (render-tank (fired-tank si) (render-ufo (fired-ufo si) (render-missle (fired-missle si) SCENE)))  ]
+        )
+  )
+
+
+; interpretation game stops if the UFO lands or if the missle hits the UFO
+; for both conditions, check for proximity of one object to another
+; SpaceInvader -> Boolean
+(define (si-game-over? si)
+  ;check if the UFO lands - if so the game ends
+  (cond [(aim? si) (if (>= (posn-y (aim-ufo si)) (- WORLD-HEIGHT (/ UFO-SIZE 2)))
+                       #t
+                       #f)
+                   ]
+
+        ;if the missle hits the ufo, the game ends
+        [(fired? si) (if (>= (posn-y (fired-ufo si)) (- WORLD-HEIGHT (/ UFO-SIZE 2)))
+                       #t
+                       (if (<= (distance (posn-x (fired-ufo si))
+                                         (posn-y (fired-ufo si))
+                                         (posn-x (fired-missle si))
+                                         (posn-y (fired-missle si))
+                                         ) HIT-THRESHOLD)
+                           #t
+                           #f)
+                       )
+                         
+                     ]
+        )
+  )
+
+
+; SpaceInvader -> Image
+; renders the final outcome of the game
+(define (si-render-final si)
+  (if (si-game-over? si)
+      (place-image (text "Game Over" 30 "red")
+                   (/ WORLD-WIDTH 2) (/ WORLD-HEIGHT 2)
+                   SCENE)
+      (render si)
+      )
+  )
+
+
+;(render fired-sample)
+;(si-game-over? fired-sample)
+;(si-render-final fired-sample)
+
+
+
+;(place-image TANK (tank-loc(aim-tank si)) (- WORLD-HEIGHT (/ TANK-HEIGHT 2)) (place-image UFO (posn-x (aim-ufo si)) (posn-y (aim-ufo si)) SCENE))
+;(place-image TANK (tank-loc(fired-tank si)) (- WORLD-HEIGHT (/ TANK-HEIGHT 2)) (place-image UFO (posn-x (fired-ufo si)) (posn-y (fired-ufo si)) (place-image MISSLE (posn-x (fired-missle si)) (posn-y (fired-missle si)) SCENE)))

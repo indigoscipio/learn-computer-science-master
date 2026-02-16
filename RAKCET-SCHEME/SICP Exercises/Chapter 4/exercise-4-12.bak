@@ -1,0 +1,107 @@
+#lang sicp
+
+; =====================================================
+
+; Exercise 4.11
+
+
+; A Binding is a (cons Symbol Any)
+; example: (cons a 1)
+(define binding0 (cons 'a 10))
+(define binding1 (cons 'b 20))
+(define binding2 (cons 'c 30))
+(define binding3 (cons 'd 40))
+(define binding4 (cons 'e 50))
+
+
+; A Frame is (listof Binding)
+; Frame = (list (cons a 1) (cons b 2) ...)
+(define frame0 (list binding1 binding0))
+(define frame1 (list binding3 binding2))
+(define frame2 (list binding4))
+
+
+; An Environment is (listof Frame)
+; example: (list (cons a 1) (cons b 2) (cons c 3))
+(define env0 (list frame2 frame1 frame0))
+
+; extracts the enclosing environment of an env
+(define (enclosing-environment env)
+  (cdr env)
+  )
+
+
+; extracts the first frame of an environmne
+(define (first-frame env)
+  (car env)
+  )
+
+; Creates an empty environment
+(define the-empty-environment '())
+
+; Creates a new frame based on given variable and values
+; assume variables and values are the same length
+(define (make-frame variables values)
+  ;(map (lambda (var val) (cons var val) ) variables values)
+
+  ;recursive version
+  (cond [(or (null? variables) (null? values)) '()]
+        [else (cons (cons (car variables) (car values)) (make-frame (cdr variables) (cdr values))  ) ]
+        )
+  )
+
+; extracts a list of variables from a given frame
+; Frame -> List-of-Symbols
+(define (frame-variables frame)
+  (map car frame)
+  )
+
+; extracts a list of values from a given frame
+; Frame -> List-of-Any
+(define (frame-values frame)
+  (map cdr frame)
+  )
+
+
+; Adds a new binding to a given frame
+; Symbol Any Frame -> 'ok
+(define (add-binding-to-frame! var val frame)
+  (let ((new-binding (cons var val)))
+    (set-cdr! frame (cons (car frame) (cdr frame)) )
+    (set-car! frame new-binding)
+    )
+  )
+
+; List-of-symbols List-of-any Environment -> MaybeEnvironment
+; extendes a given environment with addition vars and vals
+(define (extend-environment vars vals base-env)
+  (if (= (length vars) (length vals))
+      (cons (make-frame vars vals) base-env)
+      (error "var length and vars length does not match" vars vals)
+      )
+  )
+
+
+; =====================================================
+
+; Exercise 4.12
+
+
+; lookup-variable-value: symbol environment -> value or error
+(define (lookup-variable-value var env)
+
+  (define (scan frame)
+    (assoc var frame)
+    )
+
+  (define (scan-env environment)
+    (cond [(null? environment) (error "Unbound Variable")]
+          [else (let* ((frame (first-frame environment))
+                       (result (scan frame) ))
+                  (if result (cdr result) (scan-env (enclosing-environment environment)))
+                  )]
+          )
+    )
+  (scan-env env)
+  )
+

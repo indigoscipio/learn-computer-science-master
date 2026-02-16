@@ -1,0 +1,12 @@
+#lang racket
+
+; Number -> [Symbol -> Number]
+(define (make-circle r)
+  (define (dispatch msg)
+    (cond [(eq? msg 'area) (* pi r r)]
+          [(eq? msg 'perimeter) (* 2 pi r)]
+          [else (error "UNKNOWN MSG" msg) ]
+          )
+    )
+  dispatch
+  )

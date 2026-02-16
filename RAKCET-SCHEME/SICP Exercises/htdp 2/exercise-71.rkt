@@ -1,0 +1,48 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-71) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define MTS (empty-scene 100 100))
+(define DOT (circle 3 "solid" "red"))
+
+;Posn => Image
+;scene+dot is function that adds a red dot to the empty canvas at the specified position.
+(define (scene+dot dot-pos)
+  (place-image DOT (posn-x dot-pos) (posn-y dot-pos) MTS)
+  )
+
+
+;
+;reset-dot is a function that resets the dot when the mouse is clicked
+;Posn Number Number MouseEvent -> Posn
+(define (reset-dot dot-pos mouse-x mouse-y me)
+
+  ;for mouse click, change x and y pos
+  ;otherwise return dot-pos
+  (cond [(mouse=? me "button-down") (make-posn mouse-x mouse-y)]
+        [else dot-pos]
+        )
+
+  )
+(reset-dot (make-posn 33 26) 0 0 "button-down")
+
+;Posn -> Posn
+;x+ is a function that consumes a posn and increases the x-coordinate by 3
+(define (x+ dot-pos)
+  (make-posn (+ (posn-x dot-pos) 3) (posn-y dot-pos) )
+  )
+
+;Posn -> Posn
+; consumes a Posn p and a number N. it produces a Posn like p with n in the x field
+(define (posn-up-x dot-pos num)
+  (make-posn num (posn-y dot-pos))
+  )
+
+
+
+; A Posn represents the state of the world.
+; Posn -> Posn 
+(define (main p0)
+  (big-bang p0
+    [on-tick x+]
+    [on-mouse reset-dot]
+    [to-draw scene+dot]))

@@ -1,0 +1,27 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-81) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+
+; Time is a structure
+; (make-time Number Number Number)
+(define-struct time [h m s])
+(define time-sample 
+  (make-time 12 30 2)
+)
+
+(define (hour->second t)
+  (* t 3600)
+  )
+
+(define (minute->second t) 
+  (* t 60)
+  )
+
+
+; time->seconds consumes instances of time structures
+; and produces number of seconds that have passed since midnight
+; example: 12h, 30m, 2s = 45002
+(define (time->seconds t)
+  (+ (hour->second (time-h t)) (minute->second (time-m t) ) (time-s t))
+  )
+(time->seconds time-sample)

@@ -1,0 +1,83 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-285) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+(define sample-loc (list 1 2 3 4))
+(define sample-loft (list 20 30 40 50))
+(define sample-lopsn (list (make-posn 1 1) (make-posn 2 2) (make-posn 3 3)))
+(define-struct IR [n d ap rsp])
+(define sample-IR1 (make-IR "name1" "description1" 50 100))
+(define sample-IR2 (make-IR "name2" "description2" 50 200))
+(define sample-IR3 (make-IR "name3" "description3" 50 300))
+(define sample-loIR (list sample-IR1 sample-IR2 sample-IR3))
+(define sample-los1 (list "Alice" "Bob" "Charlie"))
+(define sample-los2 (list "Alice" "Delta" "Eagle" "Charlie"))
+;The following exercises request that you solve the problems from Finger Exercises: Abstraction with lambda in ISL+ .
+
+;Exercise 285. Use map to define the function convert-euro, which converts a list of US$
+;amounts into a list of € amounts based on an exchange rate of US$1.06 per €.
+;[List-of-numbers] -> [List-of-numbers]
+(define (convert-euro loc)
+   (map (lambda (c) (/ c 1.06) )
+        loc) 
+  )
+(convert-euro sample-loc)
+
+;Also use map to define convertFC,
+;which converts a list of Fahrenheit measurements to a list of Celsius measurements.
+(define (convertFC loft)
+   (map (lambda (ft) (* (- ft 32) (/ 5 9) ) ) loft) 
+  )
+(convertFC sample-loft) 
+
+;Finally, try your hand at translate, a function that translates a list of Posns into a list of lists of pairs of numbers. 
+; [List-of-posns] -> [List-of-List-of-pairs]
+;translates a list of posnss into a list of lists of pairs of numbers
+; Pair = (list 1 2)
+; List-of-pairs = (list (list 1 2) (list 3 4))
+; List-of-list-of-pairs = (list (list (1 2) (list 3 4)) (list (5 6) (list 7 8)))
+(define (translate l)
+  (map 
+   (lambda (p) (list (list (posn-x p) (posn-y p)) ) )
+   l)
+  )
+(translate sample-lopsn) 
+
+;Exercise 286. An inventory record specifies the name of an inventory item, a description, the acquisition price
+;and the recommended sales price.
+;Define a function that sorts a list of inventory records by the difference between the two prices. 
+;[List-of-IRs] -> [List-of-IRS]
+;sorts a list of IRs by the differnece between the two prices
+(define (sort-IR l)
+  (sort  l (lambda (IR1 IR2) (> (- (IR-rsp IR1) (IR-ap IR1))
+                               (- (IR-rsp IR2) (IR-ap IR2))) ) )
+
+  )
+(sort-IR sample-loIR)
+
+
+;Exercise 287. Use filter to define eliminate-exp. The function consumes a number, ua, and a list of inventory records
+;(containing name and price), and it produces a list of all those structures whose acquisition price is below ua.
+; Number List-of-IRs -> List-of-IRs
+(define (eliminate-expensive ua l) 
+  (filter (lambda (IR) (< (IR-rsp IR) ua) ) l)
+
+  )
+(eliminate-expensive 150 sample-loIR)
+
+;Then use filter to define recall, which consumes the name of an inventory item, called ty,
+;and a list of inventory records and which produces a list of inventory records that do not use the name ty.
+; String [List-of-IRs] -> [List-of-IRs]
+(define (recall ty l)
+  (filter (lambda (IR) (not (equal? (IR-n IR) ty))) l)
+
+  )
+(recall "name1" sample-loIR)
+
+;In addition, define selection, which consumes two lists of names
+;and selects all those from the second one that are also on the first.
+; [List-of-string List-of-string -> List-of-string]
+(define (selection lx ly)
+
+  (filter (lambda (s) (member? s lx)) ly)
+  )
+(selection sample-los1 sample-los2)

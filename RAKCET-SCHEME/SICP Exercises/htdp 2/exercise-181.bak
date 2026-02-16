@@ -1,0 +1,155 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname exercise-181) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define-struct editor [pre post])
+; An Editor is a structure:
+;   (make-editor Lo1S Lo1S) 
+; An Lo1S is one of: 
+; – '()
+; – (cons 1String Lo1S)
+
+;Constants
+(define HEIGHT 20) ; the height of the editor 
+(define WIDTH 200) ; its width 
+(define FONT-SIZE 16) ; the font size 
+(define FONT-COLOR "black") ; the font color 
+ 
+(define MT (empty-scene WIDTH HEIGHT))
+(define CURSOR (rectangle 2 HEIGHT "solid" "red"))
+
+(define good
+  (cons "g" (cons "o" (cons "o" (cons "d" '())))))
+(define all
+  (cons "a" (cons "l" (cons "l" '()))))
+(define lla
+  (cons "l" (cons "l" (cons "a" '()))))
+(define long-text (explode "aveyrlonglonglonglongtexttttttttttttt"))
+(define single-text (cons "a" '()) )
+(define empty-text '())
+
+(define sample-editor (make-editor all good) )
+
+;function create-editor consumes 2 strings and produces an Editor
+; the first string is the text to the left of the cursor
+; the 2nd string the the text ot the right of the cursor
+(define (create-editor pre post)
+  (make-editor (explode pre) (explode post))
+  )
+
+
+; Editor -> Image
+; renders an editor as an image of the two texts 
+; separated by the cursor 
+(define (editor-render e)
+  (place-image/align (beside (text (implode (editor-pre e)) 16 "black")
+                             CURSOR
+                             (text (implode (editor-post e)) 16 "black")) 0 0 "left" "top" MT)
+  )
+(editor-render sample-editor)
+
+; remove-last-item is a function that takes a list of 1s
+; and removes its last element
+; List-of-1string -> list-of-1string
+(define (remove-last-1s lo1s)
+  (cond [(empty? lo1s) '() ]
+        ;if it's the list item on the list, skip
+        [(empty? (rest lo1s)) (rest lo1s) ]
+        ;otherwise recurse
+        [else (cons (first lo1s) (remove-last-1s (rest lo1s)) ) ]
+        )
+  )
+;(remove-last-1s all)
+;(remove-last-1s single-text)
+;(remove-last-1s empty-text)
+
+
+;find-last-1s is a function that takes a list of 1string
+;and returns the last 1s
+;Lo1s -> 1s
+(define (find-last-1s lo1s)
+  (cond [(empty? lo1s) ""]
+        [else   (substring (implode lo1s) (- (string-length (implode lo1s)) 1)) ])
+  )
+
+; add-to-first-1s takes a pre and post
+; it adds the last 1s of pre as the 1st item of post
+; Lo1s (Pre) Lo1s (Post) -> Lo1s (Post)
+; example: all|good -> al|lgood
+(define (add-to-first-1s pre post)
+  (cond [(empty? pre) post]
+        [else (cons (find-last-1s pre) post )]) 
+  )
+(add-to-first-1s all good)
+(add-to-first-1s single-text good)
+(add-to-first-1s empty-text good)
+
+
+; add-to-last adds the first 1s of post
+; to the last item of pre (add-to-last)
+; Lo1s (Pre) Lo1s (Post) -> Lo1s (Pre)
+; example: all|good -> allg|ood 
+(define (add-to-last-1s pre post)
+  (cond [(empty? post) pre]
+        [else (explode (string-append (implode pre) (first post))) ])
+  )
+;(add-to-last-1s all good)
+(add-to-last-1s good all)
+
+;append-key is a function that takes a keyevent and a list of 1s
+;and adds that key to the end of the lo1s
+; 1String Lo1s -> Lo1s
+;example: "G" good -> goodG
+(define (append-key k lo1s)
+  (explode (string-append (implode lo1s) k)) 
+        )
+ 
+
+; Editor KeyEvent -> Editor
+; deals with a key event, given some editor
+(define (editor-kh ed k)
+  (cond 
+    ;move the cursor to the left (move last 1s of pre to the first item of post. If there's no more 1s left in pre, dont do anything)
+    [(key=? k "left") (make-editor (remove-last-1s  (editor-pre ed)) (add-to-first-1s (editor-pre ed) (editor-post ed) ) ) ]
+   
+    ;move the cursor to the right (move first 1s of post to the last item of pre. If theres no more 1s in post, don't do anything)
+    [(key=? k "right") (if (empty? (editor-post ed))
+                           ed
+                           (make-editor (add-to-last-1s (editor-pre ed) (editor-post ed)) (rest (editor-post ed))))  ]
+     
+    ;delete the last 1s in pre. If there's nothing else to delete, don't do anything
+    [(key=? k "\b") (if (empty? (editor-pre ed))
+                        ed
+                        (make-editor (remove-last-1s (editor-pre ed)) (editor-post ed))
+                         )]
+    
+    ;ignore t and r
+    [(key=? k "\t") ed]
+    [(key=? k "\r") ed]  
+    
+    [(= (string-length k) 1) (make-editor (append-key k (editor-pre ed)) (editor-post ed)) ]
+    
+    [else ed]))
+ 
+
+(check-expect (editor-kh (create-editor "abc" "def") "left")
+              (create-editor "ab" "cdef"))
+
+(check-expect (editor-kh (create-editor "abc" "def") "right")
+              (create-editor "abcd" "ef"))
+(check-expect (editor-kh (create-editor "" "") "e")
+              (create-editor "e" ""))
+(check-expect
+  (editor-kh (create-editor "cd" "fgh") "e")
+  (create-editor "cde" "fgh"))
+(check-expect
+  (editor-kh (create-editor "ab" "c") "\b")
+  (create-editor "a" "c"))
+
+
+; main : String -> Editor
+; launches the editor given some initial string 
+(define (main s)
+   (big-bang (create-editor s "GGGGFFFFFFFFFFFF")
+     [on-key editor-kh]
+     [to-draw editor-render]))
+(main "")

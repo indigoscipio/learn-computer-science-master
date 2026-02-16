@@ -1,0 +1,104 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname exercise-217) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp")) #f)))
+;Constants
+(define GRID-SIZE 5)
+(define WORLD-WIDTH 100)
+(define WORLD-HEIGHT 100)
+(define SNAKE-COLOR "red")
+(define SNAKE-IMG (circle GRID-SIZE "solid" SNAKE-COLOR))
+(define FOOD-COLOR "green")
+(define EMPTY-SCENE (empty-scene WORLD-WIDTH WORLD-HEIGHT))
+
+;A Tail is one of the following
+; '()
+; Posn List-of-Posns
+;interpretation data structure for the snake's tail
+(define sample-tail (list (make-posn 50 50) (make-posn 40 50) (make-posn 30 50)))
+
+;A Snake is a struct
+;make-snake Posn (head position) String (direction) List-of-posns (Tail)
+;interpretation the data structure for the snake
+(define-struct snake [h d t])
+
+(define snake-init (make-snake (make-posn (/ WORLD-WIDTH 2) (/ WORLD-HEIGHT 2)) "right" '()))
+(define sample-snake1 (make-snake (make-posn 20 50) "up" '()))
+(define sample-snake2 (make-snake (make-posn 50 50) "down" '()))
+(define sample-snake3 (make-snake (make-posn 60 50) "left" sample-tail))
+
+;List-of-posns Image -> Image
+;This function will take the tail (list of posn) and the current image (canvas) as arguments.
+(define (render-tail lopsn img)
+  (cond [(empty? lopsn) img]
+        [else (place-image SNAKE-IMG (posn-x (first lopsn)) (posn-y (first lopsn)) (render-tail (rest lopsn) img))] )
+  )
+
+; WorldState -> Image
+(define (render ws)
+  (place-image SNAKE-IMG (posn-x (snake-h ws)) (posn-y (snake-h ws))
+               (render-tail (snake-t ws) EMPTY-SCENE) )
+  )
+;(render sample-snake3)
+
+;List-of-posns -> List-of-posns 
+(define (remove-last-tail lopsn)
+  (cond [(empty? lopsn) '()]
+        [(empty? (rest lopsn)) '() ]
+        [else (cons (first lopsn) (remove-last-tail (rest lopsn))) ]
+        )
+  )
+;(remove-last-tail sample-tail)
+;(empty? (rest (list (make-posn 40 50))))
+;(empty?  (list (make-posn 40 50)))
+
+; WorldState -> WorldState
+(define (tock ws)
+  (cond [(equal? (snake-d ws) "left") (make-snake (make-posn (- (posn-x (snake-h ws)) GRID-SIZE)(posn-y (snake-h ws)))
+                                                  "left"
+                                                  (cons (snake-h ws) (remove-last-tail (rest (snake-t ws)))) )]
+        [(equal? (snake-d ws) "right") (make-snake (make-posn (+ (posn-x (snake-h ws)) GRID-SIZE) (posn-y (snake-h ws)))
+                                                   "right"
+                                                   (cons (snake-h ws) (remove-last-tail (rest (snake-t ws)))))] 
+        [(equal? (snake-d ws) "up") (make-snake (make-posn (posn-x (snake-h ws)) (- (posn-y (snake-h ws)) GRID-SIZE))
+                                                "up"
+                                                (cons (snake-h ws) (remove-last-tail (rest (snake-t ws)))))]
+        [(equal? (snake-d ws) "down") (make-snake (make-posn (posn-x (snake-h ws)) (+ (posn-y (snake-h ws)) GRID-SIZE))
+                                                  "down"
+                                                  (cons (snake-h ws) (remove-last-tail (rest (snake-t ws)))))]
+        [else ws])
+  )
+(tock sample-snake3) 
+
+; WorldState String -> WorldState 
+(define (change ws key)
+  (cond
+    [(key=? key "left")  (make-snake (snake-h ws) "left" '())]
+    [(key=? key "right") (make-snake (snake-h ws) "right" '())]
+    [(key=? key "up")    (make-snake (snake-h ws) "up" '())]
+    [(key=? key "down")  (make-snake (snake-h ws) "down" '()) ]
+    [else ws]))
+;(change sample-snake1 "right")
+
+;WorldState -> Boolean
+(define (end? ws)
+  (cond [(>= (posn-x (snake-h ws)) WORLD-WIDTH) #true] ; snake reaches right border
+        [(<= (posn-x (snake-h ws)) 0) #true] ; snake reaches left border
+        [(>= (posn-y (snake-h ws)) WORLD-WIDTH) #true] ; snake reaches top border
+        [(<= (posn-y (snake-h ws)) 0) #true]
+        [else #false]) 
+  )
+
+(define (render-game-over ws)
+  (place-image (text "Snake hit wall!" 12 "red") (/ WORLD-WIDTH 2) (/ WORLD-HEIGHT 2) EMPTY-SCENE)
+  )
+
+
+(define (snake-main ws)
+  (big-bang ws
+    [on-tick tock .25] 
+    [to-draw render]
+    [on-key change]
+    ;[stop-when end? render-game-over]
+    )
+  )
+;(snake-main snake-init) 

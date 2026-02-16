@@ -1,0 +1,22 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname exercise-257) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+(build-list 10 add1)
+(build-list 10 sub1)
+
+(define (add-at-end l e)
+  (cond
+    [(empty? l) (cons e '())]
+    [else
+     (cons (first l) (add-at-end (rest l) e))]))
+
+; X [X Y -> Y] Y -> Y
+; Number [Number -> X] -> [List-of X]
+(define (build-l*st n f) 
+  (cond [(zero? n) '()]
+        [else (add-at-end (build-l*st (sub1 n) f) (f (sub1 n))) ])
+  )
+
+
+(build-l*st 10 sub1)
+(build-l*st 10 add1)

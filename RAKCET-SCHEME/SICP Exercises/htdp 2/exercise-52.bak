@@ -1,0 +1,32 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-52) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define BASE-SIZE 50)
+(define red-light (circle BASE-SIZE "solid" "red"))
+(define yellow-light (circle BASE-SIZE "solid" "yellow"))
+(define green-light (circle BASE-SIZE "solid" "green"))
+(define BACKGROUND (rectangle (* BASE-SIZE 2) (* BASE-SIZE 2) "outline" "black"))
+
+
+;+1 for every clock tick
+(define (tock ws)
+  (if (= ws 2)
+      0   ; Reset to 0 when it reaches 2
+      (+ ws 1))) ; Increment otherwise
+
+(define (render ws)
+  (cond [(= ws 0) (place-image red-light BASE-SIZE BASE-SIZE BACKGROUND)]
+        [(= ws 1) (place-image yellow-light BASE-SIZE BASE-SIZE BACKGROUND)]
+        [(= ws 2) (place-image green-light BASE-SIZE BASE-SIZE BACKGROUND)]))
+
+
+;traffic light is a state from 0 - 2
+; 0 is red
+; 1 is yellow
+; 2 is green
+(define (traffic-light ws)
+  (big-bang ws
+  [on-tick tock 1]
+  [to-draw render]
+    ))
+(traffic-light 0)

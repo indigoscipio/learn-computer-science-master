@@ -1,0 +1,18 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-457) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+(define EPSILON 0.0001)
+(define IR-YEARLY 0.05)
+(define IR-MONTHLY (/ IR-YEARLY 12) )
+(define INITIAL-MONEY 1)
+(define DOUBLE-MONEY (* INITIAL-MONEY 2))
+
+; Number Number -> Number
+; computes how many months it takes to double a given amount of money
+; when a savings account pays interest at a fixed rate monthly basis
+(define (double-amount m r count)
+  (cond [(>= m DOUBLE-MONEY) count]
+        [else (double-amount (+ m (* m r)) r (add1 count)) ])
+   
+  )
+(double-amount INITIAL-MONEY IR-MONTHLY 0)

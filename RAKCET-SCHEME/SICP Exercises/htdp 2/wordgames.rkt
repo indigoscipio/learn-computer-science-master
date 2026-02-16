@@ -1,0 +1,23 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname wordgames) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp")) #f)))
+; 1S LoW -> LoW 
+(define (prepend-to-all 1s low)
+  (cond [(empty? low) '()]
+        [else (cons (cons 1s (first low)) (prepend-to-all 1s (rest low)))  ])
+  )
+;(prepend-to-all "e" (list (list "d" "r") (list "r" "d")))
+;(prepend-to-all "r" (list (list "d")))
+;(rest (list (list "d")))
+  
+; 1String Word -> LoW
+; inserts 1s everywhere at all possible positions
+(define (insert-everywhere 1s w)
+  (cond [(empty? w) (list (list 1s))]
+        [else (cons (cons 1s w) (prepend-to-all (first w) (insert-everywhere 1s (rest w))) )  ]  
+        )
+  ) 
+;(insert-everywhere "d" (list "r" "e"))
+(insert-everywhere "d" (list "r"))
+;(rest (list "r" "e"))
+;;(first (list "e"))

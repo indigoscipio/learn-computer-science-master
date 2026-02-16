@@ -1,0 +1,52 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-499) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+(define-struct node [left right])
+; A Tree is one of: 
+; – '()
+; – (make-node Tree Tree)
+(define example
+  (make-node (make-node '() (make-node '() '())) '()))
+
+
+(define (height abt)
+  (cond
+    [(empty? abt) 0]
+    [else (+ (max (height (node-left abt))
+                  (height (node-right abt))) 1)]))
+;(check-expect (height example) 3)
+;(height (make-node '() '()))
+
+(define (height.v2 abt0)
+  (local (; Tree N -> N
+          ; measures the height of abt
+          ; accumulator ...
+          (define (height.v2/a abt acc)
+            (cond [(empty? abt) acc]
+                  [else (max (height.v2/a (node-left abt) (add1 acc))
+                             (height.v2/a (node-right abt) (add1 acc)))
+                        ])
+            ))
+    (height.v2/a abt0 0)
+    )
+  )
+;(check-expect (height.v2 example) 3)
+;(height.v2 example)
+;(height.v2 (make-node '() '()))
+
+(define (height.v3 abt0)
+  (local (; Tree N N -> N
+          ; measures the height of abt
+          ; acc1 tracks the current depth
+          ; acc2 tracks the max height encountered so far in the left subtree
+          (define (height.v3/a abt acc1 acc2)
+            (cond [(empty? abt) acc1]
+                  [else (max (height.v3/a (node-left abt) (add1 acc1) (max acc1 acc2))
+                             (height.v3/a (node-right abt) (add1 acc1) acc2 )) ])
+            ))
+    (height.v3/a abt0 0 0)
+    )
+  )
+(check-expect (height.v3 example) 3)
+(height.v3 example)
+(height.v3 (make-node '() '()))

@@ -1,0 +1,20 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-501) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+
+
+; Number -> Number
+; adds natural number n to pi without using +
+(define (add-to-pi n)
+  (local (;Number Number -> Number
+          ;invariant: acc is the total number of times n0 is being incremented by 1 (plus the initial value of pi)
+          (define (add-to-pi/a n0 acc)
+            (cond [(zero? n0) acc]
+                  [else (add-to-pi/a (sub1 n0) (add1 acc) ) ])
+            )
+          )
+    (add-to-pi/a n pi)
+    )
+  )
+(add-to-pi 2)
+(check-within (add-to-pi 2) (+ 2 pi) 0.001)

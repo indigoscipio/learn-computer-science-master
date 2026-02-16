@@ -1,0 +1,26 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-164) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+
+;convertFC is a function that ocnverts list of measurements in F to C
+; List-of-temp -> List-of-temp
+; List-of-temp can either be the following
+; '()
+; List-of-temp '()
+(define empty-lot '())
+(define sample-lot (cons 100 (cons 35 '())) )
+
+
+(define (f-to-c n)
+  (* (- n 32) (/ 5 9))
+  )
+
+
+
+(define (convertFC lot)
+  (cond [(empty? lot) '()]
+        [else (cons (f-to-c (first lot)) (convertFC (rest lot)) ) ]
+        )
+  )
+
+(convertFC sample-lot)

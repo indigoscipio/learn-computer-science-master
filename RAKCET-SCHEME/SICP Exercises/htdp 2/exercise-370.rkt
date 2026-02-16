@@ -1,0 +1,207 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-370) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+; An Xexpr.v2 is a list: 
+; – (cons Symbol Body)
+; – (cons Symbol (cons [List-of Attribute] Body))
+; where Body is short for [List-of Xexpr.v2]
+; An Attribute is a list of two items:
+;   (cons Symbol (cons String '()))
+
+(define a0 '((initial "X")))
+(define a1 '((second "Y")) )
+(define e0 '(machine))
+(define e1 `(machine ,a0))
+(define e2 '(machine (action)))
+(define e3 '(machine () (action)))
+(define e4 `(machine ,a0 (action) (action)))
+
+
+
+;function therefore produces '() for such X-expressions:
+(check-expect (xexpr-attr e0) '())
+(check-expect (xexpr-attr e1) '((initial "X")))
+(check-expect (xexpr-attr e2) '())
+(check-expect (xexpr-attr e3) '())
+(check-expect (xexpr-attr e4) '((initial "X")))
+
+
+; [List-of Attribute] or Xexpr.v2 -> Boolean
+; is x a list of attributes
+(define (list-of-attributes? x)
+  (cond [(empty? x) #t]
+        [else (local ( (define possible-attribute (first x))
+                       )
+                (cons? possible-attribute)
+                ) ])
+  )
+
+; Xexpr.v2 -> [List-of Attribute]
+; retrieves the list of attributes of xe
+(define (xexpr-attr xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content) '()]
+      [else (local ((define loa-or-x (first optional-loa+content)))
+              (if (list-of-attributes? loa-or-x)
+                  loa-or-x
+                  '()
+                  )
+              )]))) 
+
+
+;Exercise 366. Design xexpr-name and xexpr-content
+
+; Xexpr.v2 -> Symbol
+; extracts the name/tag of given xml representation
+(define (xexpr-name xe)
+  (first xe)
+  ) 
+(check-expect (xexpr-name e0) 'machine)
+(check-expect (xexpr-name e1) 'machine)
+(check-expect (xexpr-name e2) 'machine)
+
+; Xexpr.v2 -> ???
+; extracts the contents of given xml representation
+(define (xexpr-content xe)
+  ;extract everything after the tag
+  (local ((define optional-loa+content (rest xe)))
+    (cond [(empty? optional-loa+content) '()];check if there's an attribute list, if true remove it to get only the content
+          [else (local ((define loa-or-x (first optional-loa+content)))
+                  (if (list-of-attributes? loa-or-x)
+                      (rest optional-loa+content)
+                      optional-loa+content
+                      )
+                  ) ])
+    )
+  )
+;(xexpr-content e2) 
+
+
+;Exercise 368. Formulate a data definition that replaces the informal
+;“or” signature for the definition of the list-of-attributes? function. 
+
+; A Maybe-Attributes is one of:
+; - [List-of Attribute]   ; Example: '((key "value") (other "data"))
+; - Xexpr.v2              ; Example: '(machine (action))
+
+; Maybe-Attributes -> Boolean
+; Determines whether x is a list of attributes.
+(define (list-of-attributes?.v2 x)
+  (cond
+    [(empty? x) #t]  ; An empty list is valid attributes
+    [else
+     (local ((define possible-attribute (first x)))
+       (and (list? possible-attribute)  ; It must be a list
+            (= (length possible-attribute) 2)  ; It must have 2 elements
+            (symbol? (first possible-attribute))  ; First must be a symbol
+            (string? (second possible-attribute))  ; Second must be a string
+            (list-of-attributes? (rest x))))]))  ; Recursively check the rest
+
+
+;Exercise 369. Design find-attr. The function consumes a list of attributes and a symbol.
+;If the attributes list associates the symbol with a string,
+;the function retrieves this string; otherwise it returns #false.
+;Look up assq and use it to define the function.
+
+; loab: '((color "red") (size "large"))).
+; symbol: '(color)
+; [List-of Attribute] Symbol -> String or #false
+; Finds the attribute value associated with sym
+(define (find-attr loab s)
+  (local ((define result (assq s loab)))
+    (if (false? result)
+        #f
+        (second result)
+        )
+    )
+  ) 
+
+
+; An XWord is '(word ((text String))).
+
+;XWord examples
+(define xw-example1 '(word ((text "Hello"))))
+(define xw-example2 '(word ((text "This is a text" ))))
+(define xw-example3 '(word ((text "Hello from HtDP"))))
+'(word ((text "Hello")))
+
+;XWord -> Boolean
+; Check if an input follows the XWord structure
+(define (word? x)
+  (and (list? x)
+       (equal? (first x) 'word)
+       (= (length (second x)) 1)
+       (equal? (first (first (second x))) 'text)
+       (string? (second (first (second x))))
+       )
+  )
+
+(rest(second xw-example1))
+(check-expect (word? xw-example1) #t)
+(check-expect (word? "not-a-word") #f)
+
+; XWord -> String
+;extracts string value from xword
+(define (word-text xw)
+  (if (word? xw)
+      (second (first (second xw))) ; Extract the string
+      (error "Invalid XWord structure" xw))) ; Handle incorrect inputs
+;(check-expect (word-text xw-example1) "Hello")
+
+; An XEnum.v1 is one of: 
+; – (cons 'ul [List-of XItem.v1])
+; – (cons 'ul (cons Attributes [List-of XItem.v1]))
+
+; An XItem.v1 is one of:
+; – (cons 'li (cons XWord '()))
+; – (cons 'li (cons Attributes (cons XWord '())))
+(define li1 '(li (word ((text "one")))))
+(define li2 '(li (word ((text "two")))))
+
+(define SIZE 12) ; font size 
+(define COLOR "black") ; font color 
+(define BT ; a graphical constant 
+  (beside (circle 1 'solid COLOR) (text " " SIZE COLOR)))
+
+; XItem -> Image
+; Renders an item as a "word" prefixed by a bullet.
+(define (render-item1 i)
+  (local ((define content (xexpr-content i))
+          (define element (first content))
+          (define a-word (word-text element))
+          (define item (text a-word 12 'black)))
+    (beside/align 'center BT item)))
+(check-expect (render-item1 li1) (beside/align 'center BT (text "one" SIZE COLOR)))
+
+
+(define ul0
+  '(ul
+    (li (word ((text "one"))))
+    (li (word ((text "two"))))))
+(define ul0-rendered
+  (above/align
+   'left
+   (beside/align 'center BT (text "one" 12 'black))
+   (beside/align 'center BT (text "two" 12 'black))))
+
+; XEnum.v1 -> Image 
+; renders a simple enumeration as an image
+(define (render-enum1 xe)
+   (local ((define content (xexpr-content xe))
+           ; XItem.v1 Image -> Image 
+           (define (deal-with-one item so-far)
+              (above/align 'left (render-item1 item) so-far) ))
+     (foldr deal-with-one empty-image content)))
+(render-enum1 ul0)
+(check-expect (render-enum1 ul0) ul0-rendered)
+
+; An XItem.v2 is one of: 
+; – (cons 'li (cons XWord '()))
+; – (cons 'li (cons [List-of Attribute] (list XWord)))
+; – (cons 'li (cons XEnum.v2 '()))
+; – (cons 'li (cons [List-of Attribute] (list XEnum.v2)))
+; 
+; An XEnum.v2 is one of:
+; – (cons 'ul [List-of XItem.v2])
+; – (cons 'ul (cons [List-of Attribute] [List-of XItem.v2]))

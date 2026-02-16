@@ -1,0 +1,28 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname exercise-189) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+; Number List-of-numbers -> Boolean
+(define sample-alon (list 1 5 7 9 1 5 55 7787 15897))
+
+(define (search n alon)
+  (cond
+    [(empty? alon) #false]
+    [else (or (= (first alon) n)
+              (search n (rest alon)))]))
+(search 3 sample-alon)
+
+; function search-sorted determines wheter a number occurs in a sorted list of numbers
+; the function must take advantage of the fact that the list is sorted
+; Number List-of-numbers -> Boolean
+(define (search-sorted n alon)
+  (cond [(empty? alon) #false]
+        [(equal? (first alon) n) #true]
+        [(> (first alon) n) #false]  ; Stop early if the first element is greater than n
+        [else (search-sorted n (rest alon)) ])
+  )
+
+
+(check-expect (search-sorted 5 '()) #false)
+(check-expect (search-sorted 5 '(1 3 5 7 9)) #true)
+(check-expect (search-sorted 2 '(1 3 5 7 9)) #false)
+(check-expect (search-sorted 10 '(1 3 5 7 9)) #false)

@@ -1,0 +1,37 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname exercise-253) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+
+
+; [Number -> Boolean]
+;takes a number and returns a boolean
+(define (is-zero? n)
+  (equal? n 0)
+  )
+
+; [Boolean String -> Boolean]
+; takes a boolean and strign and retunrs a boolean
+(define (bsf b s)
+  (if (equal? b s) #true #false)
+  )
+
+; [Number Number Number -> Number]
+;takes 3 diferent numbers and retunrs a number
+(define (sum3num n1 n2 n3 )
+  (+ n1 n2 n3)
+  )
+
+; [Number -> [List-of Number]]
+;takes a number and returns a list of number
+(define (decrease n)
+  (cond [((<= n) '()]
+        [else (cons n (decrease (sub1 n)))])
+  )
+
+; [[List-of Number] -> Boolean]
+; takes a list of numebr and retunrs a boolean
+(define (contains-num lon)
+  (cond [(equal? (first lon) 0) #true]
+        [else (contains-num (rest lon))])
+  )
+(contains-num (list 0 1 2 34))

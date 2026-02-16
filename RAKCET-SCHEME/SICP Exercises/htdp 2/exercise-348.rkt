@@ -1,0 +1,58 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-348) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+(define-struct add [left right])
+(define-struct mul [left right])
+
+;a BSL value is a number
+;the result of evaluating a BSL expression
+; (+ 1 1) = 2 -> (make-add 1 1) = 2
+
+;Exercise 347. Design eval-expression.
+;The function consumes a representation of a BSL expression and computes its value.
+; BSL-EXPR-REP -> Number
+(define (eval-expression bsl-expr-rep)
+  (cond [(number? bsl-expr-rep) bsl-expr-rep]; base case
+        ; Recursive evaluation of left and right
+        [(add? bsl-expr-rep) (+ (eval-expression (add-left bsl-expr-rep))
+                                (eval-expression (add-right bsl-expr-rep)))]
+        ; Recursive evaluation of left and right
+        [(mul? bsl-expr-rep) (* (eval-expression (mul-left bsl-expr-rep))
+                                (eval-expression (mul-right bsl-expr-rep))) ])
+  )
+;(eval-expression (make-add 5 (make-add 10 10)))
+;(eval-expression (make-mul 50 50))
+
+;Exercise 348. Develop a data representation for Boolean BSL expressions
+;constructed from #true, #false, and, or, and not. Then design eval-bool-expression,
+;which consumes (representations of) Boolean BSL expressions and computes their values.
+;What kind of values do these Boolean expressions yield?
+
+;a BSL Boolean is a Boolean
+;the result of evaluating a BSL expression
+; #true
+; #false
+; (make-or left right)
+; (make-not expr)
+; (make-and left right)
+
+(define-struct bsl-or [left right])
+(define-struct bsl-and [left right])
+(define-struct bsl-not [expr])
+
+; BSL-BOOL-REP -> Boolean
+(define (eval-bool-expression bsl-bool)
+  (cond [(not (or (bsl-or? bsl-bool)
+                  (bsl-and? bsl-bool)
+                  (bsl-not? bsl-bool))) bsl-bool] ;base case: if theres no more expression to evaluate, return final result
+        [(bsl-or? bsl-bool) (or (eval-bool-expression (bsl-or-left bsl-bool))
+                                (eval-bool-expression (bsl-or-right bsl-bool)) )]
+        [(bsl-and? bsl-bool) (and (eval-bool-expression (bsl-and-left bsl-bool))
+                                  (eval-bool-expression (bsl-and-right bsl-bool)) )]
+        [(bsl-not? bsl-bool) (not (eval-bool-expression (bsl-not-expr bsl-bool)))]
+        )
+  ) 
+(eval-bool-expression #true)
+(eval-bool-expression #false) 
+(eval-bool-expression (make-bsl-or #true (make-bsl-or #false #false)))
+(eval-bool-expression (make-bsl-not #true))

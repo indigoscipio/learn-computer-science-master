@@ -1,0 +1,36 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname exercise-241) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+(define-struct layer [stuff])
+
+; An LStr is one of: 
+; – String
+; – (make-layer LStr)
+
+	
+; An LNum is one of: 
+; – Number
+; – (make-layer LNum)
+
+
+
+; to abstract, introcude a parameter (makes data definition look like a function
+;then create an instantiation/another data definition of the abstraction
+
+; a [Layered T] is one of;
+; a T
+; (make-layer [Layered T])
+
+
+; a [Layered String] is one of;
+; a String
+; (make-layer [Layered String])
+(make-layer "string")
+(make-layer (make-layer "String"))
+
+
+; a [Layered Number] is one of;
+; a Number
+; (make-layer [Layered Number])
+(make-layer 15)
+(make-layer (make-layer 880))

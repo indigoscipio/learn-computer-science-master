@@ -1,0 +1,3 @@
+#lang racket
+
+(remainder 21 12)

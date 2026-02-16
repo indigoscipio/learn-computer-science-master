@@ -1,0 +1,62 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-389b) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+; N is one of: 
+; – 0
+; – (add1 N)
+;list-pick extracts the nth symbol from los; if there is no such symbol, it signals an error.
+; [List-of Symbol] N -> Symbol
+; extracts the nth symbol from l; 
+; signals an error if there is no such symbol
+(define (list-pick l n)
+  (cond [(and (= n 0) (empty? l)) (error "list too short")]
+        [(and (> n 0) (empty? l)) (error "list too short")]
+        [(and (= n 0) (cons? l)) (first l)]
+        [(and (> n 0) (cons? l)) (list-pick (rest l) (sub1 n))]
+        )
+  )
+
+;(check-expect (list-pick '(a b c) 2) 'c)
+;(check-error (list-pick '() 0) "list too short")
+;(check-expect (list-pick (cons 'a '()) 0) 'a)
+;(check-error (list-pick '() 3) "list too short")
+;(check-expect (list-pick '(a b) 1) 'b)
+
+
+(define-struct branch [left right])
+ 
+; A TOS is one of:
+; – Symbol
+; – (make-branch TOS TOS)
+(define sample-tos1 (make-branch 'a (make-branch 'a 'b)))
+(define sample-tos2 (make-branch 'x 'y))
+(define sample-tos3 (make-branch (make-branch 'f 'g) 'h))
+(branch-left sample-tos1)
+
+ ; A Direction is one of:
+; – 'left
+; – 'right
+ 
+; A list of Directions is also called a path. 
+(define sample-lod1 (list 'right 'left))
+(define sample-lod2 (list 'right))
+(define sample-lod3 (list 'left))
+(define sample-lod4 '())
+(define sample-lod5 (list 'left 'right))
+
+;Exercise 390. Design the function tree-pick.
+;The function consumes a tree of symbols and a list of directions:
+; TOS List-of-directions (Path) -> Symbol Or Error
+(define (tree-pick tos lod)
+  (cond [(symbol? tos) (cond [(empty? lod) tos]
+                             [else (error "Reached but there's no direction left")])]
+        [(branch? tos) (cond [(empty? lod) (error "Path is too short")]
+                             [else (cond [(equal? (first lod) 'left) (tree-pick (branch-left tos) (rest lod))]
+                                         [(equal? (first lod) 'right) (tree-pick (branch-right tos) (rest lod))]
+                                         [else (error "invalid direction!")]) ])]
+        )
+  )
+;(error "tree not found")
+(check-expect (tree-pick sample-tos1 sample-lod1) 'a)
+(check-expect (tree-pick sample-tos2 '()) sample-tos2) 
+(check-expect (tree-pick sample-tos3 sample-lod3) (make-branch 'f 'g))

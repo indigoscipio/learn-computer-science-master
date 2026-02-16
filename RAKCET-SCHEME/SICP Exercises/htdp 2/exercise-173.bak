@@ -1,0 +1,54 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-173) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+;(read-file "C:\\Users\\Samuel Oktavianus\\Documents\\test.txt")
+
+(define line1 (cons "hello" (cons "world" '())))
+(define line2 (cons "second" (cons "line" '())))
+(define line3 (cons "the" (cons "third" (cons "line" '()))))
+(define empty-line '())
+(define sample-lol (cons line1 (cons line2 '())))
+
+;a Line is a list of string
+; a list of string is the following:
+; '()
+; String List-of-string
+
+
+;combine strings is a function that combines a list of strings (one line)
+; with an empty space and outputs a string
+; List-of-strings -> String
+(define (combine-strings/line los)
+  ;base case: if it's an empty los, return an empty string
+  (cond [(empty? los) ""]
+        [(empty? (rest los)) (string-append (first los) (combine-strings/line (rest los))) ]
+        [else (string-append (first los) " " (combine-strings/line (rest los)))  ])
+  ;(combine-strings/line (rest los))
+  )
+
+;(combine-strings/line line1)
+;(combine-strings/line empty-line)
+;(check-expect (combine-strings/line line1) "hello world" )
+;(check-expect (combine-strings/line line2) "second line" )
+;(check-expect (combine-strings/line line3) "the third line" )
+
+
+;function collapse converts a list of lines into a string
+;the strings should be seperated by blank spaces (" ")
+;lines should be seperated by a new line ("\n")
+; a list of lines is the following:
+; '()
+; Line List-of-lines
+; List-of-lines -> String
+(define (collapse lol)
+  ; if it's an empty lol, return empty list '()
+  (cond [(empty? lol) ""]
+        ;for each line, combine the strings into a string
+        ;then append "\n at the end of each string"
+        [(empty? (rest lol)) (combine-strings/line (first lol))] ; Last line, no newline
+        [else (string-append (combine-strings/line (first lol)) "\n" (collapse (rest lol)) ) ])
+  )
+(collapse sample-lol)
+
+(write-file "ttt.dat"
+            (collapse (read-words/line "C:\\Users\\Samuel Oktavianus\\Documents\\ttt.txt")))

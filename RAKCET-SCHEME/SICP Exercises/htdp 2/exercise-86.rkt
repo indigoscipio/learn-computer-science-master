@@ -1,0 +1,134 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-86) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define SCENE-WIDTH 200)
+(define SCENE-HEIGHT 20)
+(define TEXT-WIDTH 16)
+
+(define-struct editor [pre post])
+; An Editor is a structure:
+;   (make-editor String String)
+; interpretation (make-editor s t) describes an editor
+; whose visible text is (string-append s t) with 
+; the cursor displayed between s and t
+(define sample-editor (make-editor "123456789" "RRRRRRR")) 
+
+;Auxiliary functions
+;string-remove-last String -> String
+; interpretation takes a string and removes its last letter
+(define (string-remove-last str)
+  (substring str 0 (- (string-length str) 1))
+  )
+
+;string-remove-first String -> String
+; interpretation takes a string and removes its first letter
+(define (string-remove-first str)
+  (substring str 1 (string-length str) )
+  )
+
+; string-first String -> String
+; interpretation returns the first letter of a given string
+(define (string-first str)
+  (string-ith str 0)
+  )
+
+;string-last String -> String
+; interpretation returns the last letter of a given string
+(define (string-last str)
+  (string-ith str (- (string-length str) 1))
+  )
+
+(define (editor-text-width ed)
+  (+ (* (string-length (editor-pre ed)) (/ TEXT-WIDTH 1.5))  (* (string-length (editor-post ed)) (/ TEXT-WIDTH 1.5)) )
+  )
+
+; edit is a function that consumes two inputs:
+; Editor KeyEvent -> Editor
+; the task is to add a single char keyevent to the end of pre field of editor
+; unless keyevent detects backspace (\b)
+; if this happens, it deletes the character immediately to the left of the cursor (if ther are any)
+; the function ignores the tab and return key
+; the function pays attention to only two keyevent longer than one letter: "left" and "right"
+(define (edit ed ke)
+
+  ;if text width exceeds scene width, stop register key event and do not display
+  
+  ;check if its 1String/one letter format
+  (if (= (string-length ke) 1)
+      ;if it's 1string, check for the following
+       (cond
+         ; Handle backspace: only remove a character if `pre` is not empty
+         [(string=? "\b" ke)
+          (if (>= (string-length (editor-pre ed)) 1)
+              (make-editor  (substring (editor-pre ed) 0 (- (string-length (editor-pre ed)) 1)) (editor-post ed) )
+              ed
+              )
+          ]
+
+         ;ignore tab ("\t") and return ("\r")
+         [ (or (string=? "\t" ke) (string=? "\r" ke)) ed]
+
+         ;add single character ke to the end of the pre field of ed only if there any
+         [else
+          (if (> (editor-text-width ed) SCENE-WIDTH)
+              ed
+              (make-editor (string-append (editor-pre ed) ke) (editor-post ed))
+              )
+          ]
+        )
+
+      ;if it's not 1string, check for only left or right key
+        (cond
+          ;if it's left, move the cursor 1char to the left (if theres any)
+          [(and (string=? "left" ke) (>= (string-length (editor-pre ed)) 1))
+               (make-editor (string-remove-last (editor-pre ed)) (string-append (string-last (editor-pre ed)) (editor-post ed) ) )
+
+               ]
+          ;otherwise, move the cursor 1char to the right (if there's any)
+           [(and (string=? "right" ke) (>= (string-length (editor-post ed)) 1))
+               (make-editor (string-append (editor-pre ed) (string-first (editor-post ed))) (string-remove-first (editor-post ed)) )
+
+           ]
+          [else (make-editor (editor-pre ed) (editor-post ed))]
+        )
+      )
+  )
+
+
+
+;(edit sample-editor "\b")
+;(edit sample-editor "a")
+;(edit sample-editor "b")
+;(edit sample-editor "c")
+;(edit sample-editor "d")
+;(edit sample-editor " ")
+;(edit sample-editor "2")
+;(edit sample-editor "left")
+;(edit sample-editor "right")
+;(edit sample-editor "escape")
+
+
+; Render is a function that consumes Editor and produces an image
+; render the text within empty scene of 200x20
+; with a 1x20 rd rectangle
+; Editor -> Image
+(define (render ed)
+(overlay/align "left" "center"
+            (beside 
+               (text (editor-pre ed) TEXT-WIDTH "black")
+               (rectangle 3 20 "solid" "red")
+               (text (editor-post ed) TEXT-WIDTH "black")
+             )
+               (empty-scene SCENE-WIDTH SCENE-HEIGHT)
+               )
+  )
+
+;Run is a bigbang
+; Editor -> Editor
+(define (run ws)
+  (big-bang ws
+    [on-key edit]
+    [to-draw render]
+    )
+  )
+(run sample-editor)

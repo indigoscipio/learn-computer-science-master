@@ -1,0 +1,15 @@
+#lang racket
+
+; Number -> (Number -> Number)
+(define (make-accumulator init)
+  (let ((acc init))
+    (lambda (x) (begin (set! acc (+ x acc))
+                       (display "Acc now: ")
+                       acc))
+    )
+  )
+(define A (make-accumulator 5))
+(A 10)
+(A 10)
+(A 10)
+(A 10)

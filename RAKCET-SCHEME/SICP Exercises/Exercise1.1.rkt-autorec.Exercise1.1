@@ -1,0 +1,36 @@
+#lang sicp
+
+; if it's 0, n is 0
+; if its 1; n is 1
+; else fib (n-1) + fib (n-2)
+
+( define (fib n)
+   (cond
+     ((= n 0) 0)
+     ((= n 1) 1)
+     (else (+ (fib (- n 1)) (fib (- n 2))) )
+     )
+   )
+
+
+
+(define (fib-linear x)
+  (define (fib-iter prev curr count)
+    (if (= count 0)
+        prev
+        (fib-iter curr (+ prev curr) (- count 1))
+        )
+    )
+
+  (fib-iter 0 1 x)
+  
+  )
+
+
+ F(n) = n if n < 3
+ F(n) = F(n - 1) + 2f(n - 2) + 3f(n - 3) if n 2 >= 3
+
+;recursive process
+(define ())
+
+;iterative process

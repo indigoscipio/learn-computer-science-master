@@ -1,0 +1,47 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-387) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+; [List-of Number] [List-of Number] -> [List-of Number]
+; replaces the final '() in front with end
+(define (replace-eol-with front end)
+  (cond [(empty? front) end]
+        [else (cons (first front) (replace-eol-with (rest front) end))]
+        )
+  )
+;(replace-eol-with (list 1) (list 'a)) ; should return (list list 1 'a)
+
+(check-expect (replace-eol-with '() '(a b)) '(a b))
+(check-expect (replace-eol-with (cons 1 '()) '(a))
+              (cons 1 '(a)))
+(check-expect (replace-eol-with (cons 2 (cons 1 '())) '(a)) 
+              (cons 2 (cons 1 '(a))))
+
+;Exercise 387. Design cross.
+;The function consumes a list of symbols and a list of number
+;and produces all possible ordered pairs of symbols and numbers.
+;That is, when given '(a b c) and '(1 2), the expected
+;result is '((a 1) (a 2) (b 1) (b 2) (c 1) (c 2)).
+
+; Symbol List-of-number -> List-of-[List-of Symbol Number]
+(define (pair-with-all s lon)
+  (cond [(empty? lon) '()]
+        [else (cons (list s (first lon))(pair-with-all s (rest lon)) )])
+  )
+(pair-with-all 'a '(1 2)) 
+(pair-with-all 'a '(1 2 3))
+
+; List-of-symbols List-of-numbers ->  List-of-[List-of Symbol Number]
+(define (cross los lon)
+  (cond [(empty? los) '()]
+        [else (append (pair-with-all (first los) lon)
+                      (cross (rest los) lon))
+              ])
+  ) 
+(cross '(a) '(1))
+(cross '(a b) '(1 2))
+
+(check-expect (cross '(a) '(1)) '((a 1)))
+(check-expect (cross '(a b) '(1)) '((a 1) (b 1)))
+(check-expect (cross '(a b) '(1 2)) '((a 1) (a 2) (b 1) (b 2)))
+(check-expect (cross '(a b c) '()) '())
+(check-expect (cross '(a b c) '(1 2)) '((a 1) (a 2) (b 1) (b 2) (c 1) (c 2)))

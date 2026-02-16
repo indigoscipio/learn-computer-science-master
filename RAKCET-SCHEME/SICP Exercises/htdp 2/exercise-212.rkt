@@ -1,0 +1,116 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname exercise-212) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp")) #f)))
+(define FILE-LOCATION "C:/Users/Samuel Oktavianus/Documents/wordlist.txt")
+
+; A Dictionary is a List-of-strings.
+(define DICTIONARY (read-lines FILE-LOCATION))
+;DICTIONARY
+
+; List-of-strings -> Boolean
+(define (all-words-from-rat? w)
+  (and
+    (member? "rat" w) (member? "art" w) (member? "tar" w)))
+ 
+; String -> List-of-strings
+; finds all words that the letters of some given word spell
+ 
+(check-member-of (alternative-words "cat")
+                 (list "act" "cat")
+                 (list "cat" "act"))
+ 
+(check-satisfied (alternative-words "rat")
+                 all-words-from-rat?)
+ 
+
+; A Word is one of:
+; – '() or
+; – (cons 1String Word)
+; interpretation a Word is a list of 1Strings (letters)
+
+; A List-of-words is either the following
+; '() or
+; (cons Word List-of-words)
+; example: (List (list "c" "a" "t") (list "m" "e" "o" "w" "s"))
+
+; 1S LoW -> LoW 
+(define (prepend-to-all 1s low)
+  (cond [(empty? low) '()]
+        [else (cons (cons 1s (first low)) (prepend-to-all 1s (rest low)))  ])
+  )
+
+; 1String Word -> LoW
+; inserts 1s everywhere at all possible positions
+(define (insert-everywhere 1s w)
+  (cond [(empty? w) (list (list 1s))]
+        [else (cons (cons 1s w) (prepend-to-all (first w) (insert-everywhere 1s (rest w))) )  ]  
+        )
+  ) 
+
+;1String LoW -> LoW
+;produces a list of words like its second argument
+;but with the first argument inserted at the beginning, between all letters, and at the end of all words at the given list
+(define (insert-everywhere/in-all-words 1s low)
+  (cond [(empty? low) '()]
+        [else (append (insert-everywhere 1s (first low)) (insert-everywhere/in-all-words 1s (rest low))) ] )
+  )
+;(insert-everywhere/in-all-words "d" (list (list "a") (list "c")))
+; should return (list (list "a" "d") (list "d" "a") (list "d c") (list "c" "a") )
+
+
+
+; Word -> List-of-words
+; creates all rearrangements of the letters in w
+(define (arrangements w)
+  (cond [(empty? w) (list '())]
+        [else (insert-everywhere/in-all-words (first w) (arrangements (rest w)))  ]))
+(arrangements (list "c" "a" "t"))
+
+
+; String -> Word
+; converts s to the chosen word representation 
+(define (string->word s)
+  (explode s)
+  )
+
+
+; Word -> String
+; converts w to a string
+(define (word->string w)
+  (implode w)
+  )
+
+
+(define (alternative-words s)
+  (in-dictionary
+    (words->strings (arrangements (string->word s)))))
+ 
+; List-of-words -> List-of-strings
+; turns all Words in low into Strings 
+(define (words->strings low)
+  (cond [(empty? low) '()]
+        [else (cons (word->string (first low)) (words->strings (rest low))) ])
+  )
+;(define sample-word1 (list "c" "a" "t"))
+;(define sample-word2 (list "m" "e" "o" "w" "s"))
+;(define sample-low (list sample-word1 sample-word2))
+;(words->strings sample-low)
+
+;is-valid-word checks wheter a given string is valid in dictionary
+(define (is-word-in-dictionary? s d)
+  (cond [(empty? d) #false]
+        [(equal? s (first d)) #true ]
+        [else (is-word-in-dictionary? s (rest d)) ])
+  )
+;(is-word-in-dictionary? "cat" DICTIONARY)
+
+; List-of-strings -> List-of-strings
+; picks out all those Strings that occur in the dictionary 
+(define (in-dictionary los)
+ (cond [(empty? los) '()]
+       [(is-word-in-dictionary? (first los) DICTIONARY) (cons (first los) (in-dictionary (rest los))) ]
+       [else (in-dictionary (rest los))]
+       )
+  )
+;(in-dictionary (list "cat" "vietnam" "laugh" "act"))
+ 

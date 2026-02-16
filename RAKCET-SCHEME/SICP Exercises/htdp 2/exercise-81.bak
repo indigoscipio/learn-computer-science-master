@@ -1,0 +1,55 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-81) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define-struct movie [title director year])
+
+(define sample-movie-1 
+(make-movie "Movie Title" "Director Name" 2015))
+
+(define (movie-template m)
+  (string-append 
+    "This " 
+    (movie-title m) 
+    " is made by " 
+    (movie-director m) 
+    " in " 
+    (number->string (movie-year m)) 
+    "."))
+  
+(movie-template sample-movie-1)
+
+
+; A pet is a structure
+; make-pet (String Number)
+(define-struct pet [name number])
+(define pet-sample1 (make-pet "Akebi" 55))
+
+
+; a pet tempalte function
+; Pet -> String
+(define (pet-template p)
+  (string-append
+   "This pet is named "
+   (pet-name p)
+   ", and it's tag number is "
+   (number->string (pet-number p))
+   )
+  )
+(pet-template pet-sample1)
+
+
+
+(define-struct CD [artist title price])
+(define CD-sample1 (make-CD "Xtal" "TITLE" 482))
+(define (CD-template cd)
+  (string-append
+   "Artist: "
+   (CD-artist cd)
+   " Title: "
+   (CD-title cd)
+   " Price: "
+   (number->string (CD-price cd))
+  
+   )
+  )
+(CD-template CD-sample1)

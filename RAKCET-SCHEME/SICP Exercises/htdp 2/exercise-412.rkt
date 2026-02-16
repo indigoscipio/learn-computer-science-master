@@ -1,0 +1,67 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-412) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+(define-struct inex [mantissa sign exponent])
+; An Inex is a structure: 
+;   (make-inex N99 S N99)
+; An S is one of:
+; – 1
+; – -1
+; An N99 is an N between 0 and 99 (inclusive).
+
+
+; N Number N -> Inex
+; makes an instance of Inex after checking the arguments
+(define (create-inex m s e)
+  (cond
+    [(and (<= 0 m 99) (<= 0 e 99) (or (= s 1) (= s -1)))
+     (make-inex m s e)]
+    [else (error "bad values given")]))
+ 
+; Inex -> Number
+; converts an inex into its numeric equivalent 
+(define (inex->number an-inex)
+  (* (inex-mantissa an-inex)
+     (expt
+       10 (* (inex-sign an-inex) (inex-exponent an-inex)))))
+
+
+(inex->number (create-inex 12 1 2))
+
+;adds two representation of numbers that have the same exponent
+; function must be able to deal with inputs that increase the exponent
+; it must signal error if the result if out of range, not rely on create-inex for error checking
+; Inex Inex -> Inex
+(define (inex+ inex1 inex2)
+  (local ((define m1 (inex-mantissa inex1))
+          (define m2 (inex-mantissa inex2))
+          (define s (inex-sign inex1))
+          (define e (inex-exponent inex1))
+          (define sum (+ m1 m2))
+          )
+
+     (if (> sum 99)
+        (if (> e 98)  ;; Prevent exponent from exceeding 99
+            (error "Result out of range")
+            (make-inex (quotient sum 10) s (+ e 1)))
+        (make-inex sum s e))
+    )
+  )
+
+
+(define (inex* inex1 inex2)
+  (local ((define m1 (inex-mantissa inex1))
+          (define m2 (inex-mantissa inex2))
+          (define s (inex-sign inex1))
+          (define e (inex-exponent inex1))
+          (define mul (* m1 m2))
+          )
+
+     (if (> mul 99)
+        (if (> e 98)  ;; Prevent exponent from exceeding 99
+            (error "Result out of range")
+            (make-inex (quotient mul 10) s (+ e 1)))
+        (make-inex mul s e))
+    )
+  )
+(inex* (make-inex 3 1 1) (make-inex 3 1 1))

@@ -1,0 +1,23 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname sierspinski) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+(define (gcd-structural S L)
+  (largest-common (divisors S S) (divisors S L)))
+ 
+; N[>= 1] N[>= 1] -> [List-of N]
+; computes the divisors of l smaller or equal to k
+(define (divisors k l)
+  (cond [(= k 0) '()]
+        [(= (remainder l k) 0) (cons k (divisors (sub1 k) l))]
+        [else (divisors (sub1 k) l)]))
+(divisors 6 6) ; '(6 3 2 1)
+
+; [List-of N] [List-of N] -> N
+; finds the largest number common to both k and l
+(define (largest-common k l)
+  (cond [(empty? k) 0]
+        [(member? (first k) l) (first k) ]
+        [else (largest-common (rest k ) l)])
+  )
+(largest-common '(6 3 2 1) '(6 3 2 1))
+(largest-common '(6 3 2 1) '(4 2 1))

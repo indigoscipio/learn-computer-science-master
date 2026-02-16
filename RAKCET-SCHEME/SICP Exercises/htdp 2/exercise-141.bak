@@ -1,0 +1,30 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-141) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+;all true is a function that consumes a list of boolean
+;and determines if all of them are true
+; if there is any false on the list, the function produces false
+; List-of-boolean -> Boolean
+(define empty-lob '())
+(define sample-lob (cons #false (cons #false (cons #false '()))))
+
+(define (all-true? lob)
+  (cond 
+    [(empty? lob) #true] ; Base case: An empty list means all are true
+    [(false? (first lob)) #false] ; If the first element is false, return #false
+    [else (all-true? (rest lob))])) ; Recursively check the rest of the list
+
+(all-true? empty-lob)
+
+
+;one-true is a function that consumes a list of boolean
+;and determines wheter at least one item on the list is true
+;List-of-boolean -> Boolean
+(define (one-true? lob)
+  (cond [(empty? lob) #false]
+        ; if one of the item is true, stop and return true
+        [(equal? (first lob) #true) #true ]
+        ;otherwise loop
+        [else (one-true? (rest lob))] )
+  )
+(one-true? sample-lob)

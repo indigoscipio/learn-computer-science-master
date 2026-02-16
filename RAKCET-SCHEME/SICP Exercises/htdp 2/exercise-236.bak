@@ -1,0 +1,32 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname exercise-236) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+;Use the contains? function to define functions
+;that search for "atom", "basic", and "zoo", respectively.
+(define sample-list (list "dog" "cat"))
+
+(define (contains? s l)
+  (cond [(empty? l) #false]
+        [else (or (equal? s (first l)) (contains? s (rest l))) ])
+  )
+
+
+; Los -> Boolean
+; does l contain "dog"
+(define (contains-dog? l)
+  (contains? "dog" l))
+
+(define (contains-atom? l)
+  (contains? "atom" l)
+  )
+
+
+(define (contains-basic? l)
+  (contains? "basic" l)
+  )
+
+
+(define (contains-zoo? l)
+  (contains? "zoo" l)
+  )
+

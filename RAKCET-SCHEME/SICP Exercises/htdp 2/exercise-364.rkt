@@ -1,0 +1,50 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-364) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+; An Xexpr.v2 is a list: 
+; – (cons Symbol Body)
+; – (cons Symbol (cons [List-of Attribute] Body))
+; where Body is short for [List-of Xexpr.v2]
+; An Attribute is a list of two items:
+;   (cons Symbol (cons String '()))
+
+;Exercise 364. Represent this XML data as elements of Xexpr.v2:
+;1. <transition from="seen-e" to="seen-f" />
+'(transition ((from "seen-e") (to "seen-f")))
+;2. <ul>
+;<li><word /><word /></li>
+;<li><word /></li>
+;</ul>
+'(ul ((li () (word word)) (li () (word))))
+
+
+;Exercise 365. Interpret the following elements of Xexpr.v2 as XML data:
+'(server ((name "example.org")))
+;<server name="example.org" />
+
+'(carcas (board (grass)) (player ((name "sam"))))
+; <carcas> <board > <grass /> </board> <player name="sam"> </carcas>
+
+'(start)
+;<start/>
+
+;expr v0 = start
+define a0 '((initial "X")))
+ 
+(define e0 '(machine))
+(define e1 `(machine ,a0))
+(define e2 '(machine (action)))
+(define e3 '(machine () (action)))
+(define e4 `(machine ,a0 (action) (action)))
+
+
+; Xexpr.v2 -> [List-of Attribute]
+; retrieves the list of attributes of xe
+(define (xexpr-attr xe) '())
+
+function therefore produces '() for such X-expressions:
+(check-expect (xexpr-attr e0) '())
+(check-expect (xexpr-attr e1) '((initial "X")))
+(check-expect (xexpr-attr e2) '())
+(check-expect (xexpr-attr e3) '())
+(check-expect (xexpr-attr e4) '((initial "X")))

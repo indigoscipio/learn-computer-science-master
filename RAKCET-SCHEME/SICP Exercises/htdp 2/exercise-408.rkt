@@ -1,0 +1,142 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-408) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+(define-struct db [schema content])
+; A DB is a structure: (make-db Schema Content)
+ 
+; A Schema is a [List-of Spec]
+
+(define-struct spec [label predicate])
+; Spec is a structure: (make-spec Label Predicate)
+; A Label is a String
+; A Predicate is a [Any -> Boolean]
+ 
+; A (piece of) Content is a [List-of Row]
+; A Row is a [List-of Cell]
+; A Cell is Any
+; constraint cells do not contain functions 
+ 
+; integrity constraint In (make-db sch con), 
+; for every row in con,
+; (I1) its length is the same as sch's, and
+; (I2) its ith Cell satisfies the ith Predicate in sch
+
+(define school-schema (list (make-spec "Name" string?)
+                            (make-spec "Age" number?)
+                            (make-spec "Present" boolean?)
+                            ))
+(define school-content (list (list "Alice" 35 #t)
+                             (list "Bob" 25 #f)
+                             (list "Carol" 30 #t)
+                             (list "Dave" 32 #f)) )
+(define school-db (make-db school-schema school-content))
+
+
+(define school-schema2 (list (make-spec "Name" string?)
+                            (make-spec "Age" number?)
+                            (make-spec "Present" boolean?)
+                            ))
+(define school-content2 (list (list "Emily" 35 #t)
+                             (list "Tio" 25 #f)
+                             (list "Alice" 35 #t)
+                             (list "Dave" 32 #f)) )
+(define school-db2 (make-db school-schema2 school-content2))
+
+
+(define presence-schema (list (make-spec "Present" boolean?)
+                              (make-spec "Description" string?)
+                              ))
+(define presence-content (list (list #t "presence")
+                               (list #f "absence")))
+(define presence-db (make-db presence-schema
+                             presence-content))
+
+
+(define (gte25 row)
+  (>= (second row) 25)
+  )
+
+; DB List-of-Labels Predicate -> List-of-rows
+(define (select db labels p)
+  (local ((define content (db-content db))
+          (define schema (db-schema db))
+          (define schema-labels (map spec-label schema))
+
+          ; Row -> Row
+          ; retains only the columns that match labels
+          (define (row-project row)
+            (foldr (lambda (cell name acc)
+                     (if (member? name labels)
+                         (cons cell acc)
+                         acc))
+                   '()
+                   row
+                   schema-labels)))
+
+    ; First, filter rows by p, then apply row-project
+    (map row-project (filter p content))))
+
+
+; reorder consumes db and lol, preduces a database like db but with its columns reordered according to lol
+; DB [List-of Label] -> DB
+; Reorders the columns of db according to lol.
+(define (reorder db lol)
+  (local ((define content (db-content db))
+          (define schema (db-schema db))
+          (define schema-labels (map spec-label schema))
+
+          ; Label -> Spec
+          (define (find-spec-by-label label specs) 
+            (cond
+              [(empty? specs) #false] ; Label not found
+              [(equal? (spec-label (first specs)) label) (first specs)] ; Label found
+              [else (find-spec-by-label label (rest specs))])) ; Continue searching
+           
+          ; List-of-specs -> List-of-spec
+          (define (reorder-cols specs)
+            (map (lambda (label) (find-spec-by-label label schema) ) lol)
+            )
+
+          ;List-of-row -> List-of-row
+          (define reorder-rows 0)
+          ) 
+
+    ; main function goes here
+    (reorder-cols schema))
+  )
+
+;db-union consumes two databases with the exact same schema and produces a new database with this schema
+;and the joint content of both. the function must eliminate rows with the exact same contnet
+; Assume that the schemas agree on the predicates for each column. 
+
+; DB DB -> DB (Union content with duplicates removed)
+(define (db-union db1 db2)
+  (local ((define content1 (db-content db1))
+          (define content2 (db-content db2))
+          (define schema (db-schema db1))    
+          
+          ; List-of-rows -> List-of-rows
+          ; Removes duplicate rows from the combined list          
+          (define (remove-duplicates content)
+            (foldr (lambda (row acc) (if (member? row acc) acc (cons row acc) ) ) '() content)
+
+            #|
+            (cond [(empty? content) '()]
+                  [(member? (first content) (rest content))  (remove-duplicates (rest content))]
+                  [else (cons (first content) (remove-duplicates (rest content))) ]
+                  )
+            |#
+            
+            )
+
+          )
+     ;Create a new database with the merged and deduplicated content
+    ;(make-db schema (remove-duplicates (append content1 content2)))
+    (remove-duplicates (append (db-content db1) (db-content db2))) 
+    ))
+
+
+
+(define (join db1 db2)
+  0
+  )

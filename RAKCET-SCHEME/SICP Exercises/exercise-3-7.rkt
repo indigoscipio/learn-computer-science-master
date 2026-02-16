@@ -1,0 +1,53 @@
+#lang racket
+
+
+
+
+;exercise 3.3
+; Number Symbol -> (Symbol Symbol -> (Number -> Number))
+(define (make-account balance password)
+  (define (withdraw amount)
+    (cond [(>= balance amount) (begin (display "Balance now: ")
+                                      (set! balance (- balance amount))
+                                      balance)]
+          [else "Insufficient Funds"])
+    )
+  
+  (define (deposit amount)
+    (begin (display "Balance now: ")
+           (set! balance (+ balance amount))
+           balance
+           )
+    )
+
+  ; 'password -> (Number -> Number)
+  ; 'deposit -> , (Number -> Number)
+  (define (dispatch pw msg)
+    (cond [(eq? pw password) (cond [(eq? msg 'withdraw) withdraw ]
+                                   [(eq? msg 'deposit) deposit]
+                                   [else "Operation not found"]
+                                   )]
+          [else (lambda (x) "Incorrect password!")])
+    
+    )
+  dispatch
+  )
+
+; make-joint : Account Symbol Symbol -> Account
+(define (make-joint account old-password new-password)
+  ; first make sure old-password is valid before returning anything
+  ; (this step prevents invalid joint creation)
+
+  ; define new dispatch function
+  (define (dispatch pw msg)
+    (cond [(eq? pw new-password) (account old-password msg)] ; translate
+          [else (account pw msg)]) ; pass through
+    )
+  dispatch
+  )
+
+(define peter-acc (make-account 1000 'open-sesame))
+((peter-acc 'open-sesame 'withdraw) 50)
+
+(define paul-acc (make-joint peter-acc 'open-sesame 'rosebud))
+((paul-acc 'open-sesame 'withdraw) 45)

@@ -1,0 +1,22 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-504) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+
+; List-of-digits -> Number
+; consumes list of digis and produces the correpsonding number
+; Domain Knowledge You may recall from grade school that the result is determined by
+; 1 . 10^2 + 0 . 10^1 + 2 . 10^0 = 102
+(define (to10 l)
+  (local (; List-of-digits Number -> Number
+          ; acc stores the sum amount of digits raised to the current power so far
+          (define (to10/a digits acc)
+            (cond [(empty? digits) acc]
+                  [else (to10/a (rest digits)
+                                (+ (* 10 acc) (first digits)))])
+            ))
+    (to10/a l 0)   
+    )
+  )
+(to10 '(1 0 2))
+(check-expect (to10 '(1 0 2)) 102)
+

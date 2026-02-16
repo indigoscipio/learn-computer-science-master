@@ -1,0 +1,66 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-479) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+(define-struct transition [current key next])
+(define-struct fsm [initial transitions final])
+
+(define transitions
+  (list (make-transition "AA" "a" "BC")
+        (make-transition "BC" "b" "BC")
+        (make-transition "BC" "c" "BC")
+        (make-transition "BC" "d" "DD")))
+
+ 
+; An FSM is a structure:
+;   (make-fsm FSM-State [List-of 1Transition] FSM-State)
+; A 1Transition is a structure:
+;   (make-transition FSM-State 1String FSM-State)
+; An FSM-State is String.
+ 
+; data example: see exercise 109
+ 
+(define fsm-a-bc*-d
+  (make-fsm
+   "AA"
+   (list (make-transition "AA" "a" "BC")
+         (make-transition "BC" "b" "BC")
+         (make-transition "BC" "c" "BC")
+         (make-transition "BC" "d" "DD"))
+   "DD"))
+
+; FSM String -> Boolean
+; Can we navigate from initial to final state using these letters?
+(define (fsm-match? an-fsm a-string)
+  
+  ;; find-next-state: FSM-State 1String [List-of 1Transition] -> [Maybe FSM-State]
+  ;; Given the current state and a character, find the next state if a valid transition exists.
+  (local ((define (find-next-state current-state 1s transitions)
+            (cond [(empty? transitions) #false]
+                  [(and (string=? (transition-current (first transitions)) current-state)
+                        (equal? (transition-key (first transitions)) 1s)) 
+                   (transition-next (first transitions))]
+                  [else (find-next-state current-state 1s (rest transitions))])
+            )
+
+            
+          ;; helper: FSM-State [List-of 1String] -> Boolean
+          ;; Recursively check if the FSM reaches the final state
+          (define (helper current-state remaining-1s)
+            (cond [(empty? remaining-1s) (string=? current-state (fsm-final an-fsm))]
+                  [else (local ((define next-state (find-next-state current-state (first remaining-1s) (fsm-transitions an-fsm))))
+                          (if next-state
+                              (helper next-state (rest remaining-1s)) ; Continue to the next character
+                              #false)
+                          )])
+            )
+          
+          )
+     (helper (fsm-initial an-fsm) (string->list a-string))
+    )
+
+
+  ;; Start recursion from the initial state
+  )
+(fsm-match? fsm-a-bc*-d "abcd")
+;(check-expect (fsm-match? fsm-a-bc*-d "acbd") #true)
+;(check-expect (fsm-match? fsm-a-bc*-d "da") #false)

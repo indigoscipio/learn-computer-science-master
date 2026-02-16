@@ -1,0 +1,23 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-142) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+;function cat consumes a list of strings and appends them all into one long string
+; List-of-string -> String
+; concatenates all strings in l into one long string
+(define sample-los (cons "a" (cons "b" (cons "c" '()))) )
+
+(define (cat los)
+  ; if its empty, return empty string""
+  (cond [(empty? los) ""]
+        ; if its a list, check the first and concatenate with the next one
+        ; if theres no more next list, return the final value
+        [(cons? los) (string-append (first los) (cat (rest los))) ]
+        
+        )
+  )
+(cat sample-los)
+
+;1st loop: ab
+;2nd loop: abcd
+;3rd loop: abcdef;
+;end

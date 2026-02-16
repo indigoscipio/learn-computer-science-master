@@ -1,0 +1,96 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-430) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+; List-of-numbers -> List-of-numbers
+; produces a sorted version of l
+(define (sort< l)
+  (cond
+    [(empty? l) '()]
+    [(cons? l) (insert (first l) (sort< (rest l)))]))
+ 
+; Number List-of-numbers -> List-of-numbers
+; inserts n into the sorted list of numbers l 
+(define (insert n l)
+  (cond
+    [(empty? l) (cons n '())]
+    [else (if (<= n (first l))
+              (cons n l)
+              (cons (first l) (insert n (rest l))))]))
+
+;Number [List-of-number] -> [List-of-number]
+; consumes a pivot number and a list of number
+; returns list of number smaller than the pivot
+(define (smaller p l)
+  (cond [(empty? l) l];nothing more to process, reutrn the final list
+        [(< (first l) p) (cons (first l) (smaller p (rest l)))]
+        [else (smaller p (rest l))];it's bigger, skip)
+        ))
+;same function, using filter
+(define (smaller.v2 p l)
+  (filter (lambda (num) (< num p) ) l)
+  )
+
+; Number [List-of-number] -> [List-of-number]
+; consumes pivot p and list of number l
+; returnst list of number larger than given p
+(define (larger p l)
+  (cond [(empty? l) l]
+        [(> (first l) p) (cons (first l) (larger p (rest l)))]
+        [else (larger p (rest l))])
+  )
+; same function, using filter
+(define (larger.v2 p l)
+  (filter (lambda (num) (> num p) ) l)
+  )
+
+; [List-of Number] -> [List-of Number]
+; produces a sorted version of alon
+(define (quick-sort< alon)
+  (cond [(empty? alon) '()]
+        [(= (length alon) 1) alon]
+        [else (append  (quick-sort< (smaller (first alon) alon))
+                       (list (first alon))
+                       (quick-sort< (larger (first alon) alon))) ]))
+
+
+; Number [List-of-number] -> [List-of-number]
+; Returns a list of numbers equal to p
+(define (equal-to n l)
+  (cond [(empty? l) l]
+        [(equal? (first l) n) (cons (first l) (equal-to n (rest l)) )]
+        [else (equal-to n (rest l))])
+  )
+
+(define THRESHOLD 5)
+; List-of-Number -> List-of-Number
+; produces a sorted version of alon
+(define (quick-sort<.v2 alon)
+  (cond [(empty? alon) '()]
+        [(< (length alon) THRESHOLD) (sort< alon)]
+        [else (append  (quick-sort< (smaller (first alon) alon))
+                       (equal-to (first alon) alon)
+                       (quick-sort< (larger (first alon) alon))) ])
+  )
+
+; [List-of Number] -> [List-of Number]
+; produces a sorted version of alon
+(define (quick-sort<.v3 alon)
+  (cond [(empty? alon) '()]
+        [else (local ((define pivot (first alon))
+
+                      ; Number List-of-number -> List-of-[List-of-number]
+                      (define (partition p l)
+                        (list (filter (lambda (num) (< num p) ) l)
+                              (filter (lambda (num) (>= num p) ) l) )
+                        )
+                      
+                      ; Partition the list once and store both results
+                      (define parts (partition pivot alon))
+                      (define smaller (first parts))
+                      (define not-smaller (second parts))
+                      ) 
+                (append (quick-sort<.v3 smaller)
+                        (list pivot)
+                        (quick-sort<.v3 not-smaller));main function goes here
+                ) ] ))
+(quick-sort<.v3 '(1 4 2 3 5))

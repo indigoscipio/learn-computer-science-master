@@ -1,0 +1,41 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-288) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+(define (sort-cmp alon0 cmp)
+  (local (; [List-of X] -> [List-of X]
+          ; Produces a variant of alon sorted by cmp.
+          (define (isort alon) ...)
+
+          ; X [List-of X] -> [List-of X]
+          ; Inserts n into the sorted list of numbers alon.
+          (define (insert n alon) ...))
+    (isort alon0)))
+
+; [X] [X X -> Boolean] -> [[List-of X] -> Boolean]
+; Produces a function that determines whether some list is sorted according to cmp.
+(define (sorted? cmp l)
+  (cond [(empty? (rest l)) #true]
+        [(not (cmp (first l) (second l))) #false ]
+        [else (sorted? cmp (rest l))]
+        )
+  )
+
+
+; [X X -> Boolean] [NEList-of X] -> Boolean 
+; determines whether l is sorted according to cmp
+(check-expect (sorted? < '(1 2 3)) #true)
+(check-expect (sorted? < '(2 1 3)) #false)
+
+; [X X -> Boolean] -> [[List-of X] -> Boolean]
+; is the given list l0 sorted according to cmp
+(define (sorted cmp)
+  (lambda (l0)
+    (local (; [NEList-of X] -> Boolean 
+            ; is l sorted according to cmp
+            (define (sorted/l l)
+              (cond
+                [(empty? (rest l)) #true]
+                [else (and (cmp (first l) (second l))
+                           (sorted/l (rest l)))])))
+      (if (empty? l0) #true (sorted/l l0)))))
+ 

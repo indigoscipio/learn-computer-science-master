@@ -1,0 +1,26 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-505) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+
+
+
+; Number -> Boolean
+; checks wheter a given number n is a prime
+(define (is-prime? n)
+  (local (; Number List-of-numbers -> Boolean
+          (define (is-prime?/a n acc)
+            (cond [(<= n 1) #f]
+                  [(= n 2)  #t]
+                  [(= acc 2) #t]
+                  [(zero? (remainder n acc)) #f]
+                  [else (is-prime?/a n (sub1 acc) ) ] ;check for divisibility
+                  )
+            )
+          )
+    (is-prime?/a n (- n 1)) 
+    )
+  )
+(is-prime? 7)
+(is-prime? 1)
+(is-prime? 3)
+(is-prime? 2)

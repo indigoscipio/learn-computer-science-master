@@ -1,0 +1,32 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-389b) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+
+(define sample-name1 "Tio")
+(define sample-name2 "Elise")
+(define sample-name3 "Tita")
+(define sample-lon1 (list sample-name1 sample-name2 sample-name3))
+
+(define sample-phone1 "123456789")
+(define sample-phone2 "555444888")
+(define sample-phone3 "303000000")
+(define sample-lop1 (list sample-phone1 sample-phone2 sample-phone3))
+
+(define-struct phone-record [name number])
+; A PhoneRecord is a structure:
+;   (make-phone-record String String)
+(define sample-pr1 (make-phone-record sample-name1 sample-phone1))
+(define sample-pr2 (make-phone-record sample-name2 sample-phone2))
+(define sample-pr3 (make-phone-record sample-name3 sample-phone3))
+
+
+;Exercise 389. Design the zip function, which consumes a list of names
+;represented as strings, and a list of phone numbers, also strings.
+;It combines those equally long lists into a list of phone records:
+; List-of-String List-of-number -> List-of-Phone-Recors
+(define (zip lon lop)
+  (cond [(or (empty? lon) (empty? lop))  '()]
+        [else (cons (make-phone-record (first lon) (first lop) )
+                    (zip (rest lon) (rest lop))) ])
+  )
+(zip sample-lon1 sample-lop1)

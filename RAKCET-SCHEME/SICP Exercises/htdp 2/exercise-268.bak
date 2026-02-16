@@ -1,0 +1,50 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-268) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+
+
+;Exercise 267. Use map to define the function convert-euro, which converts a list of US$ amount
+;into a list of € amounts based on an exchange rate of US$1.06 per € (on April 13, 2017).
+
+(define sample-currency (list 1 2 3))
+(define sample-lot (list 30 40 50))
+(define sample-lopsn (list (make-posn 1 1) (make-posn 2 2) (make-posn 3 3)))
+
+; [List-of-numbers] -> [List-of-numbers]
+; USD to EURO with 1 EUR = 1.06 USD
+(define (convert-euro l)
+  ; Number -> Number
+  ; converts one USD currency into EURO
+  (local ((define (convert n)
+            (/ n 1.06)
+            ))
+    (map convert l)
+    )
+  )
+(convert-euro sample-currency)
+
+
+; [List-of-numbers] -> List-of-numbers
+;converts a list of fahrenheit temperatures into celcius
+(define (convertFC l) 
+  (local ( (define (convert n)
+             (* (- n 32) (/ 5 9))
+             ) )
+    (map convert l)
+    )
+  )
+(check-expect (convert-euro sample-currency) (list 0.9433962264150944 1.8867924528301887 2.830188679245283))
+
+
+; [List-of-posns] -> [List-of-List-of-pairs]
+;translates a list of posnss into a list of lists of pairs of numbers
+; Pair = (list 1 2)
+; List-of-pairs = (list (list 1 2) (list 3 4))
+; List-of-list-of-pairs = (list (list (1 2) (list 3 4)) (list (5 6) (list 7 8)))
+(define (translate l)
+  (local ( (define (convert-to-num-pair p)
+             (list (list (posn-x p) (posn-y p))) ) )
+    (map convert-to-num-pair l)
+    )
+  )
+(translate sample-lopsn)

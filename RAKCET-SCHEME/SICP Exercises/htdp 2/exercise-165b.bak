@@ -1,0 +1,22 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-165b) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define-struct work [employee rate hours])
+; A (piece of) Work is a structure: 
+;   (make-work String Number Number)
+; interpretation (make-work n r h) combines the name 
+; with the pay rate r and the number of hours h
+
+
+; Low (short for list of works) is one of: 
+; – '()
+; – (cons Work Low)
+; interpretation an instance of Low represents the 
+; hours worked for a number of employees
+
+'()
+(cons (make-work "Robby" 11.95 39)
+      '())
+(cons (make-work "Matthew" 12.95 45)
+      (cons (make-work "Robby" 11.95 39)
+            '()))

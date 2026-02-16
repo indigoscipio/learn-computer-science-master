@@ -1,0 +1,55 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-503) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+
+
+;[List-of-x] -> [List-of-x]
+; takes a list l and returns all items except for the last one
+(define (all-but-last l)
+  (cond [(empty? l) '()]
+        [(empty? (rest l) ) '()]
+        [else (cons (first l) (all-but-last (rest l))) ]
+        ) 
+  )
+;(all-but-last '(a b c))
+;(rest '(c) )
+
+;List-of-X -> X
+;returns the last element in l
+(define (last l)
+  (cond [(empty? l) l]
+        [(empty? (rest l)) (first l)]
+        [else (last (rest l))])
+  )
+;(last '(a b c))
+
+
+(define (all-but-last.v2 l)
+  (local (; List-of-X List-of-X -> List-of-X
+          ; Accumulatr acc adds one list item on each computation, until the last item is reached (and we exclude it)
+          (define (all-but-last.v2/a l0 acc)
+            (cond [(or (empty? l0) (empty? (rest l0))) (reverse acc)]
+                  [else (all-but-last.v2/a (rest l0) (cons (first l0) acc) ) ])
+            ))
+    (all-but-last.v2/a l '())
+    )
+  )
+;(all-but-last.v2 '(a b c))
+
+
+;[NEList-of-1String] -> [NEList-of-1String]
+; takes nelist l and constructs a palindrome by mirroring the the list around the last item.
+(define (palindrome l)
+  (local (; List-of-1String List-of-1String -> List-of-1String
+          ; Invariant; acc gathers the list of all-but-last accumulated so far
+          (define (palindrome/a l acc) 
+            (cond [(empty? l) (append (reverse (rest acc)) (list (first acc)) (rest acc))]
+                  [else (palindrome/a (rest l) (cons (first l) acc)) ])
+            ))
+    (palindrome/a l '())
+    )
+  )
+(palindrome '(a b c))
+
+(check-expect
+ (palindrome (explode "abc")) (explode "abcba"))

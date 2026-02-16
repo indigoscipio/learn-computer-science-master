@@ -1,0 +1,57 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-61-sample) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+; Constants
+(define WORLD-HEIGHT 30)
+(define WORLD-WIDTH 90)
+(define LIGHT-X (/ WORLD-WIDTH 2))
+(define LIGHT-Y (/ WORLD-HEIGHT 2))
+(define BACKGROUND (rectangle WORLD-WIDTH WORLD-HEIGHT "outline" "black"))
+(define RED 0)
+(define GREEN 1)
+(define YELLOW 2)
+
+; Helper function for lights
+(define (create-light color style)
+  (circle 5 style color))
+
+; Helper function to render the bar of lights
+(define (render-bulbs red-style yellow-style green-style)
+  (beside (create-light "red" red-style)
+          (create-light "yellow" yellow-style)
+          (create-light "green" green-style)))
+
+; TrafficLight -> Image
+; Renders the current traffic light state
+(define (tl-render cs)
+  (cond [(= cs RED)
+         (place-image (render-bulbs "solid" "outline" "outline") LIGHT-X LIGHT-Y BACKGROUND)]
+        [(= cs YELLOW)
+         (place-image (render-bulbs "outline" "solid" "outline") LIGHT-X LIGHT-Y BACKGROUND)]
+        [(= cs GREEN)
+         (place-image (render-bulbs "outline" "outline" "solid") LIGHT-X LIGHT-Y BACKGROUND)]))
+
+
+; An N-TrafficLight is one of:
+; – 0 interpretation the traffic light shows red
+; – 1 interpretation the traffic light shows green
+; – 2 interpretation the traffic light shows yellow
+(define (next-state-numeric cs)
+
+
+  ;other alternative
+  (if (>= cs 2)
+      0
+      (+ cs 1)
+      )
+  )
+
+; Main Program
+; Simulates the traffic light FSM
+(define (traffic-light-simulation initial-state)
+  (big-bang initial-state
+            [to-draw tl-render]
+            [on-tick next-state-numeric 1]))
+
+; Launch the simulation with "red" as the initial state
+(traffic-light-simulation 0)

@@ -1,0 +1,20 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-160) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+; List-of-string String -> N
+; determines how often s occurs in los
+
+;List-of-string is either
+; '()
+; cons String List-of-string
+
+(define (count los s)
+  ;base case: check if the list if empty; if its empty return 0
+  (cond [(empty? los) 0]
+        [(equal? s (first los)) (add1 (count (rest los) s))]
+        [else (count (rest los) s) ]
+        )
+  )
+
+(define sample-los (cons "apple " (cons "banana" (cons "apple" '())))  )
+(count sample-los "apple")

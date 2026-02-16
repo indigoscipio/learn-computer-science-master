@@ -1,0 +1,31 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname exercise-224) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp")) #f)))
+(define-struct sigs [ufo tank missile])
+; A SIGS.v2 (short for SIGS version 2) is a structure:
+;   (make-sigs UFO Tank MissileOrNot)
+; interpretation represents the complete state of a
+; space invader game
+
+
+; A MissileOrNot is one of: 
+; – #false
+; – Posn
+; interpretation#false means the missile is in the tank;
+; Posn says the missile is at that location
+
+; SIGS.v2 -> Image 
+; renders the given game state on top of BACKGROUND 
+(define (si-render.v2 s)
+  (tank-render
+    (sigs-tank s)
+    (ufo-render (sigs-ufo s)
+                (missile-render.v2 (sigs-missile s)
+                                   BACKGROUND))))
+
+
+(define (missile-render.v2 m s)
+  (cond
+    [(boolean? m) s]
+    [(posn? m)
+     (place-image MISSILE (posn-x m) (posn-y m) s)]))

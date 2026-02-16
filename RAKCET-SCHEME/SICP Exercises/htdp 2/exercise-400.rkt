@@ -1,0 +1,46 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-400) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+
+;DNAPrefix takes two arguments
+;List of 'a 'c 'g 't (Pattern), what we want to check
+;List of 'a 'c 'g 't (Search string), where we are searching
+;returns true if the pattern is identical to the initial part of the search string
+;otherwise false
+(define sample-ss1 '(c g a t c g a t))
+(define sample-ss2 '(a c g))
+
+;List-of-symbols List-of-symbols -> Boolean
+(define (DNAprefix p ss)
+  (cond [(empty? p) #t]
+        [(empty? ss) #f]
+        [(equal? (first p) (first ss)) (DNAprefix (rest p)
+                                                  (rest ss))] ;if character matches, go to the next one and keep checking
+        [else #f];if character doesn't match, return flase
+        )
+  )
+(check-expect (DNAprefix '(c g a) sample-ss1) #true)
+(check-expect (DNAprefix '(c g a t) sample-ss2) #false)
+(check-expect  (DNAprefix '() sample-ss1) #true)
+(check-expect  (DNAprefix '(c g) '()) #false)
+
+;Also design DNAdelta.
+;This function is like DNAprefix but returns the first item in the search string beyond the pattern.
+;If the lists are identical and there is no DNA letter beyond the pattern, the function signals an error.
+;If the pattern does not match the beginning of the search string, it returns #false.
+;The function must not traverse either of the lists more than once.
+
+;List-of-symbol List-of-symbol -> Symbol or False or ERROR
+(define (DNAdelta p ss)
+  (cond [(and (empty? ss)(empty? p)) (error "list is identical") ]
+        [(empty? p) (first ss)]
+        [(empty? ss) #f] ; search string empty
+        [(equal? (first p) (first ss)) (DNAdelta (rest p) (rest ss))]
+        [else #f]
+        )
+  )
+(DNAdelta '(a c g) '(a c g t g c a))
+(DNAdelta '(a g) '(a c g t g c a))
+(DNAdelta '() '(a c g t g c a))
+(DNAdelta '(a c) '(a c))
+(DNAdelta '(a c g t g c a) '(a c g t g c a))

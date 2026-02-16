@@ -1,0 +1,18 @@
+#lang racket
+
+(define l1 (cons '(1 2) '(3 4)))
+l1
+(length l1)
+(list '(1 2) '(3 4))
+
+; counts the total number of leaves of a tree (excluding the branch)
+; Tree -> Number
+(define (count-leaves x)
+  (cond [(empty? x) 0]
+        [(not (pair? x)) 1] 
+        [else (+ (count-leaves (car x))
+                 (count-leaves (cdr x))) ])
+  )
+(count-leaves l1)
+(list? (cons 1 2))
+

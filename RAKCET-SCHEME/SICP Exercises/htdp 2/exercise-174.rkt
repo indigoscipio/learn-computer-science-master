@@ -1,0 +1,90 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-174) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+;design a program that encodes text files numerically
+; each letter in a word should be encoded as a numeric three letter string with a value between 0 - 256
+
+
+; 1String -> String
+; converts the given 1String to a 3-letter numeric String
+(define (encode-letter s)
+  (cond
+    [(>= (string->int s) 100) (code1 s)]
+    [(< (string->int s) 10)
+     (string-append "00" (code1 s))]
+    [(< (string->int s) 100)
+     (string-append "0" (code1 s))]))
+
+ 
+; 1String -> String
+; converts the given 1String into a String
+(define (code1 c)
+  (number->string (string->int c)))
+
+;encode word is a function that takes a list of 1String and returns a string
+; the returned string is a result of encoding each letter and combine them
+; List-of-1string -> String
+; List of 1string is either '() or 1String List-of-1String
+(define (encode-word lo1s) 
+  (cond [(empty? lo1s) ""]
+        [(empty? (rest lo1s)) (string-append  (encode-letter (first lo1s)) (encode-word (rest lo1s))) ]
+        [else (string-append (encode-letter (first lo1s)) " " (encode-word (rest lo1s)) ) ]
+        )
+  )
+
+;(check-expect (encode-word (explode "")) "")
+;(check-expect (encode-word (explode "s")) "115")
+;(check-expect (encode-word (explode "Gs")) "071 115")
+
+
+(define line1 (cons "line" (cons "one" '())))
+(define line2 (cons "2nd" (cons "line  x" '())))
+(define line3 (cons "   " (cons "third" (cons "lines__ " '()))))
+(define line4 (cons "final     " '()))
+(define line5 (cons "$%&" '()))
+(define sample-lol (cons line1 (cons line2 '())))
+(define sample-lol2 (cons line1 (cons line2 (cons line3 (cons line4 '())))))
+(define sample-lol3 (cons line4 (cons line5 '())))
+
+
+;encode-line is a function that takes a list of string
+; and returns an encoded string of that line
+; A Line contains an encoded list of words
+; List-of-string -> String
+; List-of-string is one of the following: '() or String List-of-string
+(define (encode-line los)
+  (cond [(empty? los) ""]
+        [(empty? (rest los)) (string-append (encode-word (explode (first los)))  (encode-line (rest los))) ]
+        [else (string-append (encode-word (explode (first los))) " 032 " (encode-line (rest los))) ]
+        )
+  )
+;(encode-line line1)
+;(check-expect (encode-line line1) "108 105 110 101 032 111 110 101")
+;(check-expect (encode-line line2) "050 110 100 032 108 105 110 101 032 032 120")
+;(check-expect (encode-line line3) "032 032 032 032 116 104 105 114 100 032 108 105 110 101 115 095 095 032")
+;(check-expect (encode-line line4) "102 105 110 097 108 032 032 032 032 032")
+
+
+;encode-lines is a function that takes a list of encoded lines
+;and combine them into a string
+; List-of-lines -> String
+; List-of-lines if one of the following: '() or Line List-of-lines
+(define (encode-lines lol)
+  (cond [(empty? lol) ""]
+        [(empty? (rest lol)) (string-append (encode-line (first lol))  (encode-lines (rest lol))) ]
+        [else (string-append (encode-line (first lol)) " 010 " (encode-lines (rest lol)) ) ]
+        )
+  )
+;(encode-lines sample-lol)
+;(encode-lines sample-lol2)
+(encode-lines sample-lol3)
+
+
+;main function
+; File -> File
+(define (process-file n)
+  (write-file "C:\\Users\\Samuel Oktavianus\\Documents\\processed-ascii.txt"
+           (encode-lines (read-words/line n)))
+  
+  )
+;(process-file "C:\\Users\\Samuel Oktavianus\\Documents\\ascii.txt")

@@ -1,0 +1,58 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-146) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+;NEList-of-temperatures is one of
+;(cons CTemperature '()) - a single element list
+;(cons CTemperature NEList-of-temperatures): A list with one or more elements.
+
+(define sample-nel (cons 5 (cons 4 (cons 3 '()))))
+
+; List-of-temperatures -> Number 
+; adds up the temperatures on the given list 
+(define (sum nel)
+  (cond
+    [(empty? (rest nel)) (first nel)]
+    [else (+ (first nel) (sum (rest nel)))]))
+
+
+ 
+; List-of-temperatures -> Number 
+; counts the temperatures on the given list 
+(define (how-many nel)
+  (cond [(empty? nel) 0]
+        [else (+ (how-many (rest nel)) 1)]
+        ))
+
+
+; List-of-temperatures -> Number
+; computes the average temperature 
+(define (average nel)
+  (/ (sum nel) (how-many nel)))
+
+(define (checked-average nel)
+  (if (empty? nel)
+      (error "List cannot be empty!")
+      (average nel))
+  )
+
+;sorted? consumes a NEList-of-temperatures
+; produces true if the temperatures are sorted in descending order
+; that is, if the 2nd is smaller than the first, third smaller than the 2nd, so on
+; otherwise it produces false
+(define (sorted? nel)
+  ;base case
+  ;return true if its empty
+  ;return false if next temperature is bigger than the previous
+  ;otherwise, recurse
+  
+  (cond [(empty? (rest nel)) #true]
+        [else (if (>= (first nel) (first (rest nel)) ) 
+                  (sorted? (rest nel))
+                  #false)
+                  ])
+  )
+(sorted? sample-nel)
+
+
+
+(checked-average sample-nel)

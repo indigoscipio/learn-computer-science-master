@@ -1,0 +1,29 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-168) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+
+
+;function sum consumes a list of posns
+;and produces the sum of all of its x-coordinates
+; List-of-posns -> Number
+; List-of-posns is the following:
+; '() - an empty list
+; Posn List-of-posns
+
+(define empty-posn '() )
+(define sample-posn1 (cons (make-posn 1 2) (cons (make-posn 3 4) '())))
+(define sample-posn2 (cons (make-posn 1 2) (cons (make-posn 3 4) (cons (make-posn 5 6) '()))))
+
+
+
+
+(define (sum lop)
+  (cond [(empty? lop) 0]
+        [else (+ (posn-x (first lop)) (sum (rest lop)) )   ]
+        ) 
+  )
+
+(sum sample-posn1)
+(sum sample-posn2)
+
+(check-expect (sum sample-posn) 4)

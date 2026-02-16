@@ -1,0 +1,69 @@
+#lang racket
+
+(define balance 100)
+
+(define (withdraw amount)
+  (cond [(>= balance amount) (begin (set! balance (- balance amount)) (display "Balance now: ") balance) ]
+        [else  "Insufficient funds"])
+  )
+
+
+(define xpos 0)
+(define fuel 100)
+(define (move distance)
+  (cond [(> fuel 0) (begin (set! xpos (+ xpos distance))
+                           (set! fuel (- fuel distance))
+                           (string-append "Moved to position: " (number->string xpos))
+                           )]
+        [else "Empty Fuel"])
+  )
+
+
+;[Number -> Number]
+(define new-withdraw
+  (let ((balance 100))
+    (lambda (amount)
+      (cond [(>= balance amount) (begin (set! balance (- balance amount)) (display "Balance Now: ") balance)]
+            [else "Insufficient funds"])
+      )
+    ))
+
+
+(define (withdraw.v2 balance)
+  (lambda (amount)
+    (cond [(>= balance amount) (begin (set! balance (- balance amount)) (display "Balance now: ") balance)]
+          [else "Insufficient funds"]
+          ) 
+    )
+  )
+
+
+(define (make-account balance)
+  (define (withdraw amount)
+    (cond [(>= balance amount) (begin (display "Balance now: ")
+                                      (set! balance (- balance amount))
+                                      balance)]
+          [else "Insufficient Funds"])
+    )
+  
+  (define (deposit amount)
+    (begin (display "Balance now: ")
+           (set! balance (+ balance amount))
+           balance
+           )
+    )
+  
+  (define (dispatch msg)
+    (cond [(eq? msg 'withdraw) withdraw ]
+          [(eq? msg 'deposit) deposit]
+          [else "Operation not found"]
+          )
+    )
+  dispatch
+  )
+
+(define acc (make-account 100))
+((acc 'withdraw) 50)
+((acc 'withdraw) 60)
+((acc 'deposit) 40)
+((acc 'withdraw) 60)

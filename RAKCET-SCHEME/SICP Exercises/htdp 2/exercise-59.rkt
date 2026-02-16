@@ -1,0 +1,46 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-59) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+; Constants
+(define WORLD-HEIGHT 30)
+(define WORLD-WIDTH 90)
+(define LIGHT-X (/ WORLD-WIDTH 2))
+(define LIGHT-Y (/ WORLD-HEIGHT 2))
+(define BACKGROUND (rectangle WORLD-WIDTH WORLD-HEIGHT "outline" "black"))
+
+; Helper function for lights
+(define (create-light color style)
+  (circle 5 style color))
+
+; Helper function to render the bar of lights
+(define (render-bulbs red-style yellow-style green-style)
+  (beside (create-light "red" red-style)
+          (create-light "yellow" yellow-style)
+          (create-light "green" green-style)))
+
+; TrafficLight -> Image
+; Renders the current traffic light state
+(define (tl-render cs)
+  (cond [(string=? "red" cs)
+         (place-image (render-bulbs "solid" "outline" "outline") LIGHT-X LIGHT-Y BACKGROUND)]
+        [(string=? "yellow" cs)
+         (place-image (render-bulbs "outline" "solid" "outline") LIGHT-X LIGHT-Y BACKGROUND)]
+        [(string=? "green" cs)
+         (place-image (render-bulbs "outline" "outline" "solid") LIGHT-X LIGHT-Y BACKGROUND)]))
+
+; TrafficLight -> TrafficLight
+; Determines the next traffic light state
+(define (next-state cs)
+  (cond [(string=? "red" cs) "green"]
+        [(string=? "green" cs) "yellow"]
+        [(string=? "yellow" cs) "red"]))
+
+; Main Program
+; Simulates the traffic light FSM
+(define (traffic-light-simulation initial-state)
+  (big-bang initial-state
+            [to-draw tl-render]
+            [on-tick next-state 1]))
+
+; Launch the simulation with "red" as the initial state
+(traffic-light-simulation "red")

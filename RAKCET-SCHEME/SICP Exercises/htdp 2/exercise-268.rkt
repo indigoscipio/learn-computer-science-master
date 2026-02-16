@@ -1,0 +1,27 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-268) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+;Exercise 268. An inventory record specifies the name of an item, a description,
+;the acquisition price, and the recommended sales price.
+;Define a function that sorts a list of inventory records by the difference between the two prices. 
+
+(define-struct IR [n d ap rsp])
+(define sample-IR1 (make-IR "name1" "description1" 50 100))
+(define sample-IR2 (make-IR "name2" "description2" 50 200))
+(define sample-IR3 (make-IR "name3" "description3" 50 300))
+(define sample-loIR (list sample-IR1 sample-IR2 sample-IR3))
+
+;[List-of-IRs] -> [List-of-IRS]
+;sorts a list of IRs by the differnece between the two prices
+(define (sort-IR l)
+  (local (; IR -> Number
+          ; IR -> Boolean
+          (define (compare-profit IR1 IR2)
+            (> (- (IR-rsp IR1) (IR-ap IR1))
+               (- (IR-rsp IR2) (IR-ap IR2)))
+            )
+          )
+    (sort l compare-profit)
+    )
+  )
+(sort-IR sample-loIR)

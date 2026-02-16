@@ -1,0 +1,66 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-166) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+; A (piece of) Work is a structure: 
+;   (make-work String Number Number)
+; interpretation (make-work n r h) combines the name 
+; with the pay rate r and the number of hours h
+(define-struct work [employee rate hours])
+
+
+; A paycheck is a structure:
+;(make-paycheck String Number)
+; interpretateion (make-paycheck n a) compiles the name with total amount their wage
+(define-struct paycheck [name amount])
+
+
+; Low (short for list of works) is one of: 
+; – '()
+; – (cons Work Low)
+; interpretation an instance of Low represents the 
+; hours worked for a number of employees
+
+
+
+; Lop (list of paychecks) is one of:
+; - '()
+; - (cons Paycheck Lop)
+
+;here are some examples of a valid low structure
+'()
+(cons (make-work "Robby" 11.95 39)
+      '())
+(cons (make-work "Matthew" 12.95 45)
+      (cons (make-work "Robby" 11.95 39)
+            '()))
+
+
+; Low -> List-of-numbers
+; computes the weekly wages for the given records
+(define (wage*.v2 an-low)
+  (cond
+    [(empty? an-low)'()]
+    [(cons? an-low) (cons (wage.v2 (first an-low)) (wage*.v2 (rest an-low)) ) ]))
+
+
+; Work -> Number
+; computes the wage for the given work record w
+(define (wage.v2 w)
+  (* (work-rate w) (work-hours w) )
+  )
+
+
+;wage v3 consumes a list of work records
+;computes a list of paychecks from it, one per record
+; List-of-works -> List-of-paychecks
+(define (wage.v3 an-low)
+  (cond [(empty? an-low) '()]
+        [else (make-paycheck (paycheck-name (work-name an-low))
+                             (paycheck-amount (wage.v2 an-low)))])
+  )
+
+
+(check-expect
+  (wage*.v2
+    (cons (make-work "Robby" 11.95 39) '()))
+  (cons (* 11.95 39) '()))

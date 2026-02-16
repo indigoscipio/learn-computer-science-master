@@ -1,0 +1,15 @@
+#lang racket
+(require sicp-pict)
+
+(define wave einstein)
+(define wave2 (beside wave (flip-vert wave)))
+
+; Painter -> Painter
+(define (flipped-pairs painter)
+  (let ((painter2 (beside painter (flip-vert painter))))
+    (below painter2 painter2)))
+(paint (flipped-pairs wave))
+
+
+(define wave4 (flipped-pairs wave))
+

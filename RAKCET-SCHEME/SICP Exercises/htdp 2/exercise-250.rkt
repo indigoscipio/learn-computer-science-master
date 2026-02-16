@@ -1,0 +1,57 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname exercise-250) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+; Number -> [List-of Number]
+; tabulates sin between n 
+; and 0 (incl.) in a list
+(define (tab-sin n)
+  (cond
+    [(= n 0) (list (sin 0))]
+    [else
+     (cons
+      (sin n)
+      (tab-sin (sub1 n)))])) 
+
+
+	
+; Number -> [List-of Number]
+; tabulates sqrt between n 
+; and 0 (incl.) in a list
+(define (tab-sqrt n)
+  (cond
+    [(= n 0) (list (sqrt 0))]
+    [else
+     (cons
+      (sqrt n)
+      (tab-sqrt (sub1 n)))]))
+
+
+; Number [Number -> Number] -> [List-of-number]
+; an abstract version of tabulation
+(define (tabulate n op)
+  (cond [(= n 0) (list (op 0))]
+        [else (cons (op n)
+                    (tabulate (sub1 n) op) )])
+)
+
+;instantiation of tab sin from abstract function
+(define (tab-sin-from-tabulate n)
+  (tabulate n sin)
+  )
+(tab-sin-from-tabulate 3)
+
+;instantiation of tab sqrt based on abstract function
+(define (tab-sqrt-from-tabulate n)
+  (tabulate n sqrt)
+  )
+(tab-sqrt-from-tabulate 3)
+
+(define (tab-tan-from-tabulate n)
+  (tabulate n tan)
+  )
+(tab-tan-from-tabulate 3)
+
+(define (tab-sqr-from-tabulate n)
+  (tabulate n sqr)
+  )
+(tab-sqr-from-tabulate 3)

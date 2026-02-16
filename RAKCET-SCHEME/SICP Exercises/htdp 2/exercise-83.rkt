@@ -1,0 +1,35 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-83) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define-struct editor [pre post])
+; An Editor is a structure:
+;   (make-editor String String)
+; interpretation (make-editor s t) describes an editor
+; whose visible text is (string-append s t) with 
+; the cursor displayed between s and t
+(define sample-editor (make-editor "LOL" "SSS")) 
+
+
+; edit is a function that consumes two inputs:
+; Editor KeyEvent -> Editor
+; the task is to add a single char keyevent to the end of pre field of editor
+; unless keyevent detects backspace (\b)
+; if this happens, it deletes the character immediately to the left of the cursor (if ther are any)
+; the function ignores the tab and return key
+; the function pays attention to only two keyevent longer than one letter: "left" and "right"
+
+
+
+; Render is a function that consumes Editor and produces an image
+; render the text within empty scene of 200x20
+; with a 1x20 rd rectangle
+; Editor -> Image
+(define (render editor)
+(overlay/align "left" "center"
+               (beside 
+               (text editor 16 "black")
+               (rectangle 3 20 "solid" "red") )
+               (empty-scene 200 20)
+               )
+  )
+(render "niggaz")

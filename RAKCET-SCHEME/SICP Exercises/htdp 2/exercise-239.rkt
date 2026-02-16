@@ -1,0 +1,37 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname exercise-239) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+; A [List X Y] is a list: 
+;   (cons X (cons Y '()))
+
+; a Pair-of-numbers is a data structure
+; make-list (cons Number (cons Number '()))
+(define pair-of-numbers (cons 3 (cons 4 '())))
+
+; A [CP H V] is a structure: 
+;   (make-point H V)
+
+
+; a Pair-of-number-and-1-strings
+; make-list (cons Number (cons 1String '()))
+(define pair-of-number-and-1string (cons 42 (cons "a" '())))
+
+
+; a Pair-of-strings-and-booleans
+; make-list (cons String (cons Boolean '()))
+(define pair-of-string-and-boolean (cons "Yes" (cons #true '())))
+
+
+; [LIst-of [CP Boolean Image]]
+
+; An LStr is one of: 
+; – String
+; – (make-layer LStr)
+
+	
+; An LNum is one of: 
+; – Number
+; – (make-layer LNum)
+
+
+(define-struct layer [stuff])

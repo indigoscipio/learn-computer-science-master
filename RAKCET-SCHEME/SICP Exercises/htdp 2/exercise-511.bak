@@ -1,0 +1,57 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-511) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+;basic lorem ipsum placeholder
+(define INPUT-FILE "C:\\Users\\Samuel Oktavianus\\Documents\\510inf.txt")
+(define OUTPUT-FILE "C:\\Users\\Samuel Oktavianus\\Documents\\510outf.txt")
+
+
+; A Line is a List-Of-Words.
+; example: (list "hello" "world!")
+
+; [List-of String] -> Number
+; Computes the width of a line, including spaces between words.
+(define (line-width words)
+  (cond
+    [(empty? words) 0]  ; An empty line has width 0
+    [else (+ (string-length (first words)) 
+             (line-width (rest words)) 
+             (if (empty? (rest words)) 0 1))]))  ; Add a space if there's a next word
+
+
+
+; String List-of-String Natural -> Boolean
+; Can the word be added to the line without exceeding width w?
+; (given the existing words in the line)
+(define (can-add-word? s l w)
+  (cond 
+    [(empty? l) (<= (string-length s) w)]  ; If line is empty, just check word length
+    [else (<= (+ (string-length s) (line-width l) 1) w)]))  ; Add 1 for the space
+
+; Number File File -> File
+; consumes natural number w, input file in-f, and output file out-f.
+; read all words from in-f to arrange these words in give order into lines of maximal width m 
+; and write these lines out to out-f 
+(define (fmt w in-f out-f)
+  (local (; List-of-String List-of-String List-of-[List-of-string] Number -> List-of-[List-of-string]
+          ; acc curr-line accumulates each line (List-of-string) processed before exceeding w
+          ; acc completed-lines accumulates completed lines (not exceeding w)
+          (define (fmt/a words curr-line completed-lines w)
+            (cond [(empty? words) (reverse (cons (reverse curr-line) completed-lines))]
+                  [(can-add-word? (first words) curr-line w) (fmt/a (rest words)
+                                                                          (cons (first words) curr-line)
+                                                                          completed-lines
+                                                                          w) ] ;doesn't exceed w
+                  [else (fmt/a (rest words)
+                               '()
+                               (cons (reverse curr-line) completed-lines)
+                               w)] ;exceeds w, write line  to completed lines 
+                  )
+            ) 
+          )
+    (fmt/a (read-words INPUT-FILE) '() '() w)
+    ) 
+  )
+(fmt 30 INPUT-FILE OUTPUT-FILE) 
+;(read-words INPUT-FILE) append
+;(line-width (second (read-words INPUT-FILE)) )

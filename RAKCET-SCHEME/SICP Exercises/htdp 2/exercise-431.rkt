@@ -1,0 +1,47 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-431) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+#|
+
+What is a trivially solvable problem?
+How are trivial problems solved?
+How does the algorithm generate new, smaller problems?
+How do we combine the solutions of the smaller problems into the final solution?
+
+Bundle problem
+bundles elements in a list of n chunks.
+Takes a number n and a list of items
+
+
+1. What is a trivially solvable problem?
+If the list is empty or only contains one element
+If it's a single element
+
+2. How are trivial problems solved?
+If the list is empty, return '() because there's nothing left to process
+If its a single element the nreturn '(())
+
+3. how does the algorithm generate new problem?
+Take the first n element of the list and group it into sublist
+Recursively bundle the rest of the list with the removed first n element
+
+4. how do we combine solution
+First bundled sublist is appended recursively with the rest of the list.
+
+
+
+Quick sort problem
+Takes a list of number and return a sorted list of number
+
+1. What is trivially solvable problem?
+If the list is only 1
+If the list is empty
+
+2. How are trivial problems solved?
+If the list is only 1, return as it is (theres notrhing to sort)
+If the list is empty, return an empty list
+
+3. How does it generate new problem?
+Pick pivot and divide the list into smaller and larger
+
+|#

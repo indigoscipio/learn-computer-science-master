@@ -1,0 +1,166 @@
+#lang sicp
+
+; from previous chapter reference:
+; the five possible values
+
+#|
+(define x 10)
+(parallel-execute
+ (lambda () (set! x (* x x))) -> P1
+ (lambda () (set! x (+ x 1)))) -> P2
+|#
+
+; 101: P1 sets x to 100 and then P2 increments x to 101. (1 -> 2)
+; 121: P2 increments x to 11 and then P1 sets x to x * x. (2 -> 1)
+; 110: P2 changes x from 10 to 11 between the two times that
+;      P1 accesses the value of x during the evaluation of (* x x). (1 -> 2, but the 2nd x on P1 changes)
+;  11: P2 accesses x, then P1 sets x to 100, then P2 sets x. (2 -> 1, but P2 writes the value at the end, overwriting P1's write value)
+; 100: P1 accesses x (twice), then P2 sets x to 11, then P1 sets x. (1 -> 2, but P1 write the value of at the end, overwriting P2's write value)
+
+
+; Exercise 3.39
+; which of the five possibilities in parallel execution above remain if we instead serialize
+; the execution as follows?
+
+#|
+(define x 10)
+(define s (make-serializer))
+(parallel-execute
+ (lambda () (set! x ((s (lambda () (* x x))))))
+ (s (lambda () (set! x (+ x 1)))))
+|#
+
+; answer:
+; P2 is now serialized, so it will execute on its own without interweaving
+; however P1 is does not seem to be serialized or it's serialized incorrectly
+; serialize takes a procedure and returns a serialized procedure
+; but in this case, it seems P1 is a lambda that takes no argument, sets the value of x to a serialized procedure, and returns its value
+; the computation inside (* x x) is protected, but not the set! x part
+
+; Possibility 1
+; P2 (serialized) -> P1
+; 11 -> 11 * 11 = 121
+
+; Possibility 2
+; P1 -> P2 (serialized), but P1 overwrites P2's write
+; 101 -> 100
+; P1 calculates the value * x x = 100, but did not write yet
+; P2 evaluates + 10 1 -> 11 and writes x = 11
+; P1 now sets the value of x to 100 (old value)
+
+
+; =======================================================================================
+
+
+; Exercise 3.40a
+; Give all possible values of X that can result from executing
+
+(define x 10)
+(parallel-execute (lambda () (set! x (* x x)))    ; P1 - square
+                  (lambda () (set! x (* x x x)))) ; P2 - cube
+
+; 1000000: P1 sets x to 100, then P2 sets x to 1000000 (P1 -> P2)
+; 1000000: P2 sets x to 1000, then P1 sets x to 1000000 (P2 -> P1)
+; 100000: P1 sets the value of x to 100 in the middle of P2's evaluation (x1: 10, x2: 100, x3: 100) (P1 -> P2, but P2's 2nd and 3rd x changes)
+; 10000: P1 sets the value of x to 100 in the middle of P2's evaluation (x1: 10, x2: 10, x3: 100) (P1 -> P2, but P2's 3rd x changes)
+; 10000: P2 sets the value of x to 1000 in the middle of P1's evaluation (x1 = 10, x2 = 1000) (P2 -> P1, but P1's 2nd x changes)
+; 100: P2 writes x = 1000, but then it gets overwritten by P1's set to 100 at the end (P2 -> P1, but P2's value is set by P1 at the end)
+; 1000: P1 writes x = 100, but then it gets overwritten by P2's set to 1000 at the end (P1 -> P2, but P1's value is set by P2 at the end)
+
+
+; Exercise 3.40b
+; Which of these possibilities remain if we instead use serialized procedures?
+(define x 10)
+(define s (make-serializer))
+(parallel-execute (s (lambda () (set! x (* x x))))    ; P1 - square (fully serialized)
+                  (s (lambda () (set! x (* x x x))))) ; P2 - cube (fully serialized)
+
+; answer:
+; let's see, so it seems now P1 and P2 is fully serialized, which means both the set and the computation within the lambda is protected
+; which means there can only 2 possible value
+; P1 -> P2
+
+; P2 -> P1
+
+; =======================================================================================
+
+; Exercise 3.41
+(define (make-account balance)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance
+                     (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (let ((protected (make-serializer)))
+    (define (dispatch m)
+      (cond ((eq? m 'withdraw) (protected withdraw))
+            ((eq? m 'deposit) (protected deposit))
+            ((eq? m 'balance)
+             ((protected
+               (lambda () balance)))) ; serialized
+            (else
+             (error "Unknown request: MAKE-ACCOUNT"
+                    m))))
+    dispatch))
+
+;answer:
+; lets see here, it seems like in the original serialized code,
+; we define a protected variable as make-serializer
+; the logic inside dispatch doesn't return another serialized item
+; but in ben's code, when the user passes the message 'balance,
+; it returns a serialized balance
+
+; in the original code, two processes cannot be withdrawing or depositing into a single account concurrnetly,
+; the serializer makes sure that there is an order of operation within these procedures
+; however, a serializer takes a procedure and returns a serialized procedure
+; in this case ben is wrapping the variable inside a lambda so it's valid
+
+; I'm guessing the balance will also be serialized too?
+; so at some point in time if the user withdraw and deposit and reads the balance
+; the serializer will ensure no operations will be interwave.
+; So it seems here that what Ben's doing is necessary
+
+; =======================================================================================
+
+; Exercise 3.42
+(define (make-account balance)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (let ((protected (make-serializer)))
+    (let ((protected-withdraw (protected withdraw))
+          (protected-deposit (protected deposit)))
+      (define (dispatch m)
+        (cond ((eq? m 'withdraw) protected-withdraw)
+              ((eq? m 'deposit) protected-deposit)
+              ((eq? m 'balance) balance)
+              (else
+               (error "Unknown request: MAKE-ACCOUNT"
+                      m))))
+      dispatch)))
+
+; answer:
+; it seems ben is assigning a protected withdraw and protected deposit by calling (protected withdraw) and (protected deposit)
+; where in the original code we just calls them directly by using (protected ...)
+; so when the clause is evaluated it creates a new closure and each call to make account will create
+; protected withdraw and protected deposi
+
+; I'm not sure if an assignment will have any effect here
+; these calls still use the same serializer, so they are still serialized correctly.
+; So i think i'ts completely valid and doesn't make any difference.
+
+
+(define (serialized-exchange account1 account2)
+  (let ((serializer1 (account1 'serializer))  ; Lock for A
+        (serializer2 (account2 'serializer))) ; Lock for B
+    ((serializer1 (serializer2 exchange))     ; Apply BOTH locks
+     account1 account2)))

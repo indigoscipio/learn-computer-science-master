@@ -1,0 +1,20 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-279) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+(define nig (lambda (x) (+ x 1))) 
+(nig 7)
+
+
+(define sample-list (list 1 2 3 4 5 6 7))
+(define sample-list2 (list "name1" "name2" "name3"))
+
+(map (lambda (x) (+ x 9) ) sample-list)
+
+(map (lambda (x) (expt 10 x)) sample-list)
+
+((lambda (n) (string-append "To " n ",")) "nigag")
+
+((lambda (name rst) (string-append name ", " rst))
+   "Robby"
+   "etc."
+   "nigga")

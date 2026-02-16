@@ -1,0 +1,22 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname numbersort) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+; Number List Of Numbers (Sorted) -> List Of Numbers (Sorted)
+(define (insert-num n s-lon)
+  ;if the sorted list is empty, return a list with the element
+  ;if the elemnt is smaller than the first element, add it to the front
+  ;else recurse and insert it into the front of the rest the the sorted list
+  (cond [(empty? s-lon) (cons n '())]
+        [(< n (first s-lon)) (cons n s-lon)]
+        [else (cons (first s-lon) (insert-num n (rest s-lon)) ) ])
+ )
+ ;(insert-num (first s-lon) (rest (cons n (rest s-lon))))
+;(insert-num 999 (list 1 2 3))
+
+
+; List-of-Numbers (Unsorted) -> List-of-numbers (Sorted)
+(define (sort-num lon)
+  (cond [(empty? lon) '()]
+        [else (insert-num (first lon) (sort-num (rest lon)))])
+  )
+(sort-num (list  0 -55 44 1 -1))

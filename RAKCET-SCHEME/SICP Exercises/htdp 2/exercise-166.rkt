@@ -1,0 +1,94 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-166) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+; An employee-info is a structure:
+; (make-employee-info String Number)
+; interpretation (make-employee-info s n) combines the groups emplyoe name with their employee number
+(define-struct employee-info [name number] )
+(define sample-ei-1 (make-employee-info "Robby" 1218))
+(define sample-ei-2 (make-employee-info "Matthew" 1587))
+
+; A (piece of) Work is a structure: 
+;   (make-work Employee-Info Number Number)
+; interpretation (make-work employee-info r h) combines the employee info 
+; with the pay rate r and the number of hours h
+(define-struct work [employee-info rate hours])
+
+
+; A paycheck is a structure:
+;(make-paycheck String Number)
+; interpretateion (make-paycheck n a) compiles the name with total amount their wage
+(define-struct paycheck [employee-info amount])
+
+
+; Low (short for list of works) is one of: 
+; – '()
+; – (cons Work Low)
+; interpretation an instance of Low represents the 
+; hours worked for a number of employees
+
+
+; Lop (list of paychecks) is one of:
+; - '()
+; - (cons Paycheck Lop)
+
+;here are some examples of a valid low structure
+(define empty-low '())
+(define sample-low1 (cons (make-work sample-ei-1 11.95 39)'()))
+(define sample-low2 (cons (make-work sample-ei-1 12.95 45)
+                          (cons (make-work sample-ei-2 11.95 39) '())))
+
+
+
+; Low -> List-of-numbers 
+; computes the weekly wages for the given records
+(define (wage*.v2 an-low)
+  (cond
+    [(empty? an-low)'()]
+    [(cons? an-low) (cons (wage.v2 (first an-low)) (wage*.v2 (rest an-low)) ) ]))
+
+
+; Work -> Number
+; computes the wage for the given work record w
+(define (wage.v2 w)
+  (* (work-rate w) (work-hours w) )
+  )
+
+
+;wage v3 consumes a list of work records
+;computes a list of paychecks from it, one per record
+; List-of-works -> List-of-paychecks
+(define (wage*.v3 an-low)
+  (cond [(empty? an-low) '()]
+        [else (cons (make-paycheck (employee-info-name (work-employee-info (first an-low)))
+                                   (wage.v2 (first an-low)))
+                    (wage*.v3 (rest an-low) ))
+              ])
+  )
+
+;(wage*.v3 sample-low1)
+;(wage*.v3 sample-low2)
+;(check-expect (wage*.v3 sample-low1) (cons (make-paycheck "Robby" (* 11.95 39)) '())  )
+
+
+;(define-struct employee-info [name number] )
+;(define-struct work [employee-info rate hours])
+;(define-struct paycheck [employee-info amount])
+
+; wage*v4 is a function that maps lists of revised work recoreds
+; to list of revised paychecks
+; LIst-of-works -> List-of-paychecks
+(define (wage*.v4 an-low)
+    (cond [(empty? an-low) '()]
+        [else (cons (make-paycheck (work-employee-info (first an-low))
+                                   (wage.v2 (first an-low)))
+                    (wage*.v4 (rest an-low) ))
+              ])
+  )
+
+
+
+(check-expect (wage*.v4 sample-low1) (cons (make-paycheck
+                                            (make-employee-info "Robby" 1218)
+                                            (* 11.95 39)) '()))
+

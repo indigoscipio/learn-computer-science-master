@@ -1,0 +1,202 @@
+#lang sicp
+
+
+; an interpreter is a procedure
+; that evaluates a given expression
+; evaluator/interpreter is just another program within a program
+
+; evaluate subexpression -> apply
+
+
+; Core of the evaluator
+
+; EVAL
+; Expression Environment -> ???
+
+; primitive expression
+; if number -> evalutate expression (already an atomic elemetn)
+; if variables -> do lookup
+
+; special forms (symbols)
+; return expression that was quoted
+; variable assignment/definition -> compute new value, update env
+; lambda -> transform into applicative
+
+#|
+(define (eval exp env)
+  (cond [(self-evaluating? exp) exp]
+        [(variable?) ...] ;do a variable lookup
+        [(quoted?) ...] ;return the quoted data itself
+        [(assignment? exp) ...] ;evaluate the assignment
+        [(definition? exp) ...] ;evalate the definition
+        [(if? exp) ...] ; evaluate if
+        [(lambda? exp) ...] ; create procedure obeject with parameter, body, and where it was created
+        [(begin? ...)] ;evaluate sequence
+        [(cond? exp) ...] ;evaluate condition
+        [(application? exp)] ; apply the application
+        [else ...] ;error
+        )
+  )
+)
+
+
+; Expression -> Boolean
+; checks if the expression starts with 'quote
+(define (quoted? exp)
+  (equal? (car exp) 'quote)
+  )
+
+; Expression -> Boolean
+; A Variable is a Symbol
+; Checks if an expression is a variable
+(define (variable? exp)
+  (symbol? exp)
+  )
+
+; Acts as a type detector
+(define (tagged-list? exp tag)
+  0
+  )
+
+
+; Expression -> Boolean
+; Checks if an expression is self-evaluating
+; String and Number is self-evaluating, else its false
+(define (self-evaluating? exp)
+  (cond [(number? exp) exp]
+        [(string? exp) exp]
+        [else false])
+  )
+
+; list-of-values : ListOfExpressions × Environment -> ListOfValues
+; evaluates each exps and env once
+(define (list-of-values exps env)
+  (if (null? exps)
+      '()
+      (cons (eval (car exps) env)
+            (list-of-values (cdr exps) env)
+            )
+      )
+  )
+|#
+
+(define (tagged-list? exp tag)
+  (and (pair? exp) (eq? (car exp) tag)))
+
+(define (true? x) (not (eq? x #f)))
+(define (false? x) (eq? x #f))
+
+; ========= CONSTRUCTOR ========= 
+
+; List-of-Expression List-of-Expression Symbol -> Procedure
+(define (make-procedure params body env)
+  (list 'procedure params body env)
+  )
+(define proc0 (make-procedure '(a b) '(+ x 2) 'env) )
+
+; ========= SELECTOR ========= 
+
+; Checks if a procedure is not primitive
+(define (compound-procedure? p)
+  (tagged-list? p 'procedure)
+  )
+
+; Extracts the procedure parameter
+(define (procedure-params p)
+  (cadr p)
+  )
+
+; Extracts the procedure body
+(define (procedure-body p) (caddr p))
+
+; Extracts the procedure env
+(define (procedure-environment p) (cadddr p))
+
+; ========= FRAME & ENVIRONMENT ========= 
+
+; A Frame is a pair of Symbols and Values
+; (cons (list-of-symbol) (list-of-values))
+(define frame0 (cons '(a b) '(10 20)))
+(define frame1 (cons '(c) '(30)))
+(define frame2 (cons '(d) '(15)))
+
+; An Environment is a list of frames
+(define env0 (list frame2 frame1 frame0))    ; env0 has frame1 on top of frame0
+
+; extracts the enclosing environment of an env
+(define (enclosing-environment env)
+  (cdr env)
+  )
+
+; extracts the first frame of an environmne
+(define (first-frame env)
+  (car env)
+  )
+
+; Creates an empty environment
+(define the-empty-environment '())
+
+; Creates a new frame based on given variable and values
+(define (make-frame variables values)
+  (cons variables values)
+  )
+
+(define (frame-variables frame)
+  (car frame)
+  )
+
+(define (frame-values frame)
+  (cdr frame)
+  )
+
+; Adds a new binding to a given frame
+(define (add-binding-to-frame! var val frame)
+  (set-car! frame (cons var (car frame))) ; add new variable in front of the frame
+  ; add new  val in front of the frame
+  (set-cdr! frame (cons val (cdr frame)))
+  )
+
+; extend-environment: (list-of-symbol) (list-of-values) environment -> environment
+(define (extend-environment vars vals base-env)
+  (if (= (length vars) (length vals))
+      (cons (make-frame vars vals) base-env)
+      (error "var length and vars length does not match" vars vals)
+      )
+  )
+
+; lookup-variable-value: symbol environment -> value or error
+(define (lookup-variable-value var env)
+  ; List-of-X List-of-Y -> MaybeValue
+  ; scan list of variables in the first frame
+  (define (scan variables values)
+    (cond [(or (null? variables) (null? values)) #f]
+          [(eq? var (car variables)) (car values)]
+          [else (scan (cdr variables) (cdr values))]
+          )
+    )
+
+  ; scans all frames in env
+  ; List-of-Frames -> MaybeValue
+  (define (scan-env environment)
+    (cond [(null? environment) (error "Unbound Variable")]
+          [else (let* ((frame (first-frame environment))
+                       (result (scan (frame-variables frame) (frame-values frame))))
+                  (if result result (scan-env (enclosing-environment environment)))
+                  )]
+          )
+    )
+  (scan-env env)
+  )
+env0
+(lookup-variable-value 'd env0) ; should return 20
+(lookup-variable-value 'c env0) ; should return 30
+(lookup-variable-value 'z env0) ; should return error
+
+; returns the value that is bound to the symbol ⟨var⟩ in the envi
+; ronment ⟨env⟩, or signals an error if the variable is unbound.
+
+
+; make-frame: (list-of-symbol) (list-of-values) -> frame
+; frame-variables: frame -> (list-of-symbol)
+; frame-values: frame -> (list-of-values)
+; add-binding-to-frame!: symbol value frame -> void (mutation)

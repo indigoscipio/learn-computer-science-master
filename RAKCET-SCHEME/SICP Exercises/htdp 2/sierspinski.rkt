@@ -1,0 +1,23 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname sierspinski) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+(define SMALL 12)
+(define small-triangle (triangle SMALL "outline" "red" ))
+
+; Number -> Image
+; generative creates Sierpinski Δ of size side by generating
+; one for (/ side 2) and placing one copy above two copies
+(above small-triangle (beside small-triangle small-triangle))
+(beside small-triangle small-triangle)
+
+
+; Number -> Image
+; creates Sierpinski triangle of size side
+(define (sierpinski side)
+  (cond [(<= side SMALL) (triangle side "outline" "red") ]
+        [else (local ((define half-size (sierpinski (/ side 2))))
+                (above half-size (beside half-size half-size))
+                )
+              ])
+  )
+(sierpinski 512)

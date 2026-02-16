@@ -1,0 +1,36 @@
+#lang sicp
+
+;Exponent functions
+(define (exp base power)
+  (if (= power 0)
+      1
+      (* base (exp base (- power 1)) ) )
+      )
+  
+;exponent iterative
+(define (exp-iter base power)
+  (define (iter result counter)
+    (if (= counter 0)
+        result
+        (iter (* result base) (- counter 1) )
+        )
+    )
+  (iter 1 power)
+  )
+
+;exponent fast
+(define (exp-fast base power)
+  (cond ((= power 0) 1)
+        ;even
+        ((even? base) (* b) )
+        ;odd
+        ()
+        )
+  )
+
+(define (even? x)
+  (cond ((= x 0) #t)
+        ((= x 1) #f)
+        (else (even? (- x 2)))
+        )
+  )

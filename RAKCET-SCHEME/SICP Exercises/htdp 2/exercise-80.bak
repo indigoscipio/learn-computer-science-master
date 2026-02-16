@@ -1,0 +1,18 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-80) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define-struct r3 [x y z])
+; An R3 is a structure to store 3d points in xyz axis
+;   (make-r3 Number Number Number)
+ 
+(define ex1 (make-r3 1 2 13))
+(define ex2 (make-r3 -1 0 3))
+
+; r3-distance-to-0: r3 -> Number
+; Purpose: Compute the distance of a point in 3-dimensional space to the origin
+; purpose to compute the distance of objects in a 3 dimensional space to origin
+
+(define (  r3-distance-to-0 point)
+  (sqrt (+ (expt (r3-x point) 2) (expt (r3-y point) 2) (expt (r3-z point) 2)) ) 
+  )
+(r3-distance-to-0 (make-r3 5 8 9))

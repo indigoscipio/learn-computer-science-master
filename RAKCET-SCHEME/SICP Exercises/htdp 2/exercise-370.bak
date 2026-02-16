@@ -1,0 +1,122 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-370) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+; An Xexpr.v2 is a list: 
+; – (cons Symbol Body)
+; – (cons Symbol (cons [List-of Attribute] Body))
+; where Body is short for [List-of Xexpr.v2]
+; An Attribute is a list of two items:
+;   (cons Symbol (cons String '()))
+
+(define a0 '((initial "X")))
+(define a1 '((second "Y")) )
+(define e0 '(machine))
+(define e1 `(machine ,a0))
+(define e2 '(machine (action)))
+(define e3 '(machine () (action)))
+(define e4 `(machine ,a0 (action) (action)))
+
+
+
+;function therefore produces '() for such X-expressions:
+(check-expect (xexpr-attr e0) '())
+(check-expect (xexpr-attr e1) '((initial "X")))
+(check-expect (xexpr-attr e2) '())
+(check-expect (xexpr-attr e3) '())
+(check-expect (xexpr-attr e4) '((initial "X")))
+
+
+; [List-of Attribute] or Xexpr.v2 -> Boolean
+; is x a list of attributes
+(define (list-of-attributes? x)
+  (cond [(empty? x) #t]
+        [else (local ( (define possible-attribute (first x))
+                       )
+                (cons? possible-attribute)
+                ) ])
+  )
+
+; Xexpr.v2 -> [List-of Attribute]
+; retrieves the list of attributes of xe
+(define (xexpr-attr xe)
+  (local ((define optional-loa+content (rest xe)))
+    (cond
+      [(empty? optional-loa+content) '()]
+      [else (local ((define loa-or-x (first optional-loa+content)))
+              (if (list-of-attributes? loa-or-x)
+                  loa-or-x
+                  '()
+                  )
+              )]))) 
+
+
+;Exercise 366. Design xexpr-name and xexpr-content
+
+; Xexpr.v2 -> Symbol
+; extracts the name/tag of given xml representation
+(define (xexpr-name xe)
+  (first xe)
+  ) 
+(check-expect (xexpr-name e0) 'machine)
+(check-expect (xexpr-name e1) 'machine)
+(check-expect (xexpr-name e2) 'machine)
+
+; Xexpr.v2 -> ???
+; extracts the contents of given xml representation
+(define (xexpr-content xe)
+  ;extract everything after the tag
+  (local ((define optional-loa+content (rest xe)))
+    (cond [(empty? optional-loa+content) '()];check if there's an attribute list, if true remove it to get only the content
+          [else (local ((define loa-or-x (first optional-loa+content)))
+                  (if (list-of-attributes? loa-or-x)
+                      (rest optional-loa+content)
+                      optional-loa+content
+                      )
+                  ) ])
+    )
+  )
+;(xexpr-content e2) 
+
+
+;Exercise 368. Formulate a data definition that replaces the informal
+;“or” signature for the definition of the list-of-attributes? function. 
+
+; A Maybe-Attributes is one of:
+; - [List-of Attribute]   ; Example: '((key "value") (other "data"))
+; - Xexpr.v2              ; Example: '(machine (action))
+
+; Maybe-Attributes -> Boolean
+; Determines whether x is a list of attributes.
+(define (list-of-attributes?.v2 x)
+  (cond
+    [(empty? x) #t]  ; An empty list is valid attributes
+    [else
+     (local ((define possible-attribute (first x)))
+       (and (list? possible-attribute)  ; It must be a list
+            (= (length possible-attribute) 2)  ; It must have 2 elements
+            (symbol? (first possible-attribute))  ; First must be a symbol
+            (string? (second possible-attribute))  ; Second must be a string
+            (list-of-attributes? (rest x))))]))  ; Recursively check the rest
+
+
+;Exercise 369. Design find-attr. The function consumes a list of attributes and a symbol.
+;If the attributes list associates the symbol with a string,
+;the function retrieves this string; otherwise it returns #false.
+;Look up assq and use it to define the function.
+
+; loab: '((color "red") (size "large"))).
+; symbol: '(color)
+; [List-of Attribute] Symbol -> String or #false
+; Finds the attribute value associated with sym
+(define (find-attr loab s)
+  (local ((define result (assq s loab)))
+    (if (false? result)
+        #f
+        (second result)
+        )
+    )
+  )
+
+
+
+

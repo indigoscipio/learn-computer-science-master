@@ -1,0 +1,47 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-62) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+; A DoorState is one of:
+; – LOCKED
+; – CLOSED
+; – OPEN
+
+(define LOCKED "locked")
+(define CLOSED "closed")
+(define OPEN "open")
+
+;DoorState -> DoorState
+;closes the door during one tick
+
+(define (door-closer door-state)
+  (cond [(equal? door-state LOCKED) LOCKED]
+        [(equal? door-state CLOSED) CLOSED]
+        [(equal? door-state OPEN) CLOSED])
+  )
+
+;DoorState KeyEvent -> DoorState
+(define (door-action door-state ke)
+  (cond [(and (string=? door-state LOCKED) (string=? ke "u") ) CLOSED ]
+        [(and (string=? door-state CLOSED) (string=? ke "l") ) LOCKED ]
+        [(and (string=? door-state CLOSED) (string=? ke " ") ) OPEN]
+        [else door-state]
+        )
+  )
+
+
+(define (door-render door-state)
+  (cond [(equal? door-state LOCKED) (text door-state 16 "red")]
+        [(equal? door-state CLOSED) (text door-state 16 "orange")]
+        [(equal? door-state OPEN) (text door-state 16 "green")]
+        )
+  )
+
+
+(define (door-simulation initial-state)
+  (big-bang initial-state
+    [on-tick door-closer 3]
+    [on-key door-action]
+    [to-draw door-render]
+    )
+  )
+(door-simulation LOCKED)

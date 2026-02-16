@@ -1,0 +1,111 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-514) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+
+(define ex1 '(λ (x) x))
+(define ex2 '(λ (x) y))
+(define ex3 '(λ (y) (λ (x) y)))
+(define ex4 '((λ (x) (x x)) (λ (x) (x x))))
+
+; A Variable is a symbol
+
+
+; A Lamda is a struct
+; make-lamda Symbol Expression
+(define-struct lam [param body])
+
+; An Application is a struct
+; make-app Expression Expression
+(define-struct app [fun arg])
+
+;translate example into new struct
+;ex1
+(make-lam 'x 'x)
+;ex2
+(make-lam 'x 'y)
+;ex3
+(make-lam 'y (make-lam 'x 'y))
+;ex4
+(make-app (make-lam 'x (make-app 'x 'x)) (make-lam 'x (make-app 'x 'x)))
+
+;Lam -> Boolan
+;Checks if a given x is a variable
+(define (is-var? x)
+  (symbol? x)
+  )
+;(is-var? 'g)
+
+;Lam -> Boolean
+(define (is-lam? f)
+  (and (list? f)
+       (equal? (first f) 'λ)
+       (= (length (second f)) 1)
+       (= (length f) 3) )
+  )
+(is-lam? (list 'λ (list 'x) 'y))
+
+
+;Lam -> Boolean
+;Checks if a is a function application
+(define (is-app? a)
+  (and (list? a) (= (length a) 2))
+  )
+
+
+;Lam -> List Symbol
+;Extracts a function parameter from a λ expression
+(define (λ-para f)
+  (first(second f))
+  )
+(λ-para (list 'λ '(a b) 'c))
+
+;Lam -> Lam
+;Extracts the body from a λ expression
+(define (λ-body f)
+  (third f)
+  )
+(λ-body (list 'λ '(a b) 'c))
+
+; Lam -> Lam
+;extracts the function from an application
+(define (app-fun a)
+  (first a)
+  )
+
+; Lam -> Lam
+; extracts the argument from an application
+(define (app-arg a)
+  (second a)
+  )
+
+; Lam -> List-of-Symbols
+; Finds all lamda parameters in a given expressio n
+(define (declarends f) 
+  (cond [(is-var? f) '()]
+        [(is-lam? f) (cons (λ-para f) (declarends (λ-body f) )  )]
+        [(is-app? f) (append (declarends (app-fun f) ) (declarends (app-arg f) )) ]
+        )
+  ) 
+(declarends '(λ (x) x) )
+(declarends '(λ (x) (λ (y) y) ) )
+(declarends '( (λ (x) x) (λ (y) y) ) )
+
+
+
+
+(define (undeclareds le0)
+  (local
+    (; Lam ??? -> Lam
+     ; accumulator a represents ... 
+     (define (undeclareds/a le a)
+       (cond
+         [(is-var? le) ...]
+         [(is-λ? le)
+          (... (undeclareds/a (λ-body le)
+                              ... a ...) ...)]
+         [(is-app? le)
+          (... (undeclareds/a (app-fun le)
+                              ... a ...)
+               ... (undeclareds/a (app-arg le)
+                                  ... a ...) ...)])))
+    (undeclareds/a le0 ...)))

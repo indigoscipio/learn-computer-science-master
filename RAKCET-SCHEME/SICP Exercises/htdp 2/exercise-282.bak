@@ -1,0 +1,40 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-282) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+((lambda (x y)
+   (+ x
+      ((lambda (z)
+         (+ (* 3 z) (/ 1 z)))
+       (* y y))
+      ))
+ 1 2)
+; x = 1, y = 2, z = 4
+; lambda z =  (3 * 4 ) + (1 / 4)= 12 + 0.25 = 12.25
+;(1 + 12.25 = 13.25)
+
+;Exercise 281. Write down a lambda expression that
+; 1. consumes a number and decides whether it is less than 10;
+; Number -> Boolean
+((lambda (n) (< n 10)) 8)
+
+
+;2. multiplies two given numbers and turns the result into a string;
+; Number Number -> String
+((lambda (n1 n2) (number->string (* n1 n2)) ) 8 9)
+
+
+;3. consumes a natural number and returns 0 for evens and 1 for odds;
+; Number -> Number
+((lambda (n) (if (even? n) 0 1 )  ) 7)
+
+;4. consumes two inventory records and compares them by price
+; lets say it checks if arg1 is less than arg2 price
+(define-struct IR [name price])
+((lambda (IR1 IR2) (< (IR-price IR1) (IR-price IR2) )  ) (make-IR "IR1" 100)  (make-IR "IR2" 200))
+
+;6. adds a red dot at a given Posn to a given Image.
+(define EMPTY-SCENE (empty-scene 100 100))
+(define DOT (circle 5 "solid" "red"))
+;Image Posn -> Image
+((lambda (img posn) (place-image DOT (posn-x posn) (posn-y posn) img)) EMPTY-SCENE (make-posn 25 25))
+

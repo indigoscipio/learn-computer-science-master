@@ -1,0 +1,55 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-512) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+Before we dive into the problem, let’s look at some examples in this mini-language, recalling what we know about lambda:
+(λ (x) x) is the function that returns whatever it is given, also known as the identity function;
+
+(λ (x) y) looks like a function that returns y whenever it is given an argument, except that y isn’t declared;
+
+(λ (y) (λ (x) y)) is a function that, when given some value v, produces a function that always returns v;
+
+((λ (x) x) (λ (x) x)) applies the identity function to itself;
+
+((λ (x) (x x)) (λ (x) (x x))) is a short infinite loop; and
+
+(((λ (y) (λ (x) y)) (λ (z) z)) (λ (w) w)) is a complex expression that is best run in ISL+ to find out whether it terminates.
+
+Indeed, you can run all of the above ISL+ expressions in DrRacket to confirm what is written about them.
+Exercise 511. Explain the scope of each binding occurrence in the above examples. Draw arrows from the bound to the binding occurrences. 
+
+
+1. (λ (x) x)
+binding occurnece: (x) in (λ (x) ...)
+second x in the body is bound to this binding occurence
+lambda x -> x
+
+2. (λ (x) y)
+binding occurence: (x) in (λ (x) ...)
+y in the body is not bound to anything, so it's free
+
+3. (λ (y) (λ (x) y))
+outer binding occurence: (y) inside (λ (y) ...)
+inner binding occurence: (x) inside (λ (y) (λ (x) ...))
+y in the inner body is bound to the outer binding of y
+x does not appear in the body
+
+
+4. ((λ (x) x) (λ (x) x)) -> the first x (on the left) is bound to the lamda on the left and the 2nd one bound on the lambda on the right
+first lamda: binding occurence = (x) in (λ (x) ...)
+x in first bounds to (x)
+
+second lambda: binding occurence = (x) in (λ (x) ...)
+x in second bounds to (x)
+
+
+5. ( (λ (x) (x x)) (λ (x) (x x)) )
+first: binding occurence = (x) in (λ (x) ..)
+
+second: binding occurence = (x) in (λ (x) ..)
+
+first lamda receives the second lambda as a second argument
+x bounds to (λ (x) (x x))
+Then we evaluate (x x) -> ( (λ (x) (x x)) (λ (x) (x x)) )
+
+
+6. (((λ (y) (λ (x) y)) (λ (z) z)) (λ (w) w)) -> ???

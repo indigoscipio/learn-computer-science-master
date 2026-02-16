@@ -1,0 +1,10 @@
+this is a content
+for the first
+input file
+this is a content
+for the second
+input file
+and this is
+the content
+for the third
+input file

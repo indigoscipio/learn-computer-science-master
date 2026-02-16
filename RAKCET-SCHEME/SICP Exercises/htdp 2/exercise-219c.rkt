@@ -1,0 +1,220 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname exercise-219c) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp")) #f)))
+;Constants
+(define GRID-SIZE 5)
+(define WORLD-WIDTH 200)
+(define WORLD-HEIGHT 200)
+(define SNAKE-COLOR "red")
+(define FOOD-COLOR "green")
+(define SNAKE-IMG (circle GRID-SIZE "solid" SNAKE-COLOR))
+(define FOOD-IMG (circle GRID-SIZE "solid" FOOD-COLOR))
+(define EMPTY-SCENE (empty-scene WORLD-WIDTH WORLD-HEIGHT))
+(define TOTAL-SEGMENT 0)
+
+;A Tail is one of the following
+; '()
+; Posn List-of-Posns
+;interpretation data structure for the snake's tail
+(define sample-tail (list (make-posn 50 50) (make-posn 40 50) (make-posn 30 50)))
+
+;A Snake is a struct
+;make-snake Posn (head position) String (direction) List-of-posns (Tail)
+;interpretation the data structure for the snake
+(define-struct snake [h d t])
+
+(define snake-init (make-snake (make-posn (/ WORLD-WIDTH 2) (/ WORLD-HEIGHT 2)) "right" '()))
+(define sample-snake1 (make-snake (make-posn 20 50) "up" '()))
+(define sample-snake2 (make-snake (make-posn 50 50) "down" '()))
+(define sample-snake3 (make-snake (make-posn 10 10) "right" sample-tail))
+(define sample-food-p (make-posn 70 70))
+
+; A WorldState is a struct
+; make-world Snake food-pos
+(define-struct world [snake food-pos])
+(define init-world (make-world snake-init sample-food-p))
+
+; Posn Posn -> Posn 
+(define (food-check-create p candidate)
+  (if (equal? p candidate) (food-create p) candidate))
+
+; Posn -> Posn 
+; Posn -> Posn 
+; Posn -> Posn 
+; Posn -> Posn 
+(define (food-create p)
+  (food-check-create
+   p
+   (make-posn
+    (* (quotient (+ (random (- WORLD-WIDTH 10)) 5) GRID-SIZE) GRID-SIZE)  ; X is between 5 and 95
+    (* (quotient (+ (random (- WORLD-HEIGHT 10)) 5) GRID-SIZE) GRID-SIZE)))) ; Y is between 5 and 95
+
+
+;List-of-posns Image -> Image
+;This function will take the tail (list of posn) and the current image (canvas) as arguments.
+(define (render-tail lopsn img)
+  (cond [(empty? lopsn) img]
+        [else (place-image SNAKE-IMG (posn-x (first lopsn)) (posn-y (first lopsn)) (render-tail (rest lopsn) img))] )
+  )
+
+; WorldState -> Image
+(define (render ws)
+  (place-image FOOD-IMG (posn-x (world-food-pos ws)) (posn-y (world-food-pos ws))
+               (place-image SNAKE-IMG (posn-x (snake-h (world-snake ws))) (posn-y (snake-h (world-snake ws)))
+                            (render-tail (snake-t (world-snake ws)) EMPTY-SCENE)))
+  
+  ) 
+
+;List-of-posns -> List-of-posns 
+(define (remove-last-tail lopsn)
+  (cond [(empty? lopsn) '()]
+        [(empty? (rest lopsn)) '() ]
+        [else (cons (first lopsn) (remove-last-tail (rest lopsn))) ]
+        )
+  )
+;(remove-last-tail sample-tail)
+;(empty? (rest (list (make-posn 40 50))))
+;(empty?  (list (make-posn 40 50)))
+
+(define (update-tail ws) 
+  (cond [(empty? (snake-t (world-snake ws))) '()]
+        [else (cons (snake-h (world-snake ws)) 
+                    (remove-last-tail (snake-t (world-snake ws)))) ]
+        )
+  )
+
+;WorldState -> Boolean
+(define (is-food-eaten? ws)
+  (equal? (make-posn (posn-x (snake-h (world-snake ws))) (posn-y (snake-h (world-snake ws)))) (world-food-pos ws))
+  )
+
+; WorldState -> WorldState 
+(define (tock ws) 
+  (cond  
+    [(equal? (snake-d (world-snake ws)) "left")
+     (if (is-food-eaten? ws)
+         ; food eaten?
+         (make-world  (make-snake (make-posn (- (posn-x (snake-h (world-snake ws))) GRID-SIZE)(posn-y (snake-h (world-snake ws))))
+                                  "left"
+                                  (cons (snake-h (world-snake ws)) 
+                                        (snake-t (world-snake ws)) ))
+                      
+                      (food-create (snake-h (world-snake ws))))
+         ;food not eaten
+         (make-world  (make-snake (make-posn (- (posn-x (snake-h (world-snake ws))) GRID-SIZE)(posn-y (snake-h (world-snake ws))))
+                                  "left"
+                                  (update-tail ws) )
+                      
+                      (world-food-pos ws)) 
+         )
+     ] 
+        
+    [(equal? (snake-d (world-snake ws)) "right")
+     (if (is-food-eaten? ws)
+     ; food eaten?
+     (make-world  (make-snake (make-posn (+ (posn-x (snake-h (world-snake ws))) GRID-SIZE) (posn-y (snake-h (world-snake ws))))
+                              "right"
+                              (cons (snake-h (world-snake ws))  
+                                    (snake-t (world-snake ws)) ))
+                      
+                  (food-create (snake-h (world-snake ws))))
+     ;food not eaten
+     (make-world (make-snake (make-posn (+ (posn-x (snake-h (world-snake ws))) GRID-SIZE) (posn-y (snake-h (world-snake ws))))
+                             "right"
+                             (update-tail ws) )
+                 (world-food-pos ws))
+         )
+     ] 
+        
+    [(equal? (snake-d (world-snake ws)) "up")
+     (if (is-food-eaten? ws)
+
+         ;food eaten?
+         (make-world  (make-snake (make-posn (posn-x (snake-h (world-snake ws))) (- (posn-y (snake-h (world-snake ws))) GRID-SIZE))
+                                  "up"
+                                  (cons (snake-h (world-snake ws))  
+                                        (snake-t (world-snake ws)) ))
+                      
+                      (food-create (snake-h (world-snake ws))))
+         ;food not eatne
+         (make-world (make-snake (make-posn (posn-x (snake-h (world-snake ws))) (- (posn-y (snake-h (world-snake ws))) GRID-SIZE))
+                                 "up"
+                                 (update-tail ws))
+                     (world-food-pos ws))
+
+         )
+
+     ] 
+        
+    [(equal? (snake-d (world-snake ws)) "down")
+     (if (is-food-eaten? ws)
+         ;food eaten
+         (make-world  (make-snake (make-posn (posn-x (snake-h (world-snake ws))) (+ (posn-y (snake-h (world-snake ws))) GRID-SIZE))
+                                  "down"
+                                  (cons (snake-h (world-snake ws))  
+                                        (snake-t (world-snake ws)) ))
+                      
+                      (food-create (snake-h (world-snake ws))))
+         ;food not eaten
+              (make-world (make-snake (make-posn (posn-x (snake-h (world-snake ws))) (+ (posn-y (snake-h (world-snake ws))) GRID-SIZE))
+                             "down"
+                             (update-tail ws))
+                 (world-food-pos ws))
+         )
+
+     ]
+    [else ws])
+  )
+;(tock init-world)  
+
+; WorldState String -> WorldState 
+(define (change ws key)
+  (cond
+    [(key=? key "left")  (make-world (make-snake (snake-h (world-snake ws)) "left" (snake-t (world-snake ws))) (world-food-pos ws))]
+    [(key=? key "right") (make-world (make-snake (snake-h (world-snake ws)) "right" (snake-t (world-snake ws)) ) (world-food-pos ws))]
+    [(key=? key "up")    (make-world (make-snake (snake-h (world-snake ws)) "up" (snake-t (world-snake ws)) ) (world-food-pos ws))]
+    [(key=? key "down")  (make-world (make-snake (snake-h (world-snake ws)) "down" (snake-t (world-snake ws)) ) (world-food-pos ws)) ]
+    [else ws]))
+;(change init-world "down")
+
+;WorldState -> Boolean 
+(define (end? ws)
+  ;worm hits the wall
+  (cond [(>= (posn-x (snake-h (world-snake ws))) WORLD-WIDTH) #true] ; snake reaches right border
+        [(<= (posn-x (snake-h (world-snake ws))) 0) #true] ; snake reaches left border
+        [(>= (posn-y (snake-h (world-snake ws))) WORLD-HEIGHT) #true] ; snake reaches top border
+        [(<= (posn-y (snake-h (world-snake ws))) 0) #true]
+        [(member? (snake-h (world-snake ws)) (snake-t (world-snake ws)) ) #true]
+        [else #false])
+  )
+;(end? init-world)
+
+
+(define (get-total-segment ws)
+  (+ 1 (length (snake-t (world-snake ws)))))
+
+
+;WorldState -> Image
+;renders the game over final image
+(define (render-game-over ws)
+  (place-image
+   (cond [(or (>= (posn-x (snake-h (world-snake ws))) WORLD-WIDTH)
+              (<= (posn-x (snake-h (world-snake ws))) 0)
+              (>= (posn-y (snake-h (world-snake ws))) WORLD-HEIGHT)
+              (<= (posn-y (snake-h (world-snake ws))) 0))
+          (text (string-append "Snake hit wall!" (number->string (get-total-segment ws))) 12 "red")]
+         [else (text (string-append "Snake ran into itself!" (number->string (get-total-segment ws))) 12 "red")]) 
+   (/ WORLD-WIDTH 2) 
+   (/ WORLD-HEIGHT 2) 
+   (render ws) )) 
+
+ 
+(define (snake-main ws)
+  (big-bang ws
+    [on-tick tock .1] 
+    [to-draw render]
+    [on-key change]
+    [stop-when end? render-game-over]
+    )
+  ) 
+(snake-main init-world) 

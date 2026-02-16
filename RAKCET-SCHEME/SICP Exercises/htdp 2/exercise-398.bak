@@ -1,0 +1,56 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-398) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+;Employee Record is a struct
+;make-employee String Number Number (Employee Name, Employee Number, Employee Hourly Wage)
+(define-struct employee [name number pay-rate])
+(define sample-employee1 (make-employee "Tita Russell" 1 25))
+(define sample-employee2 (make-employee "Millium" 2 50))
+(define sample-employee3 (make-employee "Estelle Bright" 3 75))
+(define sample-loe1 (list sample-employee1 sample-employee2 sample-employee3))
+
+;Time Card Record is a struct
+;make-time-card Number Number (Employee Number, Weekly hours worked)
+(define-struct time-card [number hours])
+(define sample-tc1 (make-time-card 1 40))
+(define sample-tc2 (make-time-card 2 50))
+(define sample-tc3 (make-time-card 3 60))
+(define sample-lotc1 (list sample-tc1 sample-tc2 sample-tc3))
+
+; Wage Record is a struct
+; make-wage String Number (Employee Name, Weekly wage)
+(define-struct wage [name weekly-wage])
+
+(define (calculate-weekly-wage pay-rate weekly-hours)
+  (* pay-rate weekly-hours)
+  )
+
+; Number List-of-Employee -> Employee or Error
+; Finds the employee with the given number
+(define (find-employee num loe)
+  (cond [(empty? loe) (error "Employee not found") ]
+        [(= num (employee-number (first loe))) (first loe)]
+        [else (find-employee num (rest loe))])
+  )
+(check-expect (find-employee 1 sample-loe1) sample-employee1)
+(check-expect (find-employee 2 sample-loe1) sample-employee2)
+
+;Design wages*.v3.
+;The function consumes a list of employee records and a list of time-card records.
+;It produces a list of wage records, which contain the name and weekly wage of an employee.
+;The function signals an ERROR if it cannot find an employee record for a time card or vice versa.
+; List-of-Employee List-of-TimeCard -> List-of-Wages
+(define (wages*.v3 loe lotc)
+  (cond [(empty? lotc) '()]
+
+        [else (local ((define curr-employee (find-employee (time-card-number (first lotc)) loe))
+                      (define wage (calculate-weekly-wage (employee-pay-rate curr-employee) (time-card-hours (first lotc)))))
+                (cons (make-wage (employee-name curr-employee)
+                                 wage)
+                      (wages*.v3 loe (rest lotc)))
+                )]
+        ) 
+  )
+(check-expect (wages*.v3 sample-loe1 sample-lotc1) (list (make-wage "Tita Russell" 1000)
+                                                         (make-wage "Millium" 2500)
+                                                         (make-wage "Estelle Bright" 4500))) 

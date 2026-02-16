@@ -1,0 +1,21 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-150) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define (copier n s)
+  (cond [(zero? n) '()]
+        [(positive? n) (cons s (copier (sub1 n) s) ) ])
+  )
+
+
+
+;add-to-pi consumes a natural number n
+; and ands it to pi without using the primitive + operation
+; N -> Number
+; computes (+ n pi) without using +
+
+(define (add-to-pi n)
+  (cond [(zero? n) pi]
+        [(positive? n) (add1 (add-to-pi (sub1 n)))])
+  )
+
+(add-to-pi 44)

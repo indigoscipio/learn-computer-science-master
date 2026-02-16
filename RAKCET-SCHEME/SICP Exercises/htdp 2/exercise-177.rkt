@@ -1,0 +1,53 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname exercise-177) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp")) #f)))
+(define-struct editor [pre post])
+; An Editor is a structure:
+;   (make-editor Lo1S Lo1S) 
+; An Lo1S is one of: 
+; – '()
+; – (cons 1String Lo1S)
+
+(define good
+  (cons "g" (cons "o" (cons "o" (cons "d" '())))))
+(define all
+  (cons "a" (cons "l" (cons "l" '()))))
+(define lla
+  (cons "l" (cons "l" (cons "a" '()))))
+(define sa (cons "s" (cons "a" '())))
+(define s (cons "s" '()))
+ 
+; data example 1: 
+;(make-editor all good)
+ 
+; data example 2:
+;(make-editor lla good)
+
+
+; Lo1s 1String -> Lo1s
+; creates a new list by adding 1s to the end of lo1s
+(define (add-at-end lo1s 1s)
+  (cond [(empty? lo1s) (cons 1s '()) ]
+        [else (cons (first lo1s) (add-at-end (rest lo1s) 1s ) )])
+  )
+
+ 
+(check-expect
+  (add-at-end (cons "c" (cons "b" '())) "a")
+  (cons "c" (cons "b" (cons "a" '()))))
+
+
+
+; Lo1s -> Lo1s 
+; produces a reverse version of the given list 
+
+(define (rev lo1s)
+  (cond
+    [(empty? lo1s) '()]
+     [else (add-at-end (rev (rest lo1s)) (first lo1s)) ]))
+
+
+#|
+(check-expect
+  (rev (cons "a" (cons "b" (cons "c" '()))))
+  (cons "c" (cons "b" (cons "a" '()))))|#

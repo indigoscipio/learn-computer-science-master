@@ -1,0 +1,48 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-458) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+
+(define EPSILON 0.1)
+(define (constant x) 20)
+(define (linear x) (* 2 x))
+(define (my-square x) (* 3 (sqr x)))
+
+ 
+
+
+
+(check-expect (integrate constant 12 22) 200)
+(check-expect (integrate linear 0 10) 100)
+(check-expect (integrate my-square 0 10)
+              (- (expt 10 3) (expt 0 3)))
+
+(check-within (integrate (lambda (x) 20) 12 22) 200 EPSILON)
+(check-within (integrate (lambda (x) (* 2 x)) 0 10) 100 EPSILON)
+(check-within (integrate (lambda (x) (* 3 (sqr x))) 0 10)  1000 EPSILON)
+
+; [Number -> Number] Number Number -> Number
+; computes the area under the graph of f between a and b
+; assume (< a b) holds 
+(define (integrate f a b)
+  (* (/ (- b a) 2) (+ (f a) (f b)))
+  )
+
+; [Number -> Number] Number Number -> Number
+; Computes the approximate area under the function f between a and b
+(define (integrate-kepler f a b)
+  (local ((define mid (/ (+ a b) 2))
+          (define area-left (* (/ (- mid a) 2) (+ (f a) (f mid))))
+          (define area-right ( * (/ (- b mid) 2) (+ (f mid) (f b))) )
+          )
+    (+ area-left area-right)
+    )
+  )
+(integrate-kepler constant 0 4)
+
+
+(check-within (integrate-kepler (lambda (x) 20) 12 22) 200 EPSILON)
+(check-within (integrate-kepler (lambda (x) (* 2 x)) 0 10) 100 EPSILON)
+(check-within (integrate-kepler (lambda (x) (* 3 (sqr x))) 0 10)
+              1000
+              EPSILON)
+

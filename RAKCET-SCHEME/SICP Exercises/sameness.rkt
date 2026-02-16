@@ -1,0 +1,38 @@
+#lang racket
+
+(define (make-decrementer init)
+  (let ((counter init))
+    (lambda (value) (begin (set! counter (- counter value))
+                           counter))
+    )
+  )
+
+
+
+(define (factorial n)
+  (define (iter counter acc)
+    (cond [(= counter 0) acc]
+          [else (iter (sub1 counter) (* counter acc)  ) ]
+          )
+    )
+  (iter n 1)
+  )
+
+
+
+;factorial imperative style
+(define (factorial.v2 n)
+  (let* ((acc 1)
+         (counter n))
+
+    (define (iter)
+      (cond [(= counter 0) acc]
+            [else (begin (set! acc (* counter acc) )
+                         (set! counter (sub1 counter))
+                         (iter)) ])
+      )
+    (iter)
+
+    )
+  )
+(factorial.v2 5)

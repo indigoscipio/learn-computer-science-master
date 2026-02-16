@@ -1,0 +1,61 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname exercise-258) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "itunes.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp")) #f)))
+
+; a plain background image 
+(define MT (empty-scene 50 50))
+(define LINE-COLOR "red")
+(define tri-posn1 (make-posn 20 10))
+(define tri-posn2 (make-posn 20 20))
+(define tri-posn3 (make-posn 30 20))
+(define sample-tri1 (list tri-posn1 tri-posn2 tri-posn3) )
+(define sample-tri2 (list tri-posn1 tri-posn2))
+(define sample-tri3 (list tri-posn1))
+
+(define rec-posn1 (make-posn 20 10))
+(define rec-posn2 (make-posn 20 20))
+(define rec-posn3 (make-posn 30 20))
+(define rec-posn4 (make-posn 30 10))
+(define sample-rec (list rec-posn1 rec-posn2 rec-posn3 rec-posn4) )
+
+
+(define (draw-poly img p)
+  (local (; Image Polygon -> Image 
+          ; adds a corner of p to img
+          (define (render-poly img p)
+            (render-line (connect-dots img p) (first p) (last p)))
+          
+          ; Image NELoP -> Image
+          ; connects the Posns in p in an image
+          (define (connect-dots img p)
+            (cond
+              [(empty? (rest p)) img]
+              [else (render-line (connect-dots img (rest p))
+                                 (first p)
+                                 (second p))]))
+
+           
+          ; Image Posn Posn -> Image 
+          ; draws a red line from Posn p to Posn q into im
+          (define (render-line im p q)
+            (scene+line
+             im (posn-x p) (posn-y p) (posn-x q) (posn-y q) "red"))
+
+          
+ 
+          ; Polygon -> Posn
+          ; extracts the last item from p
+          (define (last p)
+            (cond
+              [(empty? (rest (rest (rest p)))) (third p)]
+              [else (last (rest p))]))
+
+          )
+    (render-poly img p)
+    )
+  )
+
+
+(draw-poly MT sample-rec)
+(draw-poly MT sample-tri1)
+

@@ -1,0 +1,56 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname exercise-459) (read-case-sensitive #t) (teachpacks ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "convert.rkt" "teachpack" "htdp") (lib "image.rkt" "teachpack" "2htdp") (lib "universe.rkt" "teachpack" "2htdp") (lib "batch-io.rkt" "teachpack" "2htdp") (lib "web-io.rkt" "teachpack" "2htdp") (lib "abstraction.rkt" "teachpack" "2htdp") (lib "dir.rkt" "teachpack" "htdp")) #f)))
+; An SOE is a non-empty Matrix.
+; constraint for (list r1 ... rn), (length ri) is (+ n 1)
+; interpretation represents a system of linear equations
+ 
+; An Equation is a [List-of Number].
+; constraint an Equation contains at least two numbers. 
+; interpretation if (list a1 ... an b) is an Equation, 
+; a1, ..., an are the left-hand-side variable coefficients 
+; and b is the right-hand side
+ 
+; A Solution is a [List-of Number]
+
+(define M 
+  (list (list 2 2  3 10)  ; 2x + 2y + 3z = 10
+        (list 2 5 12 31)  ; 2x + 5y + 12z = 31
+        (list 4 1 -2  1))) ; 4x + y - 2z = 1
+
+(define S '(1 1 2)) ; x = 1, y = 1, z = 2
+
+; Equation -> [List-of Number]
+; extracts the left-hand side from a row in a matrix
+(check-expect (lhs (first M)) '(2 2 3))
+(define (lhs e)
+  (reverse (rest (reverse e))))
+ 
+; Equation -> Number
+; extracts the right-hand side from a row in a matrix
+(check-expect (rhs (first M)) 10)
+(define (rhs e)
+  (first (reverse e)))
+
+
+; Matrix List-of-Number -> Boolean
+(define (check-solution soe s)
+  (andmap (lambda (eq) (= (plug-in (lhs eq) s) (rhs eq))) soe))
+
+
+; Equation (left hand) Solution -> Number
+(define (plug-in eq s)
+  (cond [(or (empty? s) (empty? eq)) 0 ]
+        [else (+ (* (first eq) (first s) )
+                 (plug-in (rest eq) (rest s))) ])
+  )
+(plug-in '(2 2 3) '(1 1 2)) ;; Should return (2*1 + 2*1 + 3*2) = 10
+
+
+(check-solution (list (list 2 2  3 10)
+                      (list 2 5 12 31)
+                      (list 4 1 -2 1)) S)  ;; Should return #true
+
+(check-solution (list (list 2 2  3 10)
+                      (list   3  9 21)
+                      (list      1  2)) S)  ;; Should return #true
