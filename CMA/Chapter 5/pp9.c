@@ -11,75 +11,58 @@ PRECEDENCE LEVEL
 7. Logical OR: ||
 8. Assignment: =, *=, +=, ==, !=, etc
 
-8. The following table shows the daily flights from one city to another:
-Departure time
-8:00 a.m.
-Arrival time
-10:16 a.m.
-9:43 a.m.
-11:19 a.m.
-12:47 p.m.
-11:52 a.m.
-1:31 p.m.
-3:00 p.m.
-Programming Projects
-2:00 p.m.
-3:45 p.m .
-7:00 p.m.
-9:45 p.m.
-4:08 p.m.
-5:55 p.m.
-9:20 p.m .
-97
-11 :58 p.m.
-Write a program that asks user toentera time (expressed in hoursand minutes, using the 24
-hour clock). The program then displays the departure and arrival times for the fiight whose
-departure time is closest to that entered by the user:
-Enter a 24-hour time: 13:15
-Closest departure time is 12:47 p.m., arriving at 3:00 p.m.
-Hint: Convert the input into a time expressed in minutes since midnight ,
-and compare it to
-the departure times, also expressed in minutes since midnight. For example. 13:15 is 13 x
-60 + 15 = 795 minutes since midnight ,
-which is closer to 12:47 p.m. (767 minutes since
-midnight) than to any of the other departure times.
+PP9
+Write a program that prompts the user to enter two dates and then indicates which date
+comes earlier on the calendar:
+Enter first date (mm/dd/yy): 3/6/08
+Enter second date (mm/dd/yy): 5/17/07
+5/17/07 is earlier than 3/6/08
 */
 
 #include <stdio.h>
 
 int main(void) {
-    int h24, m24, dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8, minute_since_midnight, midpoint, closest;
+    int m1, d1, y1, m2, d2, y2, date_num_1, date_num_2, earlier_date;
 
-    dt1 = 8 * 60;
-    dt2 = 9 * 60 + 43;
-    dt3 = 11 * 60 + 19;
-    dt4 = 12 * 60 + 47;
-    dt5 = 14 * 60;
-    dt6 =  15 * 60 + 45;
-    dt7 = 19 * 60;
-    dt8 = 21 * 60 + 45;
+    printf("Enter first date (mm/dd/yy)\n");
+    scanf("%02d/%02d/%02d", &m1, &d1, &y1);
 
-    printf("Enter a 24 hour time: \n");
-    scanf("%02d:%02d", &h24, &m24);
+    printf("Enter second date (mm/dd/yy)\n");
+    scanf("%02d/%02d/%02d", &m2, &d2, &y2);
 
-    minutes_since_midnight = (h24 * 60) + m24;
+    /*
+    if(y1 > y2){
+        printf("%02d/%02d/%02d is earlier", m2,d2,y2);
+    }else if(y1 < y2) {
+        printf("%02d/%02d/%02d is earlier", m1,d1,y1);
+    }else{
+        if(m1>m2){
+        printf("%02d/%02d/%02d is earlier", m2,d2,y2);
+        }else if(m1<m2){
+        printf("%%02d/%02d/%02d is earlier", m1,d1,y1);
+        }
+        else{
+            if(d1>d2){
+            printf("%02d/%02d/%02d is earlier", m2,d2,y2);
+            }else if(d1<d2){
+            printf("%02d/%02d/%02d is earlier", m1,d1,y1);
+            }else{
+            printf("they are both the same date");
+            }
+        }
+    }
+    */
 
-    if (minutes_since_midnight <= (dt1 + dt2) / 2) {
-        printf("Closest departure time is 8:00 a.m., arriving at 10:16 a.m.\n");
-    } else if (minutes_since_midnight <= (dt2 + dt3) / 2) {
-        printf("Closest departure time is 9:43 a.m., arriving at 11:52 a.m.\n");
-    } else if (minutes_since_midnight <= (dt3 + dt4) / 2) {
-        printf("Closest departure time is 11:19 a.m., arriving at 1:31 p.m.\n");
-    } else if (minutes_since_midnight <= (dt4 + dt5) / 2) {
-        printf("Closest departure time is 12:47 p.m., arriving at 3:00 p.m.\n");
-    } else if (minutes_since_midnight <= (dt5 + dt6) / 2) {
-        printf("Closest departure time is 2:00 p.m., arriving at 4:08 p.m.\n");
-    } else if (minutes_since_midnight <= (dt6 + dt7) / 2) {
-        printf("Closest departure time is 3:45 p.m., arriving at 5:55 p.m.\n");
-    } else if (minutes_since_midnight <= (dt7 + dt8) / 2) {
-        printf("Closest departure time is 7:00 p.m., arriving at 9:20 p.m.\n");
-    } else {
-        printf("Closest departure time is 9:45 p.m., arriving at 11:58 p.m.\n");
+
+    // method 2: sum of numbers
+    date_num_1 = (y1 * 10000) + (m1 * 100) + d1;
+    date_num_2 = (y2 * 10000) + (m2 * 100) + d2;
+
+    if(date_num_1 < date_num_2){
+        printf("%02d/%02d/%02d is earlier", m1,d1,y1);
+    }
+    else{
+        printf("%02d/%02d/%02d is earlier", m2,d2,y2);
     }
 
     return 0;
