@@ -7,6 +7,8 @@ while : checks cond before the body rund
 do-while : checks cond after body runs
 for : like while, but designed with how many times you wanna run it
 
+for(xx) < here xx is called "controlling expression"
+
 */
 
 #include <stdio.h>
