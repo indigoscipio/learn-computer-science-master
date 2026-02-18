@@ -275,8 +275,7 @@ will see some overlap between screenfuls) and 22 more lines, and so on until the
   ; if its the first time (last line is empty), show 23 lines
   ; if its the second time, update last-line from last item of the previous one
   (let ((line (read-line inport)))
-    (cond [(eof-object? line) last-line]
-          [(empty? last-line) ] ;first time calling
+    (cond [(eof-object? line) 'done]
           [(>= counter line-count) last-line]
           [else (begin (show-line line)
                        (show-screen inport (+ counter 1) line-count line)
@@ -284,25 +283,96 @@ will see some overlap between screenfuls) and 22 more lines, and so on until the
     )
   )
 
-(define (page-helper inport counter)
-  ; when it begins, show the first screen (line 1 - 23)
-  ; after line 23 ask user for the input
-  ; when input is received, go to the next screen with 1st line from last screen and remaining 22, repeat
-  ; lets test show screen first
-  (show-screen inport counter 23 '())
-  #|
-    (begin (show-screen ...)
-           (wait-for-input ...)
-           (page-helper ...)
-           )
-  |#
+(define (page-helper inport overlap-line)
+  (cond [(equal? overlap-line 'done) 'done]
+        [else (let ((new-overlap (if (empty? overlap-line)
+                                     (show-screen inport 0 23 '())
+                                     (begin (show-line overlap-line)
+                                            (show-screen inport 0 22 overlap-line)
+                                            ))
+                                 ))
+                (cond [(equal? new-overlap 'done) 'done]  ; <-- check here
+                      [else
+                       (wait-for-input)
+                       (page-helper inport new-overlap)])
+                )])
   )
 
 ; string -> void
 (define (page inname)
     (let ((inport (open-input-file inname)))
-    (page-helper inport 0) ;initialize with curr page 0
+    (page-helper inport '()) ;initialize with curr page 0
     (close-input-port inport)
     )
   )
-(page "lots-of-lines") ; a sample file with Line 1\n, Line 2\n, ... Line 100 dummy text
+
+; ==================================================
+
+#|
+22.8 A common operation in a database program is to join two databases, that is, to create a new database combining 
+the information from the two given ones. There has to be some piece of information in common between the two 
+databases. For example,
+Page 403
+suppose we have a class roster database in which each record includes a student's name, student ID number, and 
+computer account name, like this:
+((john alec entwistle) 04397 john)
+((keith moon) 09382 kmoon)
+((peter townshend) 10428 pete)
+((roger daltrey) 01025 roger)
+We also have a grade database in which each student's grades are stored according to computer account name:
+(john 87 90 76 68 95)
+(kmoon 80 88 95 77 89)
+(pete 100 92 80 65 72)
+(roger 85 96 83 62 74)
+We want to create a combined database like this:
+((john alec entwistle) 04397 john 87 90 76 68 95)
+((keith moon) 09382 kmoon 80 88 95 77 89)
+((peter townshend) 10428 pete 100 92 80 65 72)
+((roger daltrey) 01025 roger 85 96 83 62 74)
+in which the information from the roster and grade databases has been combined for each account name.
+Write a program join that takes five arguments: two input filenames, two numbers indicating the position of the item 
+within each record that should overlap between the files, and an output filename. For our example, we'd say
+> (join "class–roster" "grades" 3 1 "combined–file")
+In our example, both files are in alphabetical order of computer account name, the account name is a word, and the 
+same account name never appears more than once in each file. In general, you may assume that these conditions hold 
+for the item that the two files have in common. Your program should not assume that every item in one file also 
+appears in the other. A line should be written in the output file only for the items that do appear in both files.
+|#
+
+; take all of list a and all of list b except for the head of b
+; list-of-x lisy-of-y x -> list-of-y
+(define (merge-list xs ys)
+  (cons xs (cdr ys))
+  )
+(merge-list '((john alec entwistle) 04397 john)
+            '(john 87 90 76 68 95))
+
+#|
+(define (join-helper inport1 inport2 key1 key2 outport l1 l2)
+  ; if it matches -> merge
+  ; else check if p1 > p2. if so move key2, otherwise move the other one
+  (let* ((p1 (item key1 l1))
+         (p2 (item key2 l2))
+         )
+    (cond [(or (eof? line1) (eof? line2)) 'done] ;one of the file is empty, done
+          [(equal? p1 p2) ] ;names match: write/join it
+          [else 0 ] ;recurse
+          )
+    )
+  )
+
+(define (join inname1 inname2 key1 key2 outname)
+  (let ((inport1 (open-input-file inname1))
+        (inport2 (open-input-file inname2))
+        ;(outport (open-output-file outname))
+        )
+    (join-helper inport1 inport2 key1 key2)
+    (close-input-port inport1)
+    (close-input-port inport2)
+    ;(close-output-port outport)
+    'done
+    )
+  )
+(join "ss-class-roster-db.txt" "ss-grades-db.txt" 3 1 "ss-join-output.txt")
+
+|#
