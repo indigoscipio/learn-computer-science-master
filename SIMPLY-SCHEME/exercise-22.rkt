@@ -340,39 +340,42 @@ appears in the other. A line should be written in the output file only for the i
 |#
 
 ; take all of list a and all of list b except for the head of b
-; list-of-x lisy-of-y x -> list-of-y
+; list-of-x lisy-of-y -> list-of-y
 (define (merge-list xs ys)
-  (cons xs (cdr ys))
+  (cons (car xs) (append (cdr xs) (cdr ys)))
   )
 (merge-list '((john alec entwistle) 04397 john)
             '(john 87 90 76 68 95))
 
-#|
-(define (join-helper inport1 inport2 key1 key2 outport l1 l2)
-  ; if it matches -> merge
-  ; else check if p1 > p2. if so move key2, otherwise move the other one
-  (let* ((p1 (item key1 l1))
-         (p2 (item key2 l2))
-         )
-    (cond [(or (eof? line1) (eof? line2)) 'done] ;one of the file is empty, done
-          [(equal? p1 p2) ] ;names match: write/join it
-          [else 0 ] ;recurse
-          )
-    )
+
+(define (join-helper inport1 inport2 key1 key2 outport line1 line2)
+  (cond [(or (eof-object? line1) (eof-object? line2)) 'done]
+        [else (let* ((p1 (item key1 line1))
+                    (p2 (item key2 line2))
+                    )
+                (cond [(equal? p1 p2) (merge-list line1 line2)(begin (write (merge-list line1 line2) outport)
+                                                                     (newline outport)
+                                                                     (join-helper inport1 inport2 key1 key2 outport (read inport1) (read inport2))
+                                                                     )]
+                      [(before? p1 p2) (join-helper inport1 inport2 key1 key2 outport (read inport1) line2)]
+                      [else (join-helper inport1 inport2 key1 key2 outport line1 (read inport2))])
+                )]
+        )
   )
 
 (define (join inname1 inname2 key1 key2 outname)
-  (let ((inport1 (open-input-file inname1))
-        (inport2 (open-input-file inname2))
-        ;(outport (open-output-file outname))
+  (let* ((inport1 (open-input-file inname1))
+         (inport2 (open-input-file inname2))
+         (line1 (read inport1))
+        (line2 (read inport2))
+        (outport (open-output-file outname))
         )
-    (join-helper inport1 inport2 key1 key2)
+    (join-helper inport1 inport2 key1 key2 outport line1 line2) ;lets disbale ourport for now
     (close-input-port inport1)
     (close-input-port inport2)
-    ;(close-output-port outport)
+    (close-output-port outport)
     'done
     )
   )
 (join "ss-class-roster-db.txt" "ss-grades-db.txt" 3 1 "ss-join-output.txt")
 
-|#

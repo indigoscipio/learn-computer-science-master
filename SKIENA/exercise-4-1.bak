@@ -1,0 +1,8 @@
+#lang racket
+
+; xs = 2n
+(define (split-unfair xs)
+  ;split the list
+  (drop 5 (sort xs <))
+  )
+(split-unfair '(10 2 8 4 9 1 7 3 6 5))
