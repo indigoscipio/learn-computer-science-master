@@ -72,4 +72,25 @@ d. compare diference of each neighbour
     )
   (loop (cddr sorted-xs) (cons (car sorted-xs) (cadr sorted-xs) ))
   )
-(choose-min-pair-sorted '(1 2 3 4 5))
+
+; ==================================
+; 4.3
+(define (partition-into-pair xs)
+  (let*  ((sorted-xs (sort xs <))
+         (xs-length (length xs))
+         (left-half (take sorted-xs (floor (/ xs-length 2))))
+         (right-half (drop sorted-xs (floor (/ xs-length 2))))
+         )    
+    (define (loop l1 l2 result)
+      ; l1/l2 is empty, no pair left, return the result
+      ; else pair the 1st smallest and 1st largest it and recurse
+      (cond [(or (null? l1) (null? l2)) result]
+            [else (loop (cdr l1) (cdr l2) (cons (cons (car l1) (car l2)) result)) ])
+      )
+    ; initialize with the right half list reversed
+    (loop left-half (reverse right-half) '())
+    )
+  )
+(partition-into-pair '(6 11 26 77 12 9))
+(partition-into-pair '(1 3 5 9))
+
