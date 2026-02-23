@@ -197,6 +197,6 @@ which each box contains the result of applying the function to the corresponding
                    curr-item
                    )])
     )
-  (helper vect (- (vector-length v) 1) )
+  (helper vect (- (vector-length vect) 1))
   )
 (vector-map (vector 1 2 3 4) (λ (x) (* x x)))
