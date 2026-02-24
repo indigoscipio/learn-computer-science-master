@@ -10,53 +10,54 @@ for : like while, but designed with how many times you wanna run it
 for(xx) < here xx is called "controlling expression"
 
 =============================================================
-PP9
+PP11
 
-Programming Project 9 inChapter 5asked you to writea program that determines which of
-twodates comes earlier on (he calendar.Generalize the program so that the user may enter
-any number ofdates. The user will enter0/0/0 to indicate that no moredates willbe entered:
+The value ofthemathematical constant ecanbe expressed as an infiniteseries:
+e = 1 + 1/1! + 1/2! + 1/3! +...
 
-Enter a date (mm/dd/yy): 3/6/08
-Enter a date (mm/dd/yy): 5/17/07
-Enter a date (mm/dd/yy): 6/3/07
-Enter a date (mm/dd/yy): 0/0/0
-5/17/07 is the earliest date
+Write a program that approximates e by computing the value of
+I +1/1 !+1 /2!+1 /3!+ ...+ \/n\
+
+where n is an integer entered by the user.
+
+answer:
+simple trace
+lets say n=3
+
+i = 0
+1/0! = 1/1 = 1
+
+i=1
+1/0! + 1/1! = 1 + 1 = 2
+
+i = 2
+1/0! + 1/1! + 1/2! = 1 + 1 + 1/2 = 2.5
+
+i=3
+1/0! + 1/1! + 1/2! + 1/3! = 1 + 1 + 0.5 + 0.167 = 2.667...
+
+so basically the basic logic it loops n times
+and in each loop you want to sum the previous calculation
+this shouldnt be a problem in racket but lets try this
 
 */
 
 #include <stdio.h>
 
 int main(void) {
-    int m1, d1, y1, m2, d2, y2;
-    int earliest_date, new_date;
-    int earlier_m, earlier_d, earlier_y;
+    int n, fact_counter, i;
+    float total_sum = 1;
 
-    printf("Enter a date (mm/dd/yy)\n");
-    scanf("%02d/%02d/%02d", &m1, &d1, &y1);
+    printf("Enter your number: \n");
+    scanf("%d", &n);
 
-    earliest_date = (y1 * 10000) + (m1 * 100) + d1;
-    earlier_m = m1;
-    earlier_y = y1;
-    earlier_d = d1;
-
-    for(;;){
-        printf("Enter a date (mm/dd/yy)\n");
-        scanf("%02d/%02d/%02d", &m2, &d2, &y2);
-
-        if(m2==0 && d2==0 && y2 == 0){
-            break;
-        }
-
-        new_date = (y2 * 10000) + (m2 * 100) + d2;
-
-        if(new_date < earliest_date){
-            earliest_date = new_date;
-            earlier_m = m2;
-            earlier_d = d2;
-            earlier_y = y2;
-        }
+    fact_counter =  1;
+    for(i=1; i<=n; i++){
+        fact_counter *= i;
+        total_sum += 1.0 / fact_counter;
     }
-    printf("%02d/%02d/%02d is earlier", earlier_m,earlier_y,earlier_d);
+
+    printf("Your approximation is: %.2f", total_sum);
 
     return 0;
 }
