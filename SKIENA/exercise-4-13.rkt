@@ -1,0 +1,26 @@
+#lang racket
+(require data/heap)
+
+#|
+4-13. [5] You wish to store a set of n numbers in either a max-heap or a sorted array.
+For each application below, state which data structure is better, or if it does not
+matter. Explain your answers.
+(a) Want to find the maximum element quickly.
+(b) Want to be able to delete an element quickly.
+(c) Want to be able to form the structure quickly.
+(d) Want to find the minimum element quickly
+
+answer:
+a. doesn't matter - both O(1)
+b. heap is more efficient, sorted array need to rebuild the list
+c. sort - n log n vs building a heap is on
+d. sorted vector (ascending) - smallest is first
+
+|#
+
+; given a list constructs a max heap
+(define (create-heap lst)
+  (let ((vect (list->vector lst)))
+    0
+    )
+  )
