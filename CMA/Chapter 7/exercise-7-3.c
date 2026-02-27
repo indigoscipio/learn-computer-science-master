@@ -32,9 +32,17 @@ short int
 char
 bool
 
-Casting
-3.14 -> cast into int -> becomes 3
-when int * int is computed, value will also be int
+Which of the following are not legal types in c?
+a. short unsigned int
+b. short float
+c. long double
+d. unsigned long
+
+answer:
+a. int can be short and unsigned so its legal
+b. i don't think float can be long or short its just float so its not legal
+c. double can be modified by long to increase higher precision
+d. legal same as unsigned long int
 
 */
 
@@ -42,7 +50,9 @@ when int * int is computed, value will also be int
 
 int main(void) {
 
-    printf("%f", sizeof(int));
+    unsigned long n = 10E2;
+
+    printf("%f", n);
 
     return 0;
 }

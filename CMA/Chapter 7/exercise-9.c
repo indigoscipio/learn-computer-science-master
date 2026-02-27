@@ -32,17 +32,32 @@ short int
 char
 bool
 
-Casting
-3.14 -> cast into int -> becomes 3
-when int * int is computed, value will also be int
+7.8
+Supose that i and j are variablses type int
+what is the type expression i / j + 'a'?
+
+answer:
+since we know i and j are both int
+'a' is also integer therefore the final result of the expression
+has a tpe of integer
+
+evaluation wise
+
+i/j is evaluated first -> integer
+promotes 'a' to int (a is integer already but no need to promote)
+
 
 */
+
 
 #include <stdio.h>
 
 int main(void) {
 
-    printf("%f", sizeof(int));
+
+    int n = 'a';
+
+    printf("%d", 10 + 20 / n);
 
     return 0;
 }

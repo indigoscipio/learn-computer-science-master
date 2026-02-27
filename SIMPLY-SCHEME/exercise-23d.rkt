@@ -311,4 +311,91 @@ Your program should transform the vector through these intermediate stages:
   (ss-vect-helper vect 0)
   
   )
-(selection-sort-vect (vector 23 4 18 7 95 60))
+
+#|
+23.13 Why doesn't this work?
+(define (vector–swap! vector index1 index2)
+  (vector–set! vector index1 (vector–ref vector index2))
+  (vector–set! vector index2 (vector–ref vector index1)))
+
+answer:
+since we didn't store the value of 1st index in a temp variable
+by the time when we swap the 2nd value the value wouldve been lost
+
+
+example
+(swap (vector 1 2 3)0 1)
+we wanna swap 1 with 2
+following the code
+we swap 1 with 2, so now (vector 2 2 3)
+by the time we swap 2nd one it doesn't remember the 1st value
+
+|#
+
+; --------------------------------------
+
+#|
+23.14 Implement a two-dimensional version of vectors. (We'll call one of these structures a matrix.) The 
+implementation will use a vector of vectors. For example, a three-by-five matrix will be a three-element vector, in 
+which each of the elements is a five-element vector. Here's how it should work:
+> (define m (make–matrix 3 5))
+> (matrix–set! m 2 1 '(her majesty))
+> (matrix–ref m 2 1)
+(HER MAJESTY)
+|#
+
+; vector map from preivous exercise
+(define (vector-map vect f)
+  (let ((new-vect (make-vector (vector-length vect) 0)))
+    (define (helper v i)
+      (cond [(>= i (vector-length vect) ) 'done]
+            [else (let* ((curr-item (vector-ref v i))
+                         (mapped-item (f curr-item)))
+                    (begin (vector-set! new-vect i mapped-item)
+                           (helper v (+ i 1))
+                           )
+                    )])
+      )
+    (helper vect 0)
+    new-vect
+    )
+  )
+
+; i = rows, j = column, aka row dominant?
+; initializes matrix of i element vector with each having j elements
+; example: (vector (vector j1 j2 j3) (vector j4 j5 j6))
+(define (make-matrix i j)
+  (let ((row-vect (make-vector i 0)))
+      (vector-map row-vect (λ (r) (make-vector j 0))))
+  
+  )
+
+; given a matrix and 2 index mutates the matrix
+(define (matrix-set! matrix i j new-value)
+  (vector-set! (vector-ref matrix i) j new-value)
+  )
+; given a matrix and 2 index, extracts the value
+(define (matrix-ref m i j)
+  (vector-ref (vector-ref m i) j)
+  )
+
+; ============================================
+
+#|
+23.15 Generalize Exercise 23.14 by implementing an array structure that can have any number of dimensions. Instead 
+of taking two numbers as index arguments, as the matrix procedures do, the array procedures will take one argument, a 
+list of numbers. The number of numbers is the number of dimensions, and it will be constant for any particular array. 
+For example, here is a three-dimensional array (4 × 5 × 6):
+
+> (define al (make–array '(4 5 6)))
+> (array–set! al '(3 2 3) '(the end))
+|#
+
+; given a list of numbers, creates n dimensional array
+(define (make-array list-of-numbers)
+  ...
+  )
+(make-array '(2)) ;just one dimensional with 2 items
+(make-array '(2 2)) ; 2x2 array, 2 rows with each having 2 items
+(make-array '(2 2 2)) ;2x2x2 array; 2i with each having 2j with each having 2k item
+
