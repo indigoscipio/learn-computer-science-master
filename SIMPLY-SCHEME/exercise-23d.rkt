@@ -393,9 +393,123 @@ For example, here is a three-dimensional array (4 × 5 × 6):
 
 ; given a list of numbers, creates n dimensional array
 (define (make-array list-of-numbers)
-  ...
-  )
-(make-array '(2)) ;just one dimensional with 2 items
-(make-array '(2 2)) ; 2x2 array, 2 rows with each having 2 items
-(make-array '(2 2 2)) ;2x2x2 array; 2i with each having 2j with each having 2k item
 
+  ;; list -> vector
+  (define (helper xs)
+    (cond [(null? (cdr xs)) (make-vector (car xs) 0)] ;1d vector
+          [else (vector-map (make-vector (car xs) 0) (λ (v) (helper (cdr xs))) ) ];
+          )
+    )
+  (helper list-of-numbers)
+  )
+
+;(make-array '(2)) ;just one dimensional with 2 items
+;(make-array '(2 2)) ; 2x2 array, 2 rows with each having 2 items
+;(make-array '(2 2 2)) ;2x2x2 array; 2i with each having 2j with each having 2k item
+
+(define sample-arr (make-array '(2 2 3)))
+; given an ndimensional array, extracts its value based on given indeces
+(define (array-ref arr list-of-indexes)
+  
+  (define (helper v ixs)
+    (cond [(null? (cdr ixs)) (vector-ref v (car ixs))] ;1d vector, just get the indexref 
+          [else (helper (vector-ref v (car ixs)) (cdr ixs)) ] ;else "unwrap" it
+          )
+    )
+  (helper arr list-of-indexes)
+  
+  )
+;sample-arr
+;(array-ref sample-arr '(0 0 0))
+
+; given an array, mutates its value at given indeces with new value
+(define (array-set! arr list-of-indexes new-value)
+  (define (helper v ixs)
+    (cond [(null? (cdr ixs)) (begin (vector-set! v (car ixs) new-value)
+                                    arr
+                                    )] ;1d vector, mutate it
+          [else (helper (vector-ref v (car ixs)) (cdr ixs))]
+          )
+    )
+  (helper arr list-of-indexes)
+  )
+
+#|
+23.16 We want to reimplement sentences as vectors instead of lists.
+(a) Write versions of sentence, empty?, first, butfirst, last, and butlast that use vectors. Your 
+selectors need only work for sentences, not for words.
+> (sentence 'a 'b 'c)
+#(A B C)
+> (butfirst (sentence 'a 'b 'c))
+#(B C)
+(You don't have to make these procedures work on lists as well as vectors!)
+
+answer:
+|#
+
+; SENTENCE
+(define (se-vect . arguments)
+  ; build vector length of args
+  ; for each item vector it with car arg
+  ; (define vect (apply vector args))
+  ; or just do
+  (define (calc-vect-length args)
+    (cond [(null? args) 0]
+          [(word? (car args)) (+ (calc-vect-length (cdr args)) 1)]
+          [else (+  (vector-length (car args)) (calc-vect-length (cdr args))) ] ;nested vector, count the length
+          )
+    )
+  (calc-vect-length arguments)
+  
+  
+  )
+(se-vect 'a 'b (vector 'a 'b) 'c)
+
+; BUTFIRST
+(define (bf-vect vect)
+  (define new-vect (make-vector (- (vector-length vect) 1)))
+  
+  (define (helper v i)
+    (cond [(< i 1) new-vect]
+          [else (let ((curr-value (vector-ref v i)))
+                  (begin (vector-set! new-vect (- i 1) curr-value)
+                         (helper v (- i 1))
+                         )
+                  )]
+          )
+    )
+  (helper vect (- (vector-length vect) 1))
+  )
+;(bf-vect (se-vect 'a 'b 'c))
+;(bf-vect (se-vect 'a 'b))
+
+; EMPTY
+(define (empty-se-vect? vect)
+  (< (vector-length vect) 1)
+  )
+
+; LAST
+(define (last-vect vect)
+  (vector-ref vect (- (vector-length vect) 1))
+  )
+;(last-vect (vector 1)) ;#(1)
+;(last-vect (vector 1 2 3)) ;#(3)
+
+; BUTLAST
+(define (bl-vect vect)
+  (define new-vect (make-vector (- (vector-length vect) 1)))
+  
+  (define (helper v i)
+    (cond [(>= i (- (vector-length vect) 1)) new-vect]
+          [else (let ((curr-value (vector-ref v i)))
+                  (begin (vector-set! new-vect i curr-value)
+                         (helper v (+ i 1))
+                         )
+                  )]
+          )
+    )
+  (helper vect 0)
+  )
+;(bl-vect (se-vect 'a)) ; #()
+;(bl-vect (se-vect 'a 'b)) ; #(a)
+;(bl-vect (se-vect 'a 'b 'c)) ;(a b)
