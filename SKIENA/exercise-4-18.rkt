@@ -31,4 +31,32 @@ both sides of the partition?)
     (helper lst mid-index)    
     )
   )
-(quicksort-median '(10 2 15 7 3 12 9))
+
+#|
+-18. [5] Suppose an array A consists of n elements, each of which is red, white,orblue.
+We seek to sort the elements so that all the reds come before all the whites,which
+come before all the blues The only operation permitted on the keys are
+• Examine(A,i)– report the color of the ith element of A.
+• Swap(A,i,j)–swaptheith element of A with the jth element.
+Find a correct and efficient algorithm for red-white-blue sorting. There is a linear
+time solution.
+
+
+|#
+
+
+
+(define (flag-sort vect)
+  ; red: left of low
+  ; white: between low and mid - 1
+  ; blue: everything to the right of high
+  ; unexplored: everyhing between mid and high
+  (define (helper v low mid high)
+    ; look at mid pos
+    (let ((mid (vector-ref v mid)))
+      mid
+      )
+    )
+  (helper vect 0 1 2)
+  )
+(flag-sort (vector 'R 'R 'W 'B 'W 'B))

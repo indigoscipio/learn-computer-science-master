@@ -32,3 +32,27 @@ both sides of the partition?)
     )
   )
 (quicksort-median '(10 2 15 7 3 12 9))
+
+#|
+4-17. [3] The median of a set of n values is the n/2th smallest value
+
+(a) Suppose quicksort always pivoted on the median of the current sub-array. How
+many comparisons would Quicksort make then in the worst case?
+
+(b) Suppose quicksort were always to pivot on the n/3th smallest value of the
+current sub-array. How many comparisons would be made then in the worst
+case?
+
+answer:
+a. if pivot is in the median/middle then check both left/right side equally
+so check left + check right oepration
+since each partision reduce by half n . log n = n log n
+
+
+b. this means it alwus leans to the smaller list so
+1/3 - larger
+2/3 - smaller/longer
+
+theyre both n log n
+
+|#
