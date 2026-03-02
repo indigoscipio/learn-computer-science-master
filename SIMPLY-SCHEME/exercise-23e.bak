@@ -453,9 +453,17 @@ answer:
   ; for each item vector it with car arg
   ; (define vect (apply vector args))
   ; or just do
-  (list->vector arguments)  
+  (define (calc-vect-length args)
+    (cond [(null? args) 0]
+          [(word? (car args)) (+ (calc-vect-length (cdr args)) 1)]
+          [else (+  (vector-length (car args)) (calc-vect-length (cdr args))) ] ;nested vector, count the length
+          )
+    )
+  (calc-vect-length arguments)
+  
+  
   )
-(se-vect 'a 'b 'c)
+(se-vect 'a 'b (vector 'a 'b) 'c)
 
 ; BUTFIRST
 (define (bf-vect vect)
@@ -505,13 +513,3 @@ answer:
 ;(bl-vect (se-vect 'a)) ; #()
 ;(bl-vect (se-vect 'a 'b)) ; #(a)
 ;(bl-vect (se-vect 'a 'b 'c)) ;(a b)
-
-#|
-(b) Does the following program still work with the new implementation of sentences? If not, fix the program.
-(define (praise stuff)
-  (sentence stuff '(is good)))
-
-answer:
-
-
-|#

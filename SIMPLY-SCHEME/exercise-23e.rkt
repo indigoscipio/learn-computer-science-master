@@ -453,9 +453,20 @@ answer:
   ; for each item vector it with car arg
   ; (define vect (apply vector args))
   ; or just do
-  (list->vector arguments)  
+  #|
+  (define (calc-vect-length args)
+    (cond [(null? args) 0]
+          [(word? (car args)) (+ (calc-vect-length (cdr args)) 1)]
+          [else (+  (vector-length (car args)) (calc-vect-length (cdr args))) ] ;nested vector, count the length
+          )
+    )
+  (calc-vect-length arguments)
+  |#
+
+  (list->vector arguments)
   )
-(se-vect 'a 'b 'c)
+
+
 
 ; BUTFIRST
 (define (bf-vect vect)
@@ -506,12 +517,46 @@ answer:
 ;(bl-vect (se-vect 'a 'b)) ; #(a)
 ;(bl-vect (se-vect 'a 'b 'c)) ;(a b)
 
-#|
-(b) Does the following program still work with the new implementation of sentences? If not, fix the program.
-(define (praise stuff)
-  (sentence stuff '(is good)))
 
-answer:
+; PART C
+; no since sentence takes a vector
+; use vector append
+
+; PART d
+; just use vector-ref
+; with the index offset by (n-1)
+
+#|
+PART E
+
+Does the following program still work with the new implementation of sentences?
+If not, fix the program. If so, is there some optional rewriting that would improve its performance?
+
+
+(define (every fn sent)
+  (if (empty? sent)
+      sent
+      (sentence (fn (first sent))
+                (every fn (butfirst sent)))))
+
+; answer
+it wont work if thres nested vector
+also we can use vector map since butfirst rebuilds the vector on each call
+
+|#
+
+#|
+First/Last
+vector: instant
+list: first is instant, last is linear (walk the whole list)
+
+bf/bl:
+vector: both are slow
+list: bf is instant (just use cdr), but bl is slow
+
+sentence:
+list: fast for adding to front
+vector: slow since need to adjust the size length
 
 
 |#
