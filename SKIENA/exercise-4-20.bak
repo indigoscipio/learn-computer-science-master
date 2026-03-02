@@ -33,14 +33,33 @@ both sides of the partition?)
   )
 
 #|
--18. [5] Suppose an array A consists of n elements, each of which is red, white,orblue.
-We seek to sort the elements so that all the reds come before all the whites,which
-come before all the blues The only operation permitted on the keys are
-• Examine(A,i)– report the color of the ith element of A.
-• Swap(A,i,j)–swaptheith element of A with the jth element.
-Find a correct and efficient algorithm for red-white-blue sorting. There is a linear
-time solution.
+5. An inversion of a permutation is a pair of elements that are out of order.
 
+(a) Show that a permutation of n items has at most n(n-1)/2 inversions. Which
+permutation(s) have exactly n(n - 1)/2 inversions?
+
+(b) Let P be a permutation and Pr be the reversal of this permutation. Show
+that P and Pr have a total of exactly n(n-1)/2 inversions.
+
+(c) Use the previous result to argue that the expected number of inversions in a
+random permutation is n(n -1)/4.
+
+answer:
+a. order is decreasing is the messiest possible arrangement
+eg : {1,2,3}
+
+1st num can be paired with n-1 number before it
+2nd num can be paired with n-2 number before it
+
+(1 + 2 + 3 + ... + n-1) = n (n-1) / 2
+
+b. if pair is corectly ordered in p then its inversion in pr
+if pair is inversion in p its corectly ordered in pr
+so its the same
+
+c.
+since we know permutation p and its peverse pr always share
+total possible inversions 
 
 |#
 (define sample-vect (vector 1 2 3))
