@@ -1,0 +1,6 @@
+(put 1 1)
+(put 1 a)
+(put (+ (cell * <1) (cell <1 *)) b)
+(put (+ (cell * <1) (cell <1 *)) d)
+(put (+ (cell * <1) (cell <1 *)) e)
+(put (+ (cell * <1) (cell <1 *)) f)
