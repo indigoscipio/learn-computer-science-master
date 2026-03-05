@@ -17,44 +17,44 @@ The expression is evaluated from left to right (no operator takes precedence ove
 #include <stdio.h>
 
 int main(void) {
-    char ch, op;
+    char ch, op = ' ';
     float result_so_far, next_value;
 
 
     printf("Enter expression: \n");
     scanf("%f", &result_so_far);
+
     while(op != '\n'){
-        //look for operator
-        scanf(" %c", &op);
+        //get the operator
+        op = getchar();
 
-        //read next number if there's an operator
-        scanf("%f", &next_value);
+        if(op == '\n'){
+            break;
+        }
 
-
-        //do math, update result so far
+       //do math, update result so far
+        //get the next number
         switch(op){
             case '+':
+                scanf("%f", &next_value);
                 result_so_far += next_value;
                 break;
             case '-':
+                scanf("%f", &next_value);
                 result_so_far -= next_value;
                 break;
             case '*':
+                scanf("%f", &next_value);
                 result_so_far *= next_value;
                 break;
             case '/':
+                scanf("%f", &next_value);
                 result_so_far /= next_value;
                 break;
             default:
-                printf("Invalid Operator");
                 break;
         }
 
-
-
-
-
-        //otherwise exit
     }
     printf("The value of expression is: %f", result_so_far);
 

@@ -15,8 +15,19 @@ rcross-bb
 (sum-integers-from-to 1 3)
 
 
-; Exercise 2.8
-; computes the sum of first n squares, where n is a nonnegative integer
-(define (sum-of-squares n)
+#|
+Another type of generalization of sum-of-first can be obtained by varying what
+is being summed, rather than just the range of summation:
+a. Write a procedure sum-of-squares that computes the sum of the first n squares,
+where n is a nonnegative integer.
+b. Write a procedure sum-of-cubes that computes the sum of the first n cubes,
+where n is a nonnegative integer.
+c. Write a procedure sum-of-powers that has two parameters n and p, both non
+negative integers, such that (sum-of-powers n p) computes 1p 2p
+np.
+|#
 
+(define (sum-of-squares n)
+  (cond [(> a b) 0]
+        [else (* (sum-integers-from-to (+ a 1) b) a)])
   )
