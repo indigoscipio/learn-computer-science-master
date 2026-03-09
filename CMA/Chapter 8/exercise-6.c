@@ -19,6 +19,19 @@ Here's what the array might look like, with each row representing one digit:
 const int segments [10] [7] = {{l, 1, 1, 1, 1, 1, 0}, ...};
 I 've given you the first row of the initializer: fill in the rest.
 
+{
+{l, 1, 1, 1, 1, 1, 0}, //0
+{0, 1, 1, 0, 0, 0, 0}, //1
+{l, 1, 0, 1, 1, 0, 1}, //2
+{l, 1, 1, 1, 0, 0, 1}, //3
+{0, 1, 1, 0, 0, 1, 1}, //4
+{l, 0, 1, 1, 0, 1, 1}, //5
+{l, 0, 1, 1, 1, 1, 1}, //6
+{l, 1, 1, 0, 0, 0, 0}, //7
+{l, 1, 1, 1, 1, 1, 1}, //8
+{l, 1, 1, 1, 0, 1, 1}, //9
+}
+
 */
 
 
