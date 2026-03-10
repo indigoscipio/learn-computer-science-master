@@ -175,3 +175,52 @@ show the new invariant is equal to old invariant
 therefore it matches
 
 |#
+
+#|
+(define (sum-of-divisors n)
+  (define (loop curr-divisor acc)
+    (cond [(> curr-divisor n) acc] ;no more divisors
+          [(zero? (remainder n curr-divisor)) (loop (+ 1 curr-divisor) (+ curr-divisor acc)) ]
+          [else (loop (+ 1 curr-divisor) acc) ]
+          )
+    )
+  (loop 1 0)
+  )
+|#
+
+#|
+Although the method we use for computing the sum of the divisors is straightforward,
+it isn’t particularly efficient. Any time we find a divisor d of n, we can infer that n d
+is also a divisor. In particular, all the divisors greater than the square root of n can
+be inferred from the divisors less than the square root. Make use of this observation
+to write a more efficient version of sum-of-divisors that stops once low2 
+n.
+Remember that if low2 n, low and n low are the same divisor, not two different
+ones.
+
+answer:
+lets avoid using confusing language like lowetc and just keep it simple
+|#
+
+(define (sum-of-divisors n)
+  (define (loop curr-divisor acc)
+    (cond [(>= (sqr curr-divisor) n) acc] ;no more divisors
+          [(zero? (remainder n curr-divisor)) (loop (+ 1 curr-divisor) (+ curr-divisor (/ n curr-divisor) acc)) ]
+          [else (loop (+ 1 curr-divisor) acc) ]
+          )
+    )
+  (loop 1 0)
+  )
+(sum-of-divisors 6)
+
+(define (perfect? n)
+  (= (sum-of-divisors n) (* 2 n))
+  )
+(perfect? 6)
+
+(define first-perfect-after
+  (lambda (n)
+    (if (perfect? (+ n 1))
+        (+ n 1)
+        (first-perfect-after (+ n 1)))))
+(first-perfect-after 6)

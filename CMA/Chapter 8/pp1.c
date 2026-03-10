@@ -14,45 +14,33 @@ Repeated digit(s): 7 9
 
 #include <stdio.h>
 #include <stdbool.h>
-#define N 8
-
 int main(void) {
-    bool digit_seen[10] = {false};
-    int digits[10] = {0,1,2,3,4,5,6,7,8,9};
+    int digit_counts[10] = {0};
     int digit, i;
+    bool has_repeat = false;
     long n;
 
-    printf("Enter a number: ");
-    scanf("%ld", n);
-
+    printf("Enter a number: \n");
+    scanf("%ld", &n);
 
     while(n>0){
         digit = n % 10;
-        if(digit_seen[digit]){
-            break;
-        }
-        digit_seen[digit] = true;
+        digit_counts[digit]++;
         n /= 10;
-        }
-
-
-
-    if(n > 0){
-        printf("Repeated digit(s): \n");
-    }else{
-        printf("No repeated digits\n");
     }
+
+    for(i=0;i<10;i++){
+        //found a repeat
+        if(digit_counts[i] > 1){
+            if(!has_repeat){
+                    printf("Repeated digit(s):");
+                    has_repeat = true;
+            }
+                    printf("%d",i);
+        }
+    }
+
+    if(!has_repeat) printf("No repeats");
 
     return 0;
 }
-
-/*
-    // find the seen digits, iterate through the digit_seen and check for true value
-    // match it up with the digit array
-    for(i=0;i<10;i++){
-        if(digit_seen[i]){
-            printf("%d", digits[i]);
-        }
-    }
-
-    */
