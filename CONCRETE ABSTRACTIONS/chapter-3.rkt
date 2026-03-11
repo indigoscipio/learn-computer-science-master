@@ -224,3 +224,110 @@ lets avoid using confusing language like lowetc and just keep it simple
         (+ n 1)
         (first-perfect-after (+ n 1)))))
 (first-perfect-after 6)
+
+#|
+Exercise 3.7
+Using this technique, write a procedure, improve, that takes one of the approxima
+tions of 
+and returns then next one. For example, given 2, it would return 3.
+|#
+
+#|
+(define (improve curr-phi)
+  (+ 1 (/ 1 curr-phi))
+  )
+
+(define epsilon 0.00001)
+
+(define (good-enough? curr-guess improved-guess)
+  (< (abs (- improved-guess curr-guess)) epsilon)
+  )
+
+(define (find-approximation guess)
+  (let ((improved-guess (improve guess)))
+    (cond [(good-enough? guess improved-guess) guess]
+          [else (find-approximation improved-guess)]
+          )
+    )
+  )
+(find-approximation 1.9)
+|#
+
+#|
+Presumably any art work needs to be made out of something, and there are only
+about 1079 electrons, neutrons, and protons in the universe. Therefore, we can
+conservatively assume that no artist will ever need to know to better than one part
+in 1079. Calculate an approximation that is within a tolerance of 1 1079, which can
+also be expressed as 10 79. (To calculate this tolerance in Scheme, you could use
+the expt procedure, as in (/ 1 (expt 10 79)) or (expt 10-79).)
+|#
+
+(define (improve curr-phi)
+  (+ 1 (/ 1 curr-phi))
+  )
+
+(define epsilon (expt 10 -79))
+
+(define (good-enough? curr-guess improved-guess)
+  (< (abs (- improved-guess curr-guess)) epsilon)
+  )
+
+(define (find-approximation guess)
+  (let ((improved-guess (improve guess)))
+    (cond [(good-enough? guess improved-guess) guess]
+          [else (find-approximation improved-guess)]
+          )
+    )
+  )
+
+
+(define (survives? pos n)
+  ;#t if the person in that position is one of the last two survivors
+  ;else its #f
+  (cond [(< n 3) #t]
+        [else 0]
+        )
+  )
+
+
+#|
+Exercise 3.9
+
+How about the people who were in pos 1 and 2;
+what pos numbers are they in after the renumbering?
+
+answer:
+once they killof the #3 one then the 4th one will become the new pos 1, 5th one new pos 2,
+etc so the people who were in pos1 and 2 at that renumber becomes the 1st last and 2nd last
+
+|#
+
+
+#|
+Write a procedure for doing the renumbering. It should take two arguments: the
+old position number and the old number of people (n). (It can assume that the old
+position number won’t ever be 3, because that person is killed and hence doesn’t get
+renumbered.) It should return the new position number.
+
+answer:
+|#
+
+; assume old pos wont be 3
+(define (renumber old-pos old-n)
+  #|
+  (let ((new-n (- old-n 1))
+        (shifted-result (modulo (- old-pos 3) (- old-n 1))))
+    (if (= shifted-result 0)
+        new-n
+        shifted-result
+        )
+    
+    )
+ |#
+(+ (modulo (- old-pos 1 3) 
+           (- old-n 1)) 
+   1)
+  
+)
+(renumber 1 3) ;before target, add with old n
+(renumber 4 3) ;after target, subtract old n

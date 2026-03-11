@@ -26,31 +26,48 @@ translating and printing characters one by one.
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
+#define N 100
 
 int main(void) {
-    int arr_length = 0,i;
-    char ch, curr_ch;
+    int i=0, j;
+    char ch, ch_array[N] = {0}, curr_char;
 
     printf("Enter your message: \n");
 
-    // get the array length
-    while(ch = getchar() != '\n'){
-        arr_length++;
+    // store each char in an array
+    while((ch = getchar()) != '\n'){
+        ch_array[i] = ch;
+        i++;
     }
 
-    char chars[arr_length] = {0};
-
-    for(i=0;i<arr_length;i++){
-        curr_ch = toupper(ch);
-
-        switch(){
-
+    for(j=0;j<i;j++){
+        curr_char = toupper(ch_array[j]);
+        switch(curr_char){
+            case 'A':
+                printf("4");
+                break;
+            case 'B':
+                printf("8");
+                break;
+            case 'E':
+                printf("3");
+                break;
+            case 'I':
+                printf("1");
+                break;
+            case 'O':
+                printf("0");
+                break;
+            case 'S':
+                printf("5");
+                break;
+            default:
+                printf("%c", curr_char);
         }
     }
+    // append the exclamation marks at the end
+    printf("!!!!!!!!!!");
 
-    //scan the input
-    //for each char store it in an array
-    // run thruogh each array and do the logic check/translate
 
     return 0;
 }
