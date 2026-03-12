@@ -20,7 +20,7 @@ int main(void) {
     int arr[N][N] = {0};
     int row, col, total_row, total_col;
     int total_row_arr[N] = {0}, total_col_arr[N]={0};
-    int i,j;
+    int i,j,k;
     int lq_score=0, hq_score=0;
 
     for(row=0;row<N;row++){
@@ -51,10 +51,29 @@ int main(void) {
     }
 
     printf("\n");
-
     // iterate through each quiz
     // calc avg score, high score, and low score
-    printf("Average quiz score: %d\n", total_col_arr[i]/N);
+
+    for(j=0;j<N;j++){
+        //outer loop: student row
+        lq_score = arr[0][j];
+        hq_score = arr[0][j];
+
+        for(k=0;k<N;k++){
+            if(arr[k][j] > hq_score){
+                hq_score = arr[k][j];
+            }
+
+            if(arr[k][j] < lq_score){
+                lq_score = arr[k][j];
+            }
+        }
+
+        printf("Average quiz score: %d\n", (float) total_col_arr[j]/N);
+        printf("High quiz score score: %d\n", hq_score);
+        printf("Low quiz score: %d\n", lq_score);
+    }
+
 
 
     return 0;
