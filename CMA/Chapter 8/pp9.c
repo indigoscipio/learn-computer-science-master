@@ -50,7 +50,7 @@ Y is blocked on all four sides,so there’s no place to put Z.
 #define N 10
 
 int main(void) {
-    int i, random_num;
+    int i,j,k, random_num;
     bool is_valid_arr[4] = {0};
     char arr[N][N] = {{'.','.','.','.','.','.','.','.','.','.'},
                     {'.','.','.','.','.','.','.','.','.','.'},
@@ -63,8 +63,9 @@ int main(void) {
                     {'.','.','.','.','.','.','.','.','.','.'},
                     {'.','.','.','.','.','.','.','.','.','.'}};
 
-    char alphabets[26] = {'A','B','C','D','E','F','G','B','C','D','E','F','G',
-                        'H','I','J','K','L','M','N','O','P','Q','R','S','T','U',
+    char alphabets[26] = {'A','B','C','D','E','F','G',
+                        'H','I','J','K','L','M','N','O',
+                        'P','Q','R','S','T','U',
                         'V','W','X','Y','Z'};
 
 
@@ -77,7 +78,6 @@ int main(void) {
         int attempts = 0;
 
         while(!moved && attempts < 100){
-            // generate random number
             random_num = rand() % 4;
 
             next_row = curr_row;
@@ -102,7 +102,7 @@ int main(void) {
                 (next_col >=0 && next_col < 10)&&
                 arr[next_row][next_col] == '.' ){
 
-                //mutate the array
+
                 arr[next_row][next_col]=alphabets[i];
                 curr_col = next_col;
                 curr_row = next_row;
@@ -113,6 +113,13 @@ int main(void) {
         }
 
         if(!moved) break;
+    }
+
+    for(j=0;j<N;j++){
+        for(k=0;k<N;k++){
+            printf("%c ", arr[j][k]);
+        }
+        printf("\n");
     }
 
 
