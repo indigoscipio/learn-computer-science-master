@@ -14,8 +14,8 @@ until it can be printed. You may assume that the last name is no more than 20 ch
 #include <ctype.h>
 
 int main(void) {
-    char lastname[20] = {};
-    char first_initial, last_initial;
+    char lastname[20] = {0};
+    char first_initial, last_initial, ch;
 
     printf("Enter a first a last name: \n");
 
@@ -27,10 +27,23 @@ int main(void) {
 
     // skip leading space again
     while((last_initial = getchar()) == ' ');
-    printf("%c", last_initial);
+    lastname[0] = last_initial;
 
     //start of last name
-    int i;
+    int i = 1;
+    while((ch = getchar()) != '\n'){
+        lastname[i] = ch;
+        i++;
+    }
+
+    //prints last name
+    int j;
+    for(j=0; j<i;j++){
+        printf("%c", lastname[j]);
+    }
+
+    //prints first initial
+    printf(", %c.", toupper(first_initial));
 
 
 
