@@ -229,10 +229,188 @@ category?
 answer:
 if m^2 > n then theres 0factor
 if n is not divisible by m - just move to m+1
+if its divisible then split the rest
 
 |#
 
-(define (ways-to-fact-r m n)
-  0
+; factor = m
+; target = n
+(define (ways-to-factor m n)
+  (cond [(> (sqr m) n) 0] ; no factor
+        [(not (= (remainder n m) 0)) (ways-to-factor (+ m 1) n)]
+        [else (let ((pick (quotient n m)))
+                (+ (if (>= pick m) 1 0) (ways-to-factor (+ m 1) n)
+                   (ways-to-factor m pick)
+                   )
+                )]
+        )
   )
+(ways-to-factor 2 12)
 
+
+#|
+Exercise 4.13
+(define bar
+  (lambda (n)
+    (cond ((= n 0) 5)
+          ((= n 1) 7)
+          (else (* n (bar (- n 2)))))))
+
+How many multiplications (expressed in theta notation) will the computation of
+(bar n) do? Justify your answer. You may assume that n is a nonnegative inte
+ger.
+
+answer:
+lets trace small exmaple n = 3
+
+1st call
+n=3 -> (bar 3) -> not 1 or 0
+runs (* n (bar (- n 2))) -> (* 3 (bar 1))
+multiplication = 1
+
+2nd call
+n=1 -> (bar 1) -> 1 -> returns 5
+
+total multiplication = 1
+
+
+n=10
+1st call
+(bar 10) -> not 1 or 0
+runs (* n (bar (- n 2))) -> (* 10 (bar 8))
+multiplication = 1
+
+2nd call
+(bar 8) -> not 1 or 0
+runs (* n (bar (- n 2))) -> (* 8 (bar 6))
+multiplication = 1
+
+3rd -> 6
+4th -> 4
+5th -> 2
+6th -> 0 - return 5, no multiplication
+
+total = 5 multiplication
+
+my guess is that its doing n/2 multiplication total
+so its equal to big theta(n)
+
+
+
+|#
+
+
+#|
+Exercise 4.14
+Consider the following procedures:
+
+(define foo
+  (lambda (n)
+    ; computes n! + (n!)^n
+    (+ (factorial n) ; that is, (n! plus n! to the nth power)
+       (bar n n))))
+
+(define bar
+  (lambda (i j)
+    (if (= j 0)
+        1
+        ; computes (i!)^j (i! to the jth power)
+        (* (factorial i)
+           (bar i (- j 1))))))
+(define factorial
+  (lambda (n)
+    (if (= n 0)
+        1
+        (* n (factorial (- n 1))))))
+
+How many multiplications (expressed in big teta notation) (foo n) do?
+Justify your answer.
+
+answer:
+lets try small n=3
+
+(foo 3), n=3
+calls to both (factorial 3) and (bar 3 3)
+
+(factorial 3), n = 3
+n is not 0 -> eval (* n (factorial (- n 1))) -> (* 3 (factorial 2)) -> 1 mult
+(factorial 2), n=2
+n is not 0 -> eval (* n (factorial (- n 1))) -> (* 2 (factorial 1)) -> 1 mult
+(factorial 1), n=1
+n is not 0 -> eval (* n (factorial (- n 1))) -> (* 1 (factorial 0)) -> 1 mult
+(factorial 0)
+n is zero, return 1
+total from this call = 3 multiplications
+
+
+(bar 3 3), i=3, j=3
+j is not 0 => (* (factorial i) (bar i (- j 1))) -> (* (factorial 3) (bar 3 2))
+we know factorial returns n multiplications - so mult so far = 3 + 1
+(bar 3 2)
+j is not 0 => (* (factorial i) (bar i (- j 1))) -> (* (factorial 3) (bar 3 1))
+we know factorial returns n multiplications - so mult so far = 4 + (3 + 1)
+(bar 3 1)
+j is not 0 => (* (factorial i) (bar i (- j 1))) -> (* (factorial 3) (bar 3 0))
+we know factorial returns n multiplications - so mult so far = 8 + (3 + 1)
+(bar 3 0)
+j is zero, stop and return 1, total multiplications = 12
+
+combining the total 3 + 12 = 15 multiplication for n = 3
+we know factorial does n mults
+and bar does n . (n+1) multiplications
+total = n + (n . n+1)
+thats n + n^2 + n = n^2 + 2n
+in big theta notation its just n^2
+
+|#
+
+#|
+Exercise 4.15
+|#
+
+; 1 coin = fake
+; even -> div into 2 piles, compare weights of the 2 piles, discard the heavier pile, look for the fake
+; odd -> pick one, divide into 2 pile, compare th weights.
+
+;; PART A
+;;max-weighings: number -> number
+(define (max-weighings n)
+  (cond [(= n 1) 0] ;done
+        [(even? n) (+ 1 (max-weighings (/ n 2)))];split into two
+        [else (max-weighings (- n 1)) ]
+        )
+  )
+(max-weighings 3)
+
+;; PART B
+(define (max-weighings3 n)
+  ; check if its multiple of 3
+  ; if its not a b is equal, remainder is in c
+  (cond [(= n 1) 0]
+        [else (let ((next-pile (if (zero? (/ n 3)) (/ n 3) (+ (quotient n 3) 1)) ))
+                (+ 1 (max-weighings3 next-pile))
+                )])
+  )
+(max-weighings3 5)
+
+#|
+Exercise 4.17
+
+|#
+
+; n = total number to choose from
+; k = items to pick
+(define (choose n k)
+  ; base case: k=0 and k=n
+  (cond [(or (zero? k) (equal? k n)) 1]
+        [else (let ((pick (choose (- n 1) (- k 1)))
+                    (dont-pick (choose (- n 1) k))
+                    )
+                (+ pick dont-pick)
+                ;; select it
+                ;; dont select it
+                )]
+        
+        )
+  )
+(choose 5 5)

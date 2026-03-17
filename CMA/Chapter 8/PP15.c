@@ -33,36 +33,40 @@ expression for lower-case letters.)
 // lets just do the encryption version for simplicify
 int main(void) {
     char message[80] = {0}, encrypted_message[80] = {0};
-    char ch;
-    int i=0,j, shift_amt, new_index;
+    char ch, new_upcase, new_lowcase;
+    int i=0,j,k, shift_amt, new_index;
 
     printf("Enter message to be encrypted: ");
 
     //store input in msg array
     while((ch=getchar())!='\n'){
-        message[i] = ch
+        message[i] = ch;
         i++;
     }
 
     printf("Enter shift amount: ");
-    scanf("%d", shift_amt);
+    scanf("%d", &shift_amt);
 
     //encryption
     for(j=0;j<i;j++){
-        new_upcase_i = ((ch[j] - 'A') + shift_amt) % 26 + 'A';
-        new_lowcase_i = ((ch[j] - 'a') + shift_amt) % 26 + 'a';
-
         //uppercase
-        if(message[i] >= 6 || message[i] <= 90){
-
-        }else if(message[i] >= 97 || message[i] <= 122){
-
+        if(isupper(message[j])){
+            new_upcase = ((message[j] - 'A') + shift_amt) % 26 + 'A';
+            encrypted_message[j] = new_upcase;
+        }else if(islower(message[j])){
+            //lowcase
+            new_lowcase = ((message[j] - 'a') + shift_amt) % 26 + 'a';
+            encrypted_message[j] = new_lowcase;
+        }else{
+            // keep as it is
+            encrypted_message[j] = message[j];
         }
-
-        //store in ecnrypted arr
     }
 
     //print
+    for(k=0;k<i;k++){
+        printf("%c",encrypted_message[k]);
+    }
 
     return 0;
 }
