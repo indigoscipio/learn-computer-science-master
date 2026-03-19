@@ -31,6 +31,11 @@ return 0;
 // liek afunction but just a header
 // since it needs to know how much space to reserve
 
+// Compound literas
+// used to make anontmous object
+// a mix of type cast + initializer
+
+
 */
 
 double average(double a, double b){
@@ -77,12 +82,28 @@ int main(void){
     }
     */
 
+    /*
+    //PRIMARLITY
     int n;
     printf("Enter a number: ");
     scanf("%d", &n);
     if(is_prime(n)){
         printf("Prime");
     }else{printf("Not prime");}
+    */
+
+    /*
+    int fact(int n){
+        if(n <= 1){
+            return 1;
+        }else{
+            return n * fact(n - 1);
+        }
+    }
+    printf("%d", fact(3));
+    */
+
+    int arr[] = {12,3,6,18,7,15,10};
 
 
 
