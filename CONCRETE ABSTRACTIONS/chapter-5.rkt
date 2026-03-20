@@ -175,3 +175,200 @@ sum-of-squares and sum-of-cubes from Exercise 2.8 on page 38.
   (proc + n 0 (λ (x) (expt x 3)))
   )
 (sum-of-cubes 5)
+
+#|
+Exercixe 5.10
+Write a predicate that takes a number and determines whether the sum of its digits
+is divisible by 17.
+|#
+
+#|
+(define (sod-div-by-17 n)
+  (zero? (remainder (sum-of-digits n) 17))
+  )
+|#
+
+#|
+Exercise 5.11
+Write a procedure make-verifier, which takes f and m as its two arguments
+and returns a procedure capable of checking a number. The argument f is itself a
+procedure, of course. Here is a particularly simple example of a verifier being made
+and used:
+
+(define check-isbn (make-verifier * 11))
+(check-isbn 0262010771)
+#t
+
+
+As we just saw, for ISBN numbers the divisor is 11 and the function is simply
+f (i, di) = di. Other kinds of numbers use slightly more complicated functions,
+but you will still be able to use make-verifier to make a verifier much more easily
+than if you had to start from scratch.
+
+answer:
+|#
+
+
+(define (sum-of-digits n)
+  (define (loop curr-n acc)
+    (cond [(equal? curr-n 0) acc]
+          [else (loop (quotient curr-n 10) (+ (remainder curr-n 10) acc) ) ])
+    )
+  (loop n 0)
+  )
+
+
+(define (make-verifier f m)
+  (λ (n) (define (loop i curr-n acc)
+           (cond [(zero? curr-n) (zero? (remainder acc m))]
+                 [else (loop (+ i 1) (quotient curr-n 10) (+ (f i (remainder curr-n 10)) acc))]
+                 )
+           )
+    (loop 1 n 0))
+  )
+(define check-isbn (make-verifier * 11))
+(check-isbn 0262010771)
+
+
+#|
+Execise 5.12
+For UPC codes (the barcodes on grocery items), the divisor is 10, and the function
+f (i, di)isequaltodi itself when i is odd, but to 3di when i is even. Build a verifier for
+UPCcodes using make-verifier, and test it on some of your groceries. (The UPC
+number consists of all the digits: the one to the left of the bars, the ones underneath
+the bars, and the one on the right.) Try making some mistakes, like switching or
+changing digits. Does your verifier catch them?
+|#
+
+(define check-upc (make-verifier (λ (i d) (if (odd? i) d (* 3 d))) 10))
+(check-upc 036000291453)
+
+#|
+Credit card numbers also use a divisor of 10 and also use a function that yields di
+itself when i is odd. However, when i is even, the function is a bit fancier: It is 2di if
+di 
+5, and 2di 1ifdi 5. Build a verifier for credit card numbers. In the dialog
+at the beginning of this section, did the order taker really mistype the number, or
+did the customer read it incorrectly?
+|#
+
+(define check-cc (make-verifier (λ (i d) (if (odd? i)
+                                             d
+                                             (if (< d 5)
+                                                 (* 2 d)
+                                                 (+ (* 2 d) 1)
+                                                 )
+                                             )) 10))
+(check-cc 378282246310005)
+
+
+#|
+Exercise 5.14
+
+The serial number on U.S. postal money orders is self-verifying with a divisor of 9 and
+a very simple function: f(i,di) = di, with only one exception, namely, f(1,d1) = -d1.
+Build a verifier for these numbers, and find out which of these two money orders is
+mistyped: 48077469777 or 48077462766.
+Actually, both of those money order numbers were mistyped. In one case the error
+was that a 0 was replaced by a 7, and in the other case two digits were reversed.
+Can you figure out which kind of error got caught and which didn’t? Does this help
+explain why the other kinds of numbers use fancier functions?
+
+answer:
+|#
+
+(define check-postal (make-verifier (λ (i d) (if (= i 1) (- d) d)) 9))
+(check-postal 48077469777) ;false, mistyped
+(check-postal 48077462766) ;true
+
+
+; ================================================
+
+; REVIEW PROBLEMS
+
+#|
+Exercise 5.15
+
+Write a higher-order procedure called make-function-with-exceptionthat takes
+two numbers and a procedure as parameters and returns a procedure that has the
+same behavior as the procedural argument except when given a special argument.
+The two numerical arguments to make-function-with-exception specify what
+that exceptional argument is and what the procedure made by make-function
+with-exception should return in that case. For example, the usually-sqrt pro
+cedure that follows behaves like sqrt, except that when given the argument 7, it
+returns the result 2:
+
+(define usually-sqrt
+(make-function-with-exception 7 2 sqrt))
+(usually-sqrt 9)
+3
+(usually-sqrt 16)
+4
+(usually-sqrt 7)
+2
+|#
+
+(define (make-func-with-exception a b f)
+  (λ (n) (if (equal? n a) b (f n)))
+  )
+
+(define usually-sqrt (make-func-with-exception 7 2 sqrt))
+(usually-sqrt 9)
+(usually-sqrt 16)
+(usually-sqrt 7)
+
+
+#|
+Exercise 5.16
+
+If two procedures f and g are both procedures of a single argument such that the val
+ues produced by g are legal arguments to f,thecomposition of f and g isdefinedtobe
+the procedure that first applies g to its argument and then applies f to the result. Write
+a procedure called compose that takes two one-argument procedures and returns
+the procedure that is their composition. For example, ((compose sqrt abs)-4)
+should compute the square root of the absolute value of 4.
+|#
+
+;; compose: (b -> c) (a -> b) -> c
+(define (compose f g)
+  (λ (n) (f (g n)))
+  )
+((compose sqrt abs) -4)
+
+
+
+#|
+Suppose you have a function and you want to find at what integer point in a given
+range it has the smallest value. For example, looking at the following graph of the
+function f(x) = x^2 - 2x, you can see that in the range from 0 to 4, this function has
+the smallest value at 1
+
+<plot image with curve>
+
+We could write a procedure for answering questions like this; it could be used as
+follows for this example:
+
+(integer-in-range-where-smallest (lambda (x) (- (* x x) (* 2 x))) 0 4)
+Here is the procedure that does this; fill in the two blanks to complete it:
+
+(define integer-in-range-where-smallest
+  (lambda (f a b)
+    (if (= a b)
+        a
+        (let ((smallest-place-after-a
+               <blank>))
+          (if <blank>
+           a
+           smallest-place-after-a)))))
+|#
+
+
+(define integer-in-range-where-smallest
+  (lambda (f a b)
+    (if (= a b)
+        a
+        (let ((smallest-place-after-a
+               <blank>))
+          (if <blank>
+           a
+           smallest-place-after-a)))))
