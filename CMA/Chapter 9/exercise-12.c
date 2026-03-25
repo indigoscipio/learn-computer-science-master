@@ -4,6 +4,40 @@
 
 /*
 Exercise 12
+Write the following function:
+
+double inner_product (double a [] , double b[] , int n);
+The function shouldreturn a [0] * b [0 ] + a [l] * b [l] + ... +a [n-l] * b [n-l].
+
+*/
+
+#include <ctype.h>
+#define N 5
+
+double inner_product(double a[], double b[], int n){
+    double sum = 0;
+
+    for(int i=0;i<n;i++){
+        sum+=a[i]*b[i];
+    }
+
+    return sum;
+}
+
+int main(void){
+    double a[N] = {1.00,2.00,3.00,4.00,5.00};
+    double b[N] = {10.00,9.00,8.00,7.00,6.00};
+
+
+    printf("Result is: %f",inner_product(a,b,N));
+
+    return 0;
+}
+
+/*
+Exercise 13
+
+
 
 Write the following function, which evaluates a chess position:
 int evaluate_position(char board[8] [8] );
@@ -18,45 +52,3 @@ function will return the difference between the two numbers. This value will be 
 White has an advantage in material and negative il Black has an advantage.
 
 */
-
-#include <ctype.h>
-#define N 5
-
-
-float compute_GPA(char grades[],int n){
-    int total=0;
-    for(int i=0;i<n;i++){
-        switch(grades[i]){
-            case 'A':
-            case 'a':
-                total+=4;
-                break;
-            case 'B':
-            case 'b':
-                total+=3;
-                break;
-            case 'C':
-            case 'c':
-                total+=2;
-                break;
-            case 'D':
-            case 'd':
-                total+=1;
-                break;
-            default:
-                total+=0;
-                break;
-        }
-    }
-    return (float)total/n;
-}
-
-int main(void){
-
-    char grades[N] ={'A','B','C','D','A'};
-int size = sizeof(grades) / sizeof(grades[0]);
-    printf("The GPA is: %f\n", compute_GPA(grades, N));
-
-
-    return 0;
-}
