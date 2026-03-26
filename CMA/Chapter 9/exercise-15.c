@@ -24,38 +24,27 @@ double median(double x, double y, double z)
 #define N 8
 
 double median(double x, double y, double z){
-
+    double median = 0;
     // find largest
     // find smallest
-    double median = 0;
-
-    if(x>=y){
-        //x is not the smallest
-        if(z>=x){
-            median = x;
-        }
-        if(z<y){
-            median=y;
-        }
+    //y is the median - x > y > z
+    if((x>=y && y>=z) || (z>=y && y>=x)){
+        median = y;
+    }else if((y>=x && x>=z) || (z>=x && x>=y)){
+        //x is in the middle
+        median = x ;
     }else{
-        //y>x
-        if(z>=x){
-            median = x;
-        }
-        if(z<y){
-            median=y;
-        }
+        median = z;
     }
     return median;
-
 }
 
 
 int main(void){
-    int a[]={1,1,1,0};
+    int a[]={10,20,30};
 
 
-    printf("%d", has_zero(a,4));
+    printf("%f", median(1.0,2.0,3.0));
 
     return 0;
 }
