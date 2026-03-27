@@ -19,15 +19,16 @@ with n elements, selection_sort must do the following:
 
 int find_largest(int a[], int n){
 
-    /*
+
     // with for
-    int largest = a[0];
+    int largest = 0;
     for(int i=1;i<n;i++){
-        if(a[i]>largest) largest=a[i];
+        if(a[i]>a[largest]) largest = i;
     }
     return largest;
-    */
 
+
+    /*
     // with recursion
     if(n==1){
         return 0;
@@ -39,22 +40,27 @@ int find_largest(int a[], int n){
     }else{
         return n-1;
     }
+    */
 }
 
-int selection_sort(int a[], int n){
+void selection_sort(int a[], int n){
     // find largest element
-    int largest = find_largest(a,n);
-    int tmp = a[n-1];
-    // move it to last pos
-    a[n-1] = largest;
+    if(n==1){
+        return;
+    }else {
+        int largest_idx = find_largest(a,n);
+        int tmp = a[n-1];
 
-    //recurse
-    //selection_sort(a[], n-1);
-    printf("%d\n", find_largest(a,n));
+        // swap it
+        a[n-1] = a[largest_idx];
+        a[largest_idx] = tmp;
+
+        //recurse
+        return selection_sort(a, n-1);
+    }
 }
 
 int main(void){
-
     printf("Enter a series of %d integers: ", N);
 
     int a[N] = {0};
@@ -64,10 +70,9 @@ int main(void){
 
     selection_sort(a,N);
     // sort it
-    printf("Your sorted array is: ");
-
-
-
+    for(int i=0; i<N;i++){
+        printf("%d\n", a[i]);
+    }
 
     return 0;
 }
