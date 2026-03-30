@@ -1,485 +1,377 @@
 #lang racket
 
-; ORDERS OF GROWTH & TREE RECURSION
-
-
 #|
-Exercise 4.1
-Go ahead and figure out exactly what n + (n 1) + ... + 2 + 1 is.
-Do this by adding
-the first term to the last, the second to the second from last, and so forth. What does
-each pair add up to? How many pairs are there? What does that make the sum?
+Exercise 5.1
+Write a linear iterative version of together-copies-of
 
 answer:
-(n + 1) + ((n-1) + 2) + ((n-2) + 3) + ... (first n-midpoint) + last midpoint
-
-so if n = 5
-(5 + 1) + (4 + 2) + (3)
-so 2 total pairs + one half pair => so it makes 2n total pairs + 1/2 pair
-
-sum = 6 + 6 + 3 = 15
-
-total number of pair = n/2
-total value of each pair = n+1
-multiply it = n/2 * n + 1 -> n(n+1)/2 = n^2+n/2
-
-
-
 |#
-
-
 
 #|
-Exercise 4.2
+(define (together-copies-of combine quantity thing)
 
-(define mod-expt
-  (lambda (base exponent modulus)
-    (define mod*
-      (lambda (x y)
-        (remainder (* x y) modulus)))
-    (if (= exponent 0)
-        1
-        (if (even? exponent)
-            (mod* (mod-expt base (/ exponent 2) modulus)
-                  (mod-expt base (/ exponent 2) modulus))
-            (mod* (mod-expt base (- exponent 1) modulus)
-                  base)))))
-
-Inthisexerciseyouwillshowthatthisversionofmod-exptdoes (e)multiplications,
-asweclaimed.
-a.Useinductiontoproveeachofthefollowingaboutthislatestversionofmod-expt:
-(1) eisanonnegativeinteger,(mod-exptb em)doesatleastemultiplications.
-(2)Wheneisapositiveinteger,(mod-expt b em)doesatmost2e 1multi
-plications.
-
-answer:
-
-a1.
-e is a nonnegative integer, (mod-expt b e m) does at least e multiplicaitons
-
-M(e) represents the number of mult performed for exponent e
-if e = 0; m = (0)
-
-if e is even and > 0 : m(e) = 1 + m(e/2) + m(e/2)
-if e is odd: m(e) = 1 + m (e-1)
-
-proving m(e)>=e
-base case = 1
-
-IH
-assume for some arbitrary integer k>=0
-the formula holds all values from 0 up to k
-we assume that any j<=k the number of multiplications mj >=j
-
-IS
-
-a2.
-
-|#
-
-
-#|
-Exercise 4.3
-Write a procedure that, given the exponent, will compute how many multiplications
-this latest version of mod-expt does.
-|#
-
-(define mod-expt
-  (lambda (base exponent modulus)
-    (define mod*
-      (lambda (x y)
-        (remainder (* x y) modulus)))
-    (if (= exponent 0)
-        0
-        (if (even? exponent)
-            (let ((result (mod-expt base (/ exponent 2) modulus)))
-              (+ 1 result)
-              )
-            (+ 1 (mod-expt base (- exponent 1) modulus)
-                       )))))
-(mod-expt 2 8 3)
-
-
-#|
-4.11
-(define factorial
-  (lambda (n)
-    (if (= n 0)
-        1
-        (* n (factorial (- n 1))))))
-
-(define factorial-sum1 ; returns 1! + 2! + ... + n!
-  (lambda (n)
-    (if (= n 0)
-        0
-        (+ (factorial n)
-           (factorial-sum1 (- n 1))))))
-
-(define factorial-sum2 ; also returns 1! + 2! + ... + n!
-  (lambda (n)
-    (define loop
-      (lambda (k fact-k addend)
-        (if (> k n)
-            addend
-            (loop (+ k 1)
-                  (* fact-k (+ k 1))
-                  (+ addend fact-k)))))
-    (loop 1 1 0)))
-
-n answering the following, assume that n is a nonnegative integer. Also, justify your
-answers.
-a. Give a formula for how many multiplications the procedure factorial does as
-a function of its argument n.
-b. Give a formula for how many multiplications the procedure factorial-sum1
-does (implicitly through factorial) as a function of its argument n.
-c. Give a formula for how many multiplications the procedure factorial-sum2
-does as a function of its argument n.
-
-answer:
-a. factorial
-base case is when n = 0
-an each iteration it decreases the next n by n-1
-
-so if n=3
-ist call -> 3 * (factorial 2) - 1 mult
-2nd call -> 2 * (factorial 1) - 1 mult
-3rd call -> 1 * (factorial 0) - 1 mult
-final -> 0 -> no mult
-
-total = n multiplications
-but if n is already 0, no multiplication is done
-
-; -------
-
-b. factorial-sum1
-base case is when n = 0, returns 0
-else sum the factorial + recurse with n-1
-
-lets do small exmale, n=3
-1st call - (+ (factorial 3) (factorial-sum1 2))
-we know factorial n returns n multiplications , so mult = 3
-
-2nd call - (+ (factorial 2) (factorial-sum1 1))
-we know factorial n returns n multiplications , so mult = 2
-
-3rd call - (+ (factorial 1) (factorial-sum1 0))
-we know factorial n returns n multiplications , so mult = 1
-
-final call - n reaches 0, no more mult
-total multiplications = 3+2+1 = 6
-so the total multiplication is = n + n-1 + n-2 + ... 1 
-if n is alraedy 0, no multiplication is needed
-
------
-
-c factorial-sum2
-so here added basically stores hte acc
-
-lets do example n = 3
-first call
-initialize with (loop 1 1 0) - k=1, fact-k=1, addend = 0
-1 > 3? false
-(loop 2 (* 1 2) (+ 0 1)) - here 1 multiplication happened
-
-2nd call
-(loop 2 2 1) - k=2, fact-k=2, addend = 1
-2 > 3 ?false
-(loop 3 (* 2 3) (+ 1 2)) - here 1 multiplication happened
-
-3nd call
-(loop 3 6 3) - k=3, fact-k=6, addend = 3
-3 > 3 ?false
-(loop 4 (* 6 4) (+ 3 6)) - here 1 multiplication happened
-
-final call
-since k > n it gives the result and no more mult
-so total = n mult, similar to a
-
-
-
-|#
-
-
-#|
-Exercise4.12
-How many ways are there to factor n into two or more numbers (each of which must
-be no smaller than 2)? We could generalize this to the problem of finding how many
-ways there are to factor n into two or more numbers, each of which is no smaller
-than m. That is, we write
-
-(define ways-to-factor
-(lambda (n)
-(ways-to-factor-using-no-smaller-than n 2)))
-Your job is to write ways-to-factor-using-no-smaller-than. Here are some
-questions you can use to guide you:
-If m2 n, how many ways are there to factor n into two or more numbers each
-no smaller than m?
-Otherwise, consider the case that n is not divisible by m. Compare how many
-ways are there to factor n into two or more numbers no smaller than m with how
-many ways there are to factor n into two or more numbers no smaller than m 1.
-What is the relationship?
-The only remaining case is that m2 
-n and n is divisible by m. In this case,
-there is at least one way to factor n into numbers no smaller than m. (It can
-be factored into m and nm.) There may, however, be other ways as well. The
-ways of factoring n divide into two categories: those using at least one factor of m
-and those containing no factor of m. How many factorizations are there in each
-category?
-
-answer:
-if m^2 > n then theres 0factor
-if n is not divisible by m - just move to m+1
-if its divisible then split the rest
-
-|#
-
-; factor = m
-; target = n
-(define (ways-to-factor m n)
-  (cond [(> (sqr m) n) 0] ; no factor
-        [(not (= (remainder n m) 0)) (ways-to-factor (+ m 1) n)]
-        [else (let ((pick (quotient n m)))
-                (+ (if (>= pick m) 1 0) (ways-to-factor (+ m 1) n)
-                   (ways-to-factor m pick)
-                   )
-                )]
-        )
+  (define (loop count acc)
+    (cond [(= count 1) acc] ;last one
+          [else (loop (- count 1) (combine thing acc) )]
+          )
+    )
+  (loop quantity thing)
+  
   )
-(ways-to-factor 2 12)
-
-
-#|
-Exercise 4.13
-(define bar
-  (lambda (n)
-    (cond ((= n 0) 5)
-          ((= n 1) 7)
-          (else (* n (bar (- n 2)))))))
-
-How many multiplications (expressed in theta notation) will the computation of
-(bar n) do? Justify your answer. You may assume that n is a nonnegative inte
-ger.
-
-answer:
-lets trace small exmaple n = 3
-
-1st call
-n=3 -> (bar 3) -> not 1 or 0
-runs (* n (bar (- n 2))) -> (* 3 (bar 1))
-multiplication = 1
-
-2nd call
-n=1 -> (bar 1) -> 1 -> returns 5
-
-total multiplication = 1
-
-
-n=10
-1st call
-(bar 10) -> not 1 or 0
-runs (* n (bar (- n 2))) -> (* 10 (bar 8))
-multiplication = 1
-
-2nd call
-(bar 8) -> not 1 or 0
-runs (* n (bar (- n 2))) -> (* 8 (bar 6))
-multiplication = 1
-
-3rd -> 6
-4th -> 4
-5th -> 2
-6th -> 0 - return 5, no multiplication
-
-total = 5 multiplication
-
-my guess is that its doing n/2 multiplication total
-so its equal to big theta(n)
-
-
-
-|#
-
-
-#|
-Exercise 4.14
-Consider the following procedures:
-
-(define foo
-  (lambda (n)
-    ; computes n! + (n!)^n
-    (+ (factorial n) ; that is, (n! plus n! to the nth power)
-       (bar n n))))
-
-(define bar
-  (lambda (i j)
-    (if (= j 0)
-        1
-        ; computes (i!)^j (i! to the jth power)
-        (* (factorial i)
-           (bar i (- j 1))))))
-(define factorial
-  (lambda (n)
-    (if (= n 0)
-        1
-        (* n (factorial (- n 1))))))
-
-How many multiplications (expressed in big teta notation) (foo n) do?
-Justify your answer.
-
-answer:
-lets try small n=3
-
-(foo 3), n=3
-calls to both (factorial 3) and (bar 3 3)
-
-(factorial 3), n = 3
-n is not 0 -> eval (* n (factorial (- n 1))) -> (* 3 (factorial 2)) -> 1 mult
-(factorial 2), n=2
-n is not 0 -> eval (* n (factorial (- n 1))) -> (* 2 (factorial 1)) -> 1 mult
-(factorial 1), n=1
-n is not 0 -> eval (* n (factorial (- n 1))) -> (* 1 (factorial 0)) -> 1 mult
-(factorial 0)
-n is zero, return 1
-total from this call = 3 multiplications
-
-
-(bar 3 3), i=3, j=3
-j is not 0 => (* (factorial i) (bar i (- j 1))) -> (* (factorial 3) (bar 3 2))
-we know factorial returns n multiplications - so mult so far = 3 + 1
-(bar 3 2)
-j is not 0 => (* (factorial i) (bar i (- j 1))) -> (* (factorial 3) (bar 3 1))
-we know factorial returns n multiplications - so mult so far = 4 + (3 + 1)
-(bar 3 1)
-j is not 0 => (* (factorial i) (bar i (- j 1))) -> (* (factorial 3) (bar 3 0))
-we know factorial returns n multiplications - so mult so far = 8 + (3 + 1)
-(bar 3 0)
-j is zero, stop and return 1, total multiplications = 12
-
-combining the total 3 + 12 = 15 multiplication for n = 3
-we know factorial does n mults
-and bar does n . (n+1) multiplications
-total = n + (n . n+1)
-thats n + n^2 + n = n^2 + 2n
-in big theta notation its just n^2
-
+(together-copies-of + 3 10)
 |#
 
 #|
-Exercise 4.15
-|#
-
-; 1 coin = fake
-; even -> div into 2 piles, compare weights of the 2 piles, discard the heavier pile, look for the fake
-; odd -> pick one, divide into 2 pile, compare th weights.
-
-;; PART A
-;;max-weighings: number -> number
-(define (max-weighings n)
-  (cond [(= n 1) 0] ;done
-        [(even? n) (+ 1 (max-weighings (/ n 2)))];split into two
-        [else (max-weighings (- n 1)) ]
-        )
-  )
-(max-weighings 3)
-
-;; PART B
-(define (max-weighings3 n)
-  ; check if its multiple of 3
-  ; if its not a b is equal, remainder is in c
-  (cond [(= n 1) 0]
-        [else (let ((next-pile (if (zero? (/ n 3)) (/ n 3) (+ (quotient n 3) 1)) ))
-                (+ 1 (max-weighings3 next-pile))
-                )])
-  )
-(max-weighings3 5)
-
-#|
-Exercise 4.17
-
-|#
-
-; n = total number to choose from
-; k = items to pick
-(define (choose n k)
-  ; base case: k=0 and k=n
-  (cond [(or (zero? k) (equal? k n)) 1]
-        [else (let ((pick (choose (- n 1) (- k 1)))
-                    (dont-pick (choose (- n 1) k))
+(define (together-copies-of combine quantity thing)
+  (cond [(= 1 quantity) thing]
+        [else (let ((new-quantity (quotient quantity 2)))
+                (if (even? quantity)
+                    (let ((result (together-copies-of combine new-quantity thing)))
+                      (combine result result)
+                      )
+                    
+                    (combine (together-copies-of combine (- quantity 1) thing) thing)
                     )
-                (+ pick dont-pick)
-                ;; select it
-                ;; dont select it
                 )]
-        
         )
   )
-(choose 5 5)
+(together-copies-of + 3 10)
+|#
+
 
 #|
-Exercise 4.18
-
-Onewaytosumtheintegers from a up to b is to divide the interval in half, recursively
-sum the two halves, and then add the two sums together. Of course, it may not be
-possible to divide the interval exactly in half if there are an odd number of integers
-in the interval. In this case, the interval can be divided as nearly in half as possible.
-a. Write a procedure implementing this idea.
-b. Let’s use n as a name for the number of integers in the range from a up to b.What
-is the order of growth (in notation) of the number of additions your procedure
-does, as a function of n? Justify your answer.
+What does the following procedure compute? Also, compare its performance with
+each of the three versions of together-copies-of installed, using relatively large
+values for the first argument, perhaps in the ten thousand to a million range.
 
 
-// divide interval in half
-// sum two halves, then add the two sums together
+(define mystery
+  (lambda (a b)
+    (together-copies-of + a b)))
 
 answer:
 
-a.
+this is just a wrapper for together copies of
+but witht he + operation passed on
+so its summing b a times, in other words multiplication
+
+linear recursive - on
+linear iterative - instant
+logarithmic = 20
 |#
 
-(define (sum-int a b)
-  (cond [(equal? a b) a]
-        [else (let ((midpoint (floor (/ (+ a b) 2))))
-                (+ (sum-int a midpoint)
-                   (sum-int (+ 1 midpoint) b)
-                   )
-                )]
+#|
+(define (num-digits-in-satisfying n test?)
+  (cond [(< n 0) (num-digits-in-satisfying (- n) test?)]
+        [(< n 10) (if (test? n) 1 0)]
+        [(test? (remainder n 10)) (+ (num-digits-in-satisfying (quotient n 10) test?) 1)]
+        [else (num-digits-in-satisfying (quotient n 10) test?)]))
+|#
 
+#|
+Exercise 5.4
+Use num-digits-in-satisfyingto define the procedure num-digits, which was
+defined “from scratch” in Section 2.3.
+|#
+
+
+#|
+Exercise 5.5
+Rewrite num-digits-in-satisfying so that it generates an iterative process.
+Another computational pattern that occurs very frequently involves summing the
+values of a function over a given range of integers.
+|#
+
+(define (num-digits-in-satisfying n test?)
+  (define (loop curr-n acc)
+    (cond [(< curr-n 0) (loop (- curr-n) acc)] ;negative n
+          [(< curr-n 10) (if (test? curr-n) (+ 1 acc) acc)] ;last digit
+          [(test? (remainder curr-n 10)) (loop (quotient curr-n 10) (+ 1 acc)) ] ;passes the test
+          [else (loop (quotient curr-n 10) acc)]; fails the test
+          )
+    )
+  (loop n 0)
+  )
+(num-digits-in-satisfying 12345 odd?)
+
+
+#|
+
+Exercise 5.6
+Write a general purpose procedure, that when given two integers, low and high,and
+a procedure for computing a function f, will compute f(low) + f(low + 1) + f(low +2) + ... + f(high).
+Show how it can be used to sum the squares of the integers from 5 to 10 and to sum the square
+roots of the integers from 10 to 100
+
+|#
+
+(define (sum-from low high f)
+  ; on each step increase low until it moves past high
+  (cond [(> low high) 0] ;low is now past high
+        [else (+ (f low) (sum-from (+ 1 low) high f))]
         )
   )
-(sum-int 1 3)
+(sum-from 5 10 sqr)
+(sum-from 10 100 sqrt)
 
 
-; PART B
 #|
-lets say n = 3, so 3 total integer
-
-(sum-int 1 3) - a=1, b=3
-a does not equal 0, goes to the else case
-midpoint = floor 4/2 = 2
-(+ (sum-int 1 2) (sum-int 3 3))
-so this part does 1 addition
-
-left part
-(sum-int 1 2), a does not equal b
-midpoint = floor 3/2 = floor 1.5 = 1
-(+ (sum-int 1 1) (sum-int 2 2))
-so this part does 1 addiiton
-
-(sum-int 1 1) - equal, no addition
-(sum-int 2 2) - equal, no addiiton
-
-
-right part
-(sum-int 3 3)- a=3, b=3
-since a and b are equal, it just returns 3. no addition
-
-so total addition for n=3 is 1+1 = 2 additions
-
-to generalize it seems the total addition
-is how many times it goes to the left and how many times it goes to the right
-
-if n=4 (1,2,3,4)
-(sum-int 1 4) - splits into (sum-int 1 2) (sum-int 3 4)
-
-
+Exercise 5.7
+Write a procedure make-exponentiater that is passed a single parameter e (an
+exponent) and returns a function that itself takes a single parameter, which it raises
+to the e power. You should use the built-in Scheme procedure expt. As examples,
+you could define square and cube as follows:
+(define square (make-exponentiater 2))
+(define cube (make-exponentiater 3))
+(square 4)
+16
+(cube 4)
+64
 |#
+
+(define (make-exponentiater e)
+  (λ (b) (expt b e))
+  )
+(define square (make-exponentiater 2))
+(square 4)
+
+#|
+Exercise 5.8
+Define a procedure that can be used to produce factorial (Section 2.1) or
+sum-of-first (Section 2.3). Show how it can be used to define those two pro
+cedures
+|#
+
+(define (sum-of-first n)
+  (cond [(zero? n) 0]
+        [else (+ n (sum-of-first (- n 1)))]
+        )
+  )
+
+(define (factorial n)
+  (cond [(zero? n) 1]
+        [else (* n (factorial (- n 1)))])
+  )
+
+(define (proc op n b f)
+  (cond [(zero? n) b]; done
+        [else (op (f n) (proc op (- n 1) b f)) ]
+        )
+  )
+;(proc * 5 1) ;factorial 5
+;(proc + 5 0) ;sum of first 5
+
+#|
+Exercise 5.9
+Generalize your solution to the previous exercise so it can also be used to produce
+sum-of-squares and sum-of-cubes from Exercise 2.8 on page 38.
+|#
+
+(define (sum-of-squares n)
+  (proc + n 0 sqr)
+  )
+(sum-of-squares 5)
+(define (sum-of-cubes n)
+  (proc + n 0 (λ (x) (expt x 3)))
+  )
+(sum-of-cubes 5)
+
+#|
+Exercixe 5.10
+Write a predicate that takes a number and determines whether the sum of its digits
+is divisible by 17.
+|#
+
+#|
+(define (sod-div-by-17 n)
+  (zero? (remainder (sum-of-digits n) 17))
+  )
+|#
+
+#|
+Exercise 5.11
+Write a procedure make-verifier, which takes f and m as its two arguments
+and returns a procedure capable of checking a number. The argument f is itself a
+procedure, of course. Here is a particularly simple example of a verifier being made
+and used:
+
+(define check-isbn (make-verifier * 11))
+(check-isbn 0262010771)
+#t
+
+
+As we just saw, for ISBN numbers the divisor is 11 and the function is simply
+f (i, di) = di. Other kinds of numbers use slightly more complicated functions,
+but you will still be able to use make-verifier to make a verifier much more easily
+than if you had to start from scratch.
+
+answer:
+|#
+
+
+(define (sum-of-digits n)
+  (define (loop curr-n acc)
+    (cond [(equal? curr-n 0) acc]
+          [else (loop (quotient curr-n 10) (+ (remainder curr-n 10) acc) ) ])
+    )
+  (loop n 0)
+  )
+
+
+(define (make-verifier f m)
+  (λ (n) (define (loop i curr-n acc)
+           (cond [(zero? curr-n) (zero? (remainder acc m))]
+                 [else (loop (+ i 1) (quotient curr-n 10) (+ (f i (remainder curr-n 10)) acc))]
+                 )
+           )
+    (loop 1 n 0))
+  )
+(define check-isbn (make-verifier * 11))
+(check-isbn 0262010771)
+
+
+#|
+Execise 5.12
+For UPC codes (the barcodes on grocery items), the divisor is 10, and the function
+f (i, di)isequaltodi itself when i is odd, but to 3di when i is even. Build a verifier for
+UPCcodes using make-verifier, and test it on some of your groceries. (The UPC
+number consists of all the digits: the one to the left of the bars, the ones underneath
+the bars, and the one on the right.) Try making some mistakes, like switching or
+changing digits. Does your verifier catch them?
+|#
+
+(define check-upc (make-verifier (λ (i d) (if (odd? i) d (* 3 d))) 10))
+(check-upc 036000291453)
+
+#|
+Credit card numbers also use a divisor of 10 and also use a function that yields di
+itself when i is odd. However, when i is even, the function is a bit fancier: It is 2di if
+di 
+5, and 2di 1ifdi 5. Build a verifier for credit card numbers. In the dialog
+at the beginning of this section, did the order taker really mistype the number, or
+did the customer read it incorrectly?
+|#
+
+(define check-cc (make-verifier (λ (i d) (if (odd? i)
+                                             d
+                                             (if (< d 5)
+                                                 (* 2 d)
+                                                 (+ (* 2 d) 1)
+                                                 )
+                                             )) 10))
+(check-cc 378282246310005)
+
+
+#|
+Exercise 5.14
+
+The serial number on U.S. postal money orders is self-verifying with a divisor of 9 and
+a very simple function: f(i,di) = di, with only one exception, namely, f(1,d1) = -d1.
+Build a verifier for these numbers, and find out which of these two money orders is
+mistyped: 48077469777 or 48077462766.
+Actually, both of those money order numbers were mistyped. In one case the error
+was that a 0 was replaced by a 7, and in the other case two digits were reversed.
+Can you figure out which kind of error got caught and which didn’t? Does this help
+explain why the other kinds of numbers use fancier functions?
+
+answer:
+|#
+
+(define check-postal (make-verifier (λ (i d) (if (= i 1) (- d) d)) 9))
+(check-postal 48077469777) ;false, mistyped
+(check-postal 48077462766) ;true
+
+
+; ================================================
+
+; REVIEW PROBLEMS
+
+#|
+Exercise 5.15
+
+Write a higher-order procedure called make-function-with-exceptionthat takes
+two numbers and a procedure as parameters and returns a procedure that has the
+same behavior as the procedural argument except when given a special argument.
+The two numerical arguments to make-function-with-exception specify what
+that exceptional argument is and what the procedure made by make-function
+with-exception should return in that case. For example, the usually-sqrt pro
+cedure that follows behaves like sqrt, except that when given the argument 7, it
+returns the result 2:
+
+(define usually-sqrt
+(make-function-with-exception 7 2 sqrt))
+(usually-sqrt 9)
+3
+(usually-sqrt 16)
+4
+(usually-sqrt 7)
+2
+|#
+
+(define (make-func-with-exception a b f)
+  (λ (n) (if (equal? n a) b (f n)))
+  )
+
+(define usually-sqrt (make-func-with-exception 7 2 sqrt))
+(usually-sqrt 9)
+(usually-sqrt 16)
+(usually-sqrt 7)
+
+
+#|
+Exercise 5.16
+
+If two procedures f and g are both procedures of a single argument such that the val
+ues produced by g are legal arguments to f,thecomposition of f and g isdefinedtobe
+the procedure that first applies g to its argument and then applies f to the result. Write
+a procedure called compose that takes two one-argument procedures and returns
+the procedure that is their composition. For example, ((compose sqrt abs)-4)
+should compute the square root of the absolute value of 4.
+|#
+
+;; compose: (b -> c) (a -> b) -> c
+(define (compose f g)
+  (λ (n) (f (g n)))
+  )
+((compose sqrt abs) -4)
+
+
+
+#|
+Suppose you have a function and you want to find at what integer point in a given
+range it has the smallest value. For example, looking at the following graph of the
+function f(x) = x^2 - 2x, you can see that in the range from 0 to 4, this function has
+the smallest value at 1
+
+<plot image with curve>
+
+We could write a procedure for answering questions like this; it could be used as
+follows for this example:
+
+(integer-in-range-where-smallest (lambda (x) (- (* x x) (* 2 x))) 0 4)
+Here is the procedure that does this; fill in the two blanks to complete it:
+
+(define integer-in-range-where-smallest
+  (lambda (f a b)
+    (if (= a b)
+        a
+        (let ((smallest-place-after-a
+               <blank>))
+          (if <blank>
+           a
+           smallest-place-after-a)))))
+
+
+answer: ...
+|#
+
+
+(define (integer-in-range-where-smallest f a b)
+  (if (= a b)
+      a
+      (let ((smallest-place-after-a <blank>))
+        (if <blank>
+            a
+            smallest-place-after-a))
+      )
+  )

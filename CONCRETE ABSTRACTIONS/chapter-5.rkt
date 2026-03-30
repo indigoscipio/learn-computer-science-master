@@ -360,15 +360,174 @@ Here is the procedure that does this; fill in the two blanks to complete it:
           (if <blank>
            a
            smallest-place-after-a)))))
+
+
+answer: ...
 |#
 
 
-(define integer-in-range-where-smallest
-  (lambda (f a b)
-    (if (= a b)
-        a
-        (let ((smallest-place-after-a
-               <blank>))
-          (if <blank>
-           a
-           smallest-place-after-a)))))
+(define (integer-in-range-where-smallest f a b)
+  (if (= a b)
+      a
+      (let ((smallest-place-after-a (integer-in-range-where-smallest f (+ a 1) b)))
+        (if (< (f a ) (f smallest-place-after-a))
+            a
+            smallest-place-after-a))
+      )
+  )
+
+#|
+Exercise 5.18
+Consider the following definitions
+
+
+(define make-scaled
+  (lambda (scale f)
+    (lambda (x)
+      (* scale (f x)))))
+
+(define add-one
+  (lambda (x)
+    (+ 1 x)))
+
+(define mystery (make-scaled 3 add-one))
+
+for the following questions, be sure to indicate how you arrived at your answer:
+
+a. what is the value of (mystery 4)?
+b. what is the value of the procedural call ((make-scaled 2 (make-scaled
+3 add-one)) 4)?
+
+answer:
+a. lets to a simple trace
+
+(mystery 4) -> ((make-scaled 3 add-one) 4) ->
+inside make-scaled
+scale = 3, f = add-one, x = 4
+(* scale (f x)) -> (* 3 (add-one 4)) -> (* 3 5) -> 15
+so it returns 15
+
+b. lets do this one by one
+since make scaled is a function machine that expects 1 arg
+we stack it so it expect 1 arg then another arg
+
+INNER PART
+the inside application first (make-scaled 3 add-one) ->
+scale = 3, f = add-one
+it returns a lamda that expects x -> (lambda (x) (* 3 (add-one x)))
+in other words it increases whatever x you provide by 1 , then multiplies it by 3
+
+OUTER PART
+then to the next one
+((make-scaled 2 (make-scaled 3 add-one)) ->
+where scale = 2, and f is the previous function
+it returns a lambda that also expects another x -> (lambda (x) (* scale (f x))) ->
+since we know the result from the inner app just subst
+(lambda (x) (* 2 ((lambda (x) (* 3 (add-one x))) x)))
+
+APPLICATION
+the last application we provide the 1st arg where x = 4
+(* 2 ((lambda (x) (* 3 (add-one x))) 4)) -> calc inner layer ->
+(lambda (x) (* 3 (add-one 4))) -> (lambda (x) (* 3 5)) -> (lambda (x) 15)
+
+then the outer
+(* 2 ((lambda (x) 15)) -> (* 2 15) -> 30
+so it evals to 30
+
+
+|#
+
+(define (make-scaled scale f)
+  (lambda (x) (* scale (f x))))
+
+(define (add-one x)
+    (+ 1 x))
+
+(define mystery (make-scaled 3 add-one))
+(mystery 4)
+
+((make-scaled 2 (make-scaled 3 add-one)) 4)
+(lambda (x) (* 2 ((lambda (x) (* 3 (add-one x))) 4)))
+
+#|
+Exercise 5.19
+f l and h are integers, with l < h, we say f is an increasing function on the integer
+range from l to h if f(l) < f(l+1) < f(l+2) < ... < f(h).
+
+Write a procedure, increasing-on-integer-range?, that takes f, l,and h as its three arguments and
+returns true or false (that is, #t or #f) as appropriate.
+|#
+
+;; int int int -> bool
+(define (increasing-on-integer-range? f l h)
+  ; if f(l) < f(h) - keep checking
+  ; if f(l) > f(h) - stop and return false
+  (cond [(= l h) #t] ; return the result
+        [else (let ((curr-val (f l))
+                    (next-val (f (+ 1 l))))
+                (if (> next-val curr-val)
+                    (increasing-on-integer-range? f (+ l 1) h)
+                    #f
+                    )
+                )]
+        )
+
+) 
+(increasing-on-integer-range? (λ (x) (* x 2)) 1 5)
+(increasing-on-integer-range? (λ (x) (- 10 x)) 1 5)
+
+#|
+Exercise 5.20
+Suppose the following have been defined:
+
+(define f
+  (lambda (m b)
+    (lambda (x) (+ (* m x) b))))
+(define g (f 3 2))
+
+For each of the following expressions, indicate whether an error would be signaled,
+the value would be a procedure, or the value would be a number. If an error is
+signaled, explain briefly the nature of the error. If the value is a procedure, specify
+how many arguments the procedure expects. If the value is a number, specify which
+number.
+
+a. f
+b. g
+c. (* (f 3 2) 7)
+d. (g 6)
+e. (f 6)
+f. ((f 4 7) 6)
+
+answer:
+
+a.this one returns a procedure
+since we defined f as (lambda (m b)(lambda (x) (+ (* m x) b)))
+it returns that procedure that expects 2 argument m and b
+
+
+b. since we defined g = (f 3 2) it calls the function
+with m = 3 and b = 2
+(lambda (m b)(lambda (x) (+ (* m x) b))) ->
+(lambda (x) (+ (* 3 x) 2))
+so this one returns another function that expects one argument x
+
+c. (* (f 3 2) 7)
+this one would return an error
+because as mentioned in the previous one, the result of function application of f
+returns another function that expects 1 argument x
+but here we treat it as a math expression which would result in different type (* lambda number)
+
+d. (g 6)
+this one results ina number
+
+e. (f 6)
+
+f. ()
+
+|#
+
+(define f
+  (lambda (m b)
+    (lambda (x) (+ (* m x) b))))
+(define g (f 3 2))
+

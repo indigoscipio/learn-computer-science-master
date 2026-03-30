@@ -25,16 +25,36 @@ void print_magic_square (int n, char magic_square[99] [99] )
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
-#define N 99
 
 void create_magic_square(int n, char magic_square[n][n]){
-    int row, col, next_col, next_row;
+    int row=0, col=n/2, next_col, next_row;
 
-    return;
+    //fill up first num
+    magic_square[row][col] = 1;
+
+    for(int num = 2; num <= n*n; num++){
+        next_row = (row-1<0) ? n-1 : row-1;
+        next_col = (col+1 >=n) ? 0 : col+1;
+
+        if (magic_square[next_row][next_col] != 0) {
+        next_row = (row + 1 >= n) ? 0 : row + 1;
+        next_col = col;
+        }
+
+        magic_square[next_row][next_col] = num;
+        row = next_row;
+        col = next_col;
+    }
+
 }
 
 void print_magic_square(int n, char magic_square[n][n]){
-    return;
+    for(int i=0;i<n;i++){
+        for(int j=0; j<n;j++){
+            printf("%02d  ",magic_square[i][j]);
+        }
+        printf("\n");
+    }
 }
 
 
@@ -45,15 +65,16 @@ int main(void) {
     printf("Enter size of magic square: ");
     scanf("%d", &n);
 
-    int a[n][n];
+    // fill up the array
+    char a[n][n];
     for(int i=0;i<n;i++){
         for(int j=0;j<n;j++){
             a[i][j]=0;
         }
     }
+
     create_magic_square(n, a);
-
-
+    print_magic_square(n,a);
 
     return 0;
 }
