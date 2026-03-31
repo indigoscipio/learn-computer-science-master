@@ -58,18 +58,13 @@ int roll_dice(void);
 
 bool play_game(void){
     int point;
-    //play one craps game
-        //true if win, false if lose
 
     int rand_n = roll_dice();
+    printf("You rolled: %d\n", rand_n);
 
     if(rand_n == 7 || rand_n == 11){
-        printf("You rolled: %d\n", rand_n);
-        printf("You win!");
         return true;
     }else if(rand_n == 2 || rand_n == 3 || rand_n == 12){
-        printf("You rolled: %d\n", rand_n);
-        printf("You lose!");
         return false;
     }
     else{
@@ -79,12 +74,11 @@ bool play_game(void){
         while(true){
             int rand_n1 = roll_dice();
             printf("You rolled: %d\n", rand_n1);
+
             if(rand_n1 == rand_n){
-                printf("You win!");
                 return true;
             }
             if(rand_n1 == 7){
-                printf("You lose!");
                 return false;
             }
         }
@@ -102,13 +96,35 @@ int roll_dice(void){
 int main(void) {
     srand(time(NULL));
     bool is_game_over = false;
+    int wins = 0, losses = 0;
 
-    while(is_game_over == false){}
-    /*
+
     do{
-        play_game();
-    }while(is_game_over==false);
-    */
+        if(play_game()){
+
+            printf("You win!\n");
+            wins++;
+        }else{
+            printf("You lose!\n");
+            losses++;
+        }
+
+        char ch;
+        printf("Do you want to play again? (Y/N)\n");
+        scanf(" %c", &ch);
+
+        if(toupper(ch) == 'Y'){
+            continue;
+        }
+        if(toupper(ch) == 'N'){
+            is_game_over = true;
+        }
+
+
+    }while(is_game_over!=true);
+
+    printf("Total wins: %d, Total losses: %d\n", wins, losses);
+
     // call play game repeatedly
     // keep track of wins and loses and display "you win" or "you lose"
 

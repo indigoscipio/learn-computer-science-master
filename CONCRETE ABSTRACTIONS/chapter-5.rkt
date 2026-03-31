@@ -129,11 +129,15 @@ you could define square and cube as follows:
 64
 |#
 
+
+#|
 (define (make-exponentiater e)
   (λ (b) (expt b e))
   )
 (define square (make-exponentiater 2))
 (square 4)
+
+|#
 
 #|
 Exercise 5.8
@@ -518,11 +522,21 @@ returns another function that expects 1 argument x
 but here we treat it as a math expression which would result in different type (* lambda number)
 
 d. (g 6)
-this one results ina number
+since g is (f 3 2) it returns a function that expects 1 arg
+(lambda (x) (+ (* 3 x) 2)) we apply 6 to it
+((lambda (x) (+ (* 3 x) 2)) 6) ->
+(+ (* 3 6) 2) -> (+ 18 2) -> 20 so this one returns a number
 
 e. (f 6)
+since f returns a function that takes 2 args and return a function that takes 1 arg
+it wil return an error since (f 6) we only specify 1 arg
 
-f. ()
+f. ((f 4 7) 5)
+(f 4 7) -> valid, this will return a func that expects 1 arg ->
+(lambda (x) (+ (* 4 x) 7)) -> apply with x= 5 -> ((lambda (x) (+ (* 4 x) 7)) 5)
+ (+ (* 4 5) 7) -> (+ 20 7) -> 27
+so it will return a number
+
 
 |#
 
@@ -531,3 +545,145 @@ f. ()
     (lambda (x) (+ (* m x) b))))
 (define g (f 3 2))
 
+#|
+Exercise 5.22
+
+Thefunction halts?was definedasatest of whether a procedure with no parameters
+would generate a terminating process. That is, (halts? f) returns true if and
+only if the evaluation of (f) would terminate. What about procedures that take
+arguments? Suppose we had a procedure halts-on? that tests whether a one
+argument procedure generates a terminating process when given some particular
+argument. That is, (halts-on? f x) returns true if and only if the evaluation of
+(f x) would terminate.
+
+a. use halts-on? in a definition of halts?
+b. what does this tell you about the possibility of halts-on?
+
+answer:
+
+
+|#
+
+
+; THERE IS NO UNIVERSAL DEBUGGER
+
+
+#|
+Exercise 5.23
+
+Consider the following example:
+
+(define double (lambda (x) (* x 2)))
+(define square (lambda (x) (* x x)))
+(define new-procedure
+  (make-averaged-procedure double square))
+
+(new-procedure 4)
+12
+(new-procedure 6)
+24
+
+In the first example, the new-procedure that was made by make-averaged
+procedure returned 12 because 12 is the average of 8 (twice 4) and 16 (4 squared).
+In the second example, it returned 24 because 24 is the average of 12 (twice 6)
+and 36 (6 squared). In general, new-procedure will return the average of what
+ever double and square return because those two procedures were passed to
+make-averaged-procedure when new-procedure was made.
+
+Write the higher-order procedure factory make-averaged-procedure.
+
+answer:
+|#
+
+
+(define double (lambda (x) (* x 2)))
+(define square (lambda (x) (* x x)))
+
+(define (make-averaged-procedure f1 f2)
+  (λ (x) (/ (+ (f1 x) (f2 x)) 2))
+  )
+
+(define new-procedure
+  (make-averaged-procedure double sqr))
+(new-procedure 4)
+(new-procedure 6)
+
+
+#|
+Exercise 5.24
+
+Consider the following procedure:
+
+(define (positive-integer-upto-where-smallest n f)
+  ; return an integer i such that
+  ; 1 <= i <= n and for all integers j
+  ; in that same range, f(i) <= f(j)
+  (define (loop where-smallest-so-far next-to-try)
+    (if (> next-to-try n)
+        where-smallest-so-far
+        (loop (if (< (f next-to-try)
+                     (f where-smallest-so-far))
+                  next-to-try
+                  where-smallest-so-far)
+              (+ next-to-try 1))))
+  (loop 1 2)
+  )
+
+a. Write a mathematical formula involving n that tells how many times this proce
+dure uses the procedure it is given as its second argument. Justify your answer.
+b. Give a simple order of growth for the quantity you determined in part a. Justify
+your answer.
+c. Suppose you were to rewrite this procedure to make it more efficient. What (in
+terms of n) is the minimum number of times it can invoke f and still always
+determine the correct answer? Justify your answer. (You are not being asked to
+actually rewrite the procedure.)
+
+
+|#
+
+(define (positive-integer-upto-where-smallest n f)
+  ; return an integer i such that
+  ; 1 <= i <= n and for all integers j
+  ; in that same range, f(i) <= f(j)
+  (define (loop where-smallest-so-far next-to-try)
+    (if (> next-to-try n)
+        where-smallest-so-far
+        (loop (if (< (f next-to-try)
+                     (f where-smallest-so-far))
+                  next-to-try
+                  where-smallest-so-far)
+              (+ next-to-try 1))
+        ))
+  (loop 1 2)
+  )
+
+#|
+answer:
+a. lets trace this
+with n = 5, f = sqr
+inside initializes with (loop 1 2)
+where-smallest = 1, next-to-try = 2
+checks (> 2 5), false
+
+recurse with 1st argument check and 2nd arg increase
+(< (f next-to-try)(f where-smallest-so-far)) -> calls f two times.
+(< (sqr 2)(sqr 1)) -> (< 4 1) -> false
+
+recurse with (loop 1 )
+where-smallest = 1, next-to-try = 3
+
+so it seems that if we go to the else case
+it recurse with the f being called two times.
+
+2 x (n-1)
+2 because we call 2 times on each recursion
+n-1 is the range from 2 - n
+
+PART B
+big theta of n
+
+PART C
+save the result in a variable
+reduces total call from 2n -> n
+|#
+(positive-integer-upto-where-smallest 5 sqr)
