@@ -42,6 +42,7 @@ bool is_full(void){
 void push(char i){
     if(is_full()){
         printf("Stack Overflow");
+        exit(EXIT_FAILURE);
     }else{
         contents[top++]=i;
     }
@@ -55,30 +56,47 @@ char pop(void){
     }
 }
 
+
+
+//check recent char
+    // if it encounters right brace, pop the matching pair
+    // if it doesn't match with elft, then it's not nested
+//when it ends/scans newline check if the stack is empty
+    // if so, braces are matched
+    // else they aren't matched
+
 int main(void) {
     char ch;
     printf("Enter parentheses/or braces: ");
 
-    while((ch = getchar()) != '\n'){
+    bool is_properly_nested = true;
 
+    while((ch = getchar()) != '\n'){
         if(ch == '{'  || ch == '('){
             push(ch);
         }else if(ch == '}' || ch == ')'){
-            char opened = pop();
-
-            //mismatch
-
             //underflow
-
+            if(is_empty()){
+                printf("Stack Underflow");
+                is_properly_nested = false;
+                break;
+            }else{
+                char opened = pop();
+                // mismatch
+                if((opened == '(' && ch != ')') ||
+                    (opened == '{' && ch != '}')){
+                    printf("Mismatch/Illegal");
+                    is_properly_nested = false;
+                    break;
+                }
+            }
         }
+    }
 
-        //check recent char
-            // if it encounters right brace, pop the matching pair
-            // if it doesn't match with elft, then it's not nested
-        //when it ends/scans newline check if the stack is empty
-            // if so, braces are matched
-            // else they aren't matched
-
+    if(is_empty() && is_properly_nested){
+        printf("Matched");
+    }else{
+        printf("Not Matched");
     }
 
     return 0;

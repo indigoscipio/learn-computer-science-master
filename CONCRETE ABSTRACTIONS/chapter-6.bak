@@ -1,0 +1,9 @@
+#lang racket
+
+
+(size-of-pile game-state p)
+;returns an integer equal to the number of coins in the p-th
+;pile of the game-state
+(remove-coins-from-pile game-state n p)
+;given a Nim game-state, returns a new game state with n
+;fewer coins in pile p
