@@ -18,12 +18,14 @@ the suit of the first card.
 #define NUM_RANKS 13
 #define NUM_SUITS 4
 #define NUM_CARDS 5
+#define ROW 5
+#define COL 2
 
 
 bool straight,flush,four,three;
 int pairs;
 
-void read_cards(int []);
+void read_cards(int [][]);
 void analyze_hand(int []);
 void print_result(void);
 
@@ -31,7 +33,7 @@ void print_result(void);
 int main(void) {
     //int num_in_rank[NUM_RANKS];
     //int num_in_suit[NUM_SUITS];
-    int hand[5][2] = {0};
+    int hand[ROW][COL] = {0};
 
     for(;;){
         read_cards(hand);
@@ -43,24 +45,25 @@ int main(void) {
 
 //read_cards: read cards into external var num_in_rank and num_in_suit,
 // checks for bad cards + dups
-void read_cards(int hand[]){
-    //bool card_exists[NUM_RANKS][NUM_SUITS];
+void read_cards(int hand[][COL]){
+    bool card_exists[NUM_RANKS][NUM_SUITS];
     char ch, rank_ch, suit_ch;
     int rank,suit;
     bool bad_card;
     int cards_read = 0;
 
-
-    for(rank=0;rank<NUM_RANKS;rank++){
-        hand[rank]=0;
-
-        for(suit=0;suit<NUM_SUITS;suit++){
-            card_exists[rank][suit] = false;
+    //initialize to 0
+    for(int r=0;r<ROW;r++){
+        for(int c=0;c<COL;c++){
+            hand[r][c] = 0;
         }
     }
 
-    for(suit=0;suit<NUM_SUITS;suit++){
-        num_in_suit[suit]=0;
+    // clear card exists
+    for(rank=0;rank<NUM_RANKS;rank++){
+        for(suit=0;suit<NUM_SUITS;suit++){
+            card_exists[rank][suit] = false;
+        }
     }
 
     while(cards_read<NUM_CARDS){
@@ -104,8 +107,8 @@ void read_cards(int hand[]){
         }else if(card_exists[rank][suit]){
             printf("Duplicate card; ignored.\n");
         }else{
-            num_in_rank[rank]++;
-            num_in_suit[suit]++;
+            hand[cards_read][0] = rank;
+            hand[cards_read][1] = suit;
             card_exists[rank][suit] = true;
             cards_read++;
         }
@@ -115,19 +118,20 @@ void read_cards(int hand[]){
 
 //analyze_hand: deetmine wheter hand ocntians straight, flish etc
 // determines the num of pairs, store result into external var straight flush etc
-void analyze_hand(int num_in_rank[], int num_in_suit[]){
+void analyze_hand(int hand[][COL]){
     int num_consec = 0;
     int rank,suit;
     straight = false;
-    flush = false;
+    flush = true;
     four = false;
     three = false;
     pairs = 0;
 
     //check for flush
-    for(suit=0;suit<NUM_SUITS;suit++){
-        if(num_in_suit[suit] == NUM_CARDS){
-            flush = true;
+    int first_suit=hand[0][1]
+    for(int r=1; r<ROW;r++){
+        if(hand[r][1] != first_suit){
+            flush = false;
         }
     }
 
@@ -141,6 +145,7 @@ void analyze_hand(int num_in_rank[], int num_in_suit[]){
         straight = true;
         return;
     }
+
 
     //check 4 of a kind, 3 of a kind, pairs
     for(rank=0;rank<NUM_RANKS;rank++){
