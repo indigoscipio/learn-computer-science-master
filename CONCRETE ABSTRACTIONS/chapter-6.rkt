@@ -201,6 +201,8 @@ and display-game-state appropriately. Do so.
 |#
 
 
+#|
+
 (define (remove-coins-from-pile game-state num-coins pile-number)
   (let ((amt-to-take (min num-coins (size-of-pile game-state pile-number))))
     (cond [(= pile-number 1) (make-game-state (- (car game-state) amt-to-take) (cadr game-state) (cddr game-state) )]
@@ -258,3 +260,178 @@ here we only have conditional to check if 1st pile is not empty if so move the 2
     (display pile)
     (newline)
     (remove-coins-from-pile game-state 1 pile)))
+
+
+|#
+
+; ===============================================================================
+
+#|
+Exercise 6.13
+In this exercise, we will construct the move instruction data type and modify our
+program appropriately.
+a. First, you need to decide what the basic operations for move instructions should
+be. There are several ways to do this. You can think about how move instructions
+are going to be used—in particular, what information other procedures need
+to know about a given move instruction. You can think how you would fully
+describe a move instruction to someone. You can model move instructions on
+game states. In any case, it should be clear that you will need one constructor
+and two selectors. Give a specification for move instructions similar to the one we
+gave the game state data type. That is, what is the name of each operation, what
+sort of parameters does it take, and what sort of result does it return? (We will
+call the move instruction constructor make-move-instruction in the following
+discussionandwillassumeit takes thenumberofcoinsas itsfirstargumentand
+thepilenumberasitssecondargument,soyoumightwant todothesame.)Can
+youalsowriteequationsthatdescribehowtheoperationsarerelated?
+
+answer:
+
+a move is an action where an entity (player/computer) can take some coin from some pile
+
+CONSTRUCTOR
+;;make-move-instruction
+it takes n number of coin and pile number, and returns a new move instruction object
+
+SELECTOR
+;;move-num-coins
+it takes a move instruction and returns the number of coins to take
+
+;;move-pile-number
+it takes a move instruction and returns which pile to take from
+
+
+b. choose a represntation and ipmlement htese procedures
+|#
+
+; number number -> move instruction
+(define (make-move-instruction n p)
+  (cons n p)
+  )
+
+; move instruction -> number
+(define (move-num-coins move)
+  (car move)
+  )
+
+; move instruction -> number
+(define (move-pile-number move)
+  (cdr move)
+  )
+
+
+#|
+c.
+Wehaveusedtheprocedureremove-coins-from-piletoprogress fromone
+gamestatetothenext,passingtoit thecurrentgamestateandthetwointegers
+that specify themove.Butwithourmove instructiondata type, itmakesmore
+sense tohaveaprocedure that ispassedthecurrent game stateand themove
+instructionandreturns thenext game state.Wecouldcall theprocedure just
+remove;alternatively,wecouldcallitnext-game-state.Thelatterseemsmore
+descriptive.
+Writetheprocedurenext-game-state,whichtakes twoparameters,agame
+stateandamoveinstruction,andreturnsagamestate.Youwillneedtochange
+computer-moveandhuman-movesothat theycorrectlycallnext-game-state
+insteadof remove-coins-from-pile.Runyourprogramtomake sureevery
+thingworksasbefore.
+
+answer:
+
+(define (next-game-state game-state move-instruction)
+  (let ((c (move-num-coins move-instruction))
+        (p (move-pile-number move-instruction))
+        )
+     (remove-coins-from-pile game-state c p)
+    )
+  )
+(next-game-state 10 (cons 3 1))
+
+|#
+
+#|
+(define (computer-move game-state)
+  ; computer only move if its ifnds a nonempty pile
+  (let ((pile (cond [(> (size-of-pile game-state 1) 0) 1]
+                    [(> (size-of-pile game-state 2) 0) 2]
+                    [else 3]
+                    )
+              ))
+    (display "I take 1 coin from pile ")
+    (display pile)
+    (newline)
+    (next-game-state game-state (make-move-instruction 1 pile))))
+
+|#
+
+
+#|
+; ===========================================================
+; Exercise 6.14
+
+In this exercise, you will change the procedures computer-move and play-with
+turns as indicated previously. After making these changes, test the program by
+making the previous initial call.
+a. Modify the procedure computer-move so that it takes an additional parameter
+called strategy and uses it appropriately to make the computer’s move. Re
+member that when the strategy is applied to a game state, a move instruction is
+returned. This can then be passed on to next-game-state.
+b. Modify play-with-turns so that it also has a new parameter (the computer’s
+strategy), modifying in particular the call to computer-move so that the strategy
+is employed. Note that you must make additional changes to play-with-turns
+in order that the strategy gets “passed along” to the next iteration.
+Now we can add a variety of different strategies to our program. This amounts to
+writing the various strategies and then calling play-with-turns with the strategies
+we want. We ask you in the next few exercises to program various strategies.
+
+answer;
+
+
+; PART A
+; game-state -> move-instruction
+(define (simple-strategy game-state)
+  (let ((pile (cond [(> (size-of-pile game-state 1) 0) 1]
+                    [(> (size-of-pile game-state 2) 0) 2]
+                    [else 3]
+                    )
+              ))
+    (make-move-instruction 1 pile))
+  )
+
+; game-state (game-state ->move instruction) -> game-state
+(define (computer-move game-state strategy)
+  (let ((move-instruction (strategy game-state))
+        (coins (move-num-coins move-instruction))
+        (pile (move-pile-number move-instruction))
+        )
+    (display "I take")
+    (display coins)
+    (display "Coins from pile")
+    (display pile)
+    (newline)
+    (next-game-state game-state (move-instruction coins pile))
+    )
+  )
+
+
+; PART B
+(define (play-with-turns game-state player strategy)
+  (display-game-state game-state)
+  (cond [(over? game-state) (announce-winner player)]
+        [(equal? player ’human) (play-with-turns (human-move game-state) ’computer strategy)]
+        [(equal? player ’computer) (play-with-turns (computer-move game-state strategy) ’human strategy)]
+        [else (error "player wasn’t human or computer:" player)]))
+
+|#
+
+; =================================================================
+
+#|
+Exercise 6.15
+Write a procedure take-all-of-first-nonempty that will return the instruction
+for taking all the coins from the first nonempty pile.
+
+answer:
+|#
+
+(define (take-all-of-first-nonempty pile)
+  ...
+  )
