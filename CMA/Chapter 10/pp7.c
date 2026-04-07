@@ -106,27 +106,6 @@ void process_digit(int digit, int position){
 }
 
 void print_digits_array(void){
-
-}
-
-//main: calls read_cards, analyze_hand and print_Result repeatedly
-int main(void) {
-    int n;
-
-    clear_digits_array();
-
-    //scan user input
-    //printf("Enter a number: ");
-    //scanf("%d", n);
-
-
-    process_digit(1,0);
-    process_digit(2,1);
-    process_digit(3,2);
-
-
-
-
     //call print digit
     //for every digits print it
     for(int i=0;i<ROW_HEIGHT;i++){
@@ -135,6 +114,30 @@ int main(void) {
         }
         printf("\n");
     }
+}
 
+//main: calls read_cards, analyze_hand and print_Result repeatedly
+int main(void) {
+    char ch;
+    int pos = 0;
+
+    clear_digits_array();
+
+    //scan user input
+    printf("Enter a number: ");
+    while((ch=getchar()) != '\n'){
+
+        if(pos>MAX_DIGITS-1){
+            break;
+        }
+
+        if(isdigit(ch)){
+            int digit_value = ch-'0';
+            process_digit(digit_value, pos);
+            pos++;
+        }
+
+    }
+    print_digits_array();
     return 0;
 }
