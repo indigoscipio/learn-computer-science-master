@@ -430,8 +430,137 @@ Write a procedure take-all-of-first-nonempty that will return the instruction
 for taking all the coins from the first nonempty pile.
 
 answer:
+
+
+(define (take-all-of-first-nonempty game-state)
+  (let ((p1 (size-of-pile game-state 1) )
+        (p2 (size-of-pile game-state 2) )
+        (p3 (size-of-pile game-state 3))
+        )
+    (cond [(not (zero? p1)) (make-move-instruction p1 1)]
+          [(not (zero? p2)) (make-move-instruction p2 2)]
+          [else (make-move-instruction p3 3)]
+          )
+    )
+  )
+
 |#
 
-(define (take-all-of-first-nonempty pile)
-  ...
+#|
+Exercise 6.16
+Write a procedure take-one-from-random-pile that implements the following
+“random” strategy: randomly select a nonempty pile and then remove one coin from
+it. Randomness can be simulated using the random procedure, which should be
+
+pre-defined in any Scheme used with this book (although it isn’t specified by the
+R4RS standard for Scheme). If n is a positive integer, a call of the form (random n)
+will return a random integer between 0 and n 1, inclusive. (Actually, it returns a
+so-called pseudo-randominteger; pseudo-random integers are produced systematically
+and hence are not random, but sequences of consecutive pseudo-random integers
+have many of the same statistical properties that sequences of random integers do.)
+
+; nonempty -> pick at random and take  acoin
+(define (take-one-from-random-pile game-state)
+  (let* ((p1 (size-of-pile game-state 1))
+         (p2 (size-of-pile game-state 2))
+         (p3 (size-of-pile game-state 3))
+         (valid-piles (append (if (zero? p1) '() (list 1) )
+                              (if (zero? p2) '() (list 2))
+                              (if (zero? p3) '() (list 3))
+                              ))
+         )
+    ; randomly selects nonempty file
+    (make-move-instruction 1 (list-ref valid-piles (random (length valid-piles))) )
+    )
+  )
+
+
+|#
+
+
+
+
+#|
+Exercise 6.17
+
+Take the previous exercise one step further by writing a procedure that, when given
+a particular game state, will return a move instruction where both components are
+chosen at random. Remember to ensure that the move instruction returned is a valid
+one. In particular, it should not suggest a move that takes coins from an empty pile
+
+(define (take-random-coin-from-random-pile game-state)
+  (let* ((p1 (size-of-pile game-state 1))
+         (p2 (size-of-pile game-state 2))
+         (p3 (size-of-pile game-state 3))
+         (valid-piles (append (if (zero? p1) '() (list 1) )
+                              (if (zero? p2) '() (list 2))
+                              (if (zero? p3) '() (list 3))
+                              ))
+         (target-pile (list-ref valid-piles (random (length valid-piles))))
+         (amt-to-take (+ (random (size-of-pile game-state target-pile)) 1))
+         )
+    (make-move-instruction amt-to-take target-pile)
+    )
+  )
+|#
+
+
+
+
+#|
+Exercise 6.18
+
+If we consider the chocolate bar version of Nim, we can describe a strategy that
+allows you to win whenever possible. Remember that in this version, the players
+alternate breaking off pieces of the bar along a horizontal or a vertical line, and
+the person who gets the last square of chocolate loses (so the person who makes
+the last possible break wins, just as the person who takes the last coin wins). If it’s
+your turn and the chocolate bar is not square, you can always break off a piece
+that makes the bar into a square. If you do so, your opponent must make it into
+a nonsquare. If you always hand your opponent a square, he will get smaller and
+smaller squares, leading eventually to the minimal square (i.e., the poisoned square).
+Write a procedure which implements this strategy in two-pile Nim. What action
+should it take if presented with (the equivalent of) a square chocolate bar?
+
+(define (square-nim game-state)
+  ;; is pile1 and pile2 nonequal -> Make it square
+  ;; if pile1 and pile 2 equal -> just take 1 coin
+  (let* ((p1 (size-of-pile game-state 1))
+         (p2 (size-of-pile game-state 2))
+         )
+    (cond [(equal? p1 p2) (make-move-instruction 1 1)] ;just take 1
+          [(> p1 p2) (make-move-instruction (- p1 p2) 1)] ;p1 is larger
+          [else (make-move-instruction (- p2 p1) 2)] ;p2 is larger
+          )
+    )
+  )
+|#
+
+
+
+
+#|
+Exercise 6.19
+
+Suppose you want to randomly intermingle two different strategies. How can
+this be done? The answer is with higher-order programming. Write a procedure
+random-mix-of that takes two strategies as arguments and returns the strategy that
+randomly chooses between these two procedures each turn. Thus, a call of the form
+
+
+(play-with-turns (make-game-state 5 8)
+                 'human
+                 (random-mix-of simple-strategy
+                                take-all-of-first-nonempty))
+
+
+would randomly choose at each turn between taking one coin or all the coins from
+the first nonempty pile.
+
+|#
+
+; strat strat -> strat
+; needs to save the staete, reutrn lambda
+(define (random-mix-of s1 s2)
+  (λ (game-state) ((list-ref (list s1 s2) (random 2)) game-state) )
   )
