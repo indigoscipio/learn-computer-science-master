@@ -15,6 +15,7 @@ int i -> value is here
 
 *: indirection operator (dereference operator)
 go there!! aka the magical peeking portal
+Get the value of xx
 follow the address writeen here
 
 RULE OF THIMB: INITIALIZE BEFORE INDIRECTION
@@ -33,6 +34,8 @@ j=*&i is equal to j = i;
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
+
+#define N 10
 
 //main: calls read_cards, analyze_hand and print_Result repeatedly
 int main(void) {
