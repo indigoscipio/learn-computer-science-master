@@ -47,27 +47,79 @@ in expr -> *a inside a body -> acts as a dereference -> peek inside and gets the
 
 ----------------------------------------------------
 
-Exercise 1
-If i is an int variable and pa nd q are poitners to int
+Exercise 2
+If i in an int variable and p and q are pointers to int
+which os the following assignments are legal?
 
+a. p = i;
+b. *p = &i;
+c. &p = q;
+d. p = &q;
+e. p = *&q;
+f. p = q;
+g. p = *q;
+h. *p = q;
+i. *p =*q;
 
 answer:
-we know i is a var and p points to i so smth like
+ok we know int i, *p, *q;
+p = &i;
+q = &i;
 
-small example
-int i, *p; access
-p = &i; initialize
-*p; access
-p=*&i is equal to p = i;
+a. p = i
+we already set *p as pointer to i
+this would assign the actual value of i to the pointer p, not legal
 
-a. yes, its an alias  for i
-b. no - this is the addrss of i
-c. gives address to pointer p ->  derefnerce it -> back to p which is the address. so no
-d. no, this one dereference first, then gets the address.
-e. no, this  dereference i
-f. no, this is the address of i not getting the value/rference of i
-g. yes - get the address of i, dereference it and gets the value
-h. no
+
+b.
+*p = &i;
+this assigns the memory address of i into the value that pointer p holds
+not sure if its legal but its very dangerous so not legal i guess
+
+
+c. &p = q;
+this assigns q, which is &i (memory address of i) to memory address of p
+not legal since & operation is right value?
+&p is temporary value (address of p), &p is not a variable but a number
+
+
+d. p = &q;
+this one assigns the memory addres of pointer q to pointer p - pointer of a pointer
+p is a pointer has a type of int *
+&q is the address of a pointer
+since we know pointer q holds the address of var i -> q = &i -> p = &(&i) ->
+we try go get the  memory  address 'twice'?
+i dont think this is legal
+
+
+e. p = *&q
+since we know p and q are both pointers that reference integer i
+we assign address of pointer q -> dereference it
+this is basically back at beginining since theyre both inverse
+so p = q so its legal
+
+f. p = q;
+since p and q are both pointers that reference integer i
+we assign pointer q to p which means its legal
+
+g. p = *q;
+here we assign pointer p to the value of pointer q
+since we know *q is a reference to int i -> pointer p = value of i
+p = i, but poitner should hold memory address instead of actual vlue so not legal
+
+h. *p = q;
+since we know p and q are both pointer that references int i
+here we set *p which 'gets' the value that pointer p holds -> int i -> as  q which is a pointer
+so i = q; but we know q is a pointer. so were just shoving memory address into integer, not legal;
+
+
+i. *p = *q;
+since we know p and q are both pointer that references to i
+here we get the 'value' that pointer p holds -> &i -> int i
+and set it to *q -> &i -> int i
+
+so it would be the same thing as assigning int i to itself
+i = i - legal but i think its kinda pointless?
 
 */
 
@@ -80,19 +132,13 @@ h. no
 #define N 10
 
 // mutates big and small from main
-void max_min(int a[], int n, int *max, int *min){
-    int i;
+int main(void){
+    int i = 999, *p,*q;
+    p = &i;
+    q = &i;
 
-    // initialize max an min value to 1st item
-    *max=*min=a[0];
+    printf("%d", *p);
+    *p = *q;
 
-    for(i=1;i<n;i++){
-        //check if curr item exceeds max, if so update new max
-        if(a[i]>*max){
-            *max=a[i];
-        }
-        else if(a[i]<*min){
-            *min=a[i];
-        }
-    }
+    return 0;
 }
