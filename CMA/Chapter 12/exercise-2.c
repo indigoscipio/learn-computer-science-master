@@ -56,6 +56,29 @@ MULTIDIMENSIONA LARRAY
 
 pointer doesn't just hold address, it also holds the size
 if its int * -> move 4 byte when pointer is incremented
+*/
+
+/*
+Exercise 2
+Suppose that high. low.and middle are all pointer variables of the same type,
+and that
+low and high point to elements of an array. Why is the following statement illegal, and
+how could it be fixed?
+middle = (low + high) / 2;
+
+
+answer:
+since theyre the same type something like this for guide
+int *middle = n;
+int *low = &a[0];
+int *high = &a[N];
+
+in the code we have
+middle = (low + high) / 2;
+
+we cannot add two pointers here we need to calculate the distance
+so middle = low + (high - low) / 2; -> middle is a pointer that holds address
+
 
 */
 
@@ -68,18 +91,11 @@ if its int * -> move 4 byte when pointer is incremented
 #define N 10
 
 int main(void){
-    int a[N], *p;
+    int a[]={1,2,3,4,5};
+    int *p = &a[1];
+    int *q = &a[4];
 
-    printf("Enter %d numbers", N);
-    for(p=&a[0]; p<&a[N]; p++){
-        scanf("%d", p);
-    }
-
-    printf("In reverse order: ");
-    for(p=&a[N-1]; p>=&a[0];p--){
-        printf(" %d", *p);
-    }
-    printf("\n");
+    printf("%d", p-q );
 
     return 0;
 }

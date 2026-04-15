@@ -55,7 +55,25 @@ MULTIDIMENSIONA LARRAY
 (*p)[NUM_COLS]
 
 pointer doesn't just hold address, it also holds the size
-if its int * -> move 4 byte when pointer is incremented
+if its int * -> move 4 byte when pointer is incremen ted
+*/
+
+/*
+Exercise 6
+
+Rewrite the following function to use pointer arithmetic instead of array subscripting. (In
+other words, eliminate the variable i and all uses of the [] operator.) Make as few changes
+as possible.
+
+int sum_array(const int a[] , int n){
+    int i, sum;
+
+    sum = 0;
+    for(i=0;i<n;i++){
+        sum+=a[i];
+    }
+    return sum;
+}
 
 */
 
@@ -65,21 +83,20 @@ if its int * -> move 4 byte when pointer is incremented
 #include <time.h>
 #include <ctype.h>
 
-#define N 10
+int sum_array(const int a[] , int n){
+    int *p, sum = 0;
+
+    for(p=a;p<a+n;p++){
+        sum+=*p;
+    }
+    return sum;
+}
 
 int main(void){
-    int a[N], *p;
+    const int a[5] = {1,2,3,4,5};
+    int n = 5;
 
-    printf("Enter %d numbers", N);
-    for(p=&a[0]; p<&a[N]; p++){
-        scanf("%d", p);
-    }
-
-    printf("In reverse order: ");
-    for(p=&a[N-1]; p>=&a[0];p--){
-        printf(" %d", *p);
-    }
-    printf("\n");
+    printf("%d", sum_array(a,n));
 
     return 0;
 }

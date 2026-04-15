@@ -55,8 +55,30 @@ MULTIDIMENSIONA LARRAY
 (*p)[NUM_COLS]
 
 pointer doesn't just hold address, it also holds the size
-if its int * -> move 4 byte when pointer is incremented
+if its int * -> move 4 byte when pointer is incremen ted
+*/
 
+/*
+Exercise 4
+
+
+Rewritethe make_empty.isempty.and is_full functionsof Section 10.2 to use the
+pointer variable top_ptr instead of the integer variable top.
+
+void make_empty(void){
+    top = 0;
+}
+
+void is_empty(void){
+    return top == 0;
+}
+
+void is_full(void){
+    return top == STACK_SIZE;
+}
+
+
+answer:
 */
 
 #include <stdbool.h>
@@ -65,21 +87,30 @@ if its int * -> move 4 byte when pointer is incremented
 #include <time.h>
 #include <ctype.h>
 
-#define N 10
+#define STACK_SIZE 100
+
+/* external variables */
+int contents[STACK_SIZE];
+int *top_ptr;
+
+void make_empty(void){
+    top_ptr = contents;
+}
+
+bool is_empty(void){
+    return top_ptr == contents;
+}
+
+bool is_full(void){
+    return top_ptr == &contents[STACK_SIZE];
+}
 
 int main(void){
-    int a[N], *p;
+    int a[]={1,2,3,4,5};
+    int *p = &a[1];
+    int *q = &a[4];
 
-    printf("Enter %d numbers", N);
-    for(p=&a[0]; p<&a[N]; p++){
-        scanf("%d", p);
-    }
-
-    printf("In reverse order: ");
-    for(p=&a[N-1]; p>=&a[0];p--){
-        printf(" %d", *p);
-    }
-    printf("\n");
+    printf("%d", p-q );
 
     return 0;
 }

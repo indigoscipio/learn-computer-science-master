@@ -56,6 +56,45 @@ MULTIDIMENSIONA LARRAY
 
 pointer doesn't just hold address, it also holds the size
 if its int * -> move 4 byte when pointer is incremented
+*/
+
+/*
+Exercise 3
+What will be the contents of the a array after the following statements areexecuted?
+#define N 10
+
+inc a [N]={1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+int *p = &a[0] , *q=&a[N-l] , temp;
+
+while (p < q){
+    temp = *p;
+    *p++ = *q;
+    *q-- = temp;
+}
+
+answer:
+lets analyze this one by one
+we have array of 10 length which holds 1 - 10
+then we have pointer p that holds address of 1st item (1),
+another pointer q that holds the last one (10) and temp var that holds int
+
+then int he loop, tests for condition condition
+since ps index (0) is less than qs index (9) it starts the itaration
+
+1st iter
+temp = 1, *p = 0th index, *q = 9th index
+*p++ = *q -> postfix, dereferenec pointer ps value, set that value of last item, increment ps pointer -> *p = 2nd index
+so it now sets sthe value of 1 with 10
+*q-- = temp; -> changes the last value with of array a temp which is 1 -> *q = 8th index
+so the array swaps 1 and 10 basically
+
+2nd iter
+temp = 2, *p = 1st index, *q = 8th index
+same thing again, store 2 to temp and swaps 9 with 2
+
+loop ends when index p is equal or more than q so halfway through
+basicaly what this does it 'reverses' the array through pointer arithmetic
+
 
 */
 
@@ -68,18 +107,11 @@ if its int * -> move 4 byte when pointer is incremented
 #define N 10
 
 int main(void){
-    int a[N], *p;
+    int a[]={1,2,3,4,5};
+    int *p = &a[1];
+    int *q = &a[4];
 
-    printf("Enter %d numbers", N);
-    for(p=&a[0]; p<&a[N]; p++){
-        scanf("%d", p);
-    }
-
-    printf("In reverse order: ");
-    for(p=&a[N-1]; p>=&a[0];p--){
-        printf(" %d", *p);
-    }
-    printf("\n");
+    printf("%d", p-q );
 
     return 0;
 }

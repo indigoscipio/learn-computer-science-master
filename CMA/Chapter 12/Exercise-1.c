@@ -56,6 +56,38 @@ MULTIDIMENSIONA LARRAY
 
 pointer doesn't just hold address, it also holds the size
 if its int * -> move 4 byte when pointer is incremented
+*/
+
+/*
+Exercise 1
+Suppose that the following declarations are in effect:
+int a[] = {5, 15, 34, 54, 14, 2, 52, 72};
+int *p = &a[l] , *q = &a [5] ;
+(a) What is the value of * (p+3 )?
+(b) What is the value of * (q-3)?
+(c) What is the value of q- p?
+(d) Is the condition p < q true or false?
+(e) Is the condition *p < *q true or false?
+
+Answer:
+ok so we have an arrya a with a few ints
+and we assign pointer p to a[1] memory (value = 15) and pointer q to a[5] memory (value = 2)
+
+a. *(p + 3)
+since the first item is 15 we 'jump' 3 steps forward to , so 14
+
+b. *(q - 3)
+since pointer q starts with 2, it goes 3 steps back, so 34
+
+c. q - p
+this gets us the 'distance' between the address/index 5 and 1 -> 5 - 1 = 4 steps so ir return 4
+
+d. since pointer p is 1st index and q is 5th index
+therefore q > p or same as p < q so true
+
+e. since value of *p is 15 and value of *q is 2
+therefore *p > *q, so its false
+
 
 */
 
@@ -68,18 +100,11 @@ if its int * -> move 4 byte when pointer is incremented
 #define N 10
 
 int main(void){
-    int a[N], *p;
+    int a[]={1,2,3,4,5};
+    int *p = &a[1];
+    int *q = &a[4];
 
-    printf("Enter %d numbers", N);
-    for(p=&a[0]; p<&a[N]; p++){
-        scanf("%d", p);
-    }
-
-    printf("In reverse order: ");
-    for(p=&a[N-1]; p>=&a[0];p--){
-        printf(" %d", *p);
-    }
-    printf("\n");
+    printf("%d", p-q );
 
     return 0;
 }

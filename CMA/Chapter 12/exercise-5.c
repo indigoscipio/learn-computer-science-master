@@ -55,7 +55,45 @@ MULTIDIMENSIONA LARRAY
 (*p)[NUM_COLS]
 
 pointer doesn't just hold address, it also holds the size
-if its int * -> move 4 byte when pointer is incremented
+if its int * -> move 4 byte when pointer is incremen ted
+*/
+
+/*
+Exercise 5
+
+Suppose that a is a one-dimensional array and p is a pointer variable. Assuming that the
+assignment p = a has just been performed, which of the following expressions are illegal
+because of mismatched types? Of the remaining expressions, which are true (have a nonzero
+value)?
+
+(a) p == a[0]
+(b) p == &a[0]
+(c) *p == a[0]
+(d) p[0] == a[0]
+
+answer:
+suppose int a[N], *p;
+p = a; (or p = &a[0])
+
+a. p == a[0]
+this checks if pointer of p equals to the value of first item of array a
+since pointer p holds memory to 1st item of array a its different to the actual value
+therefore it's false/returns 0
+
+b. p == &a[0]
+checks if pointer p is equal to addres of first item in array a
+since we assign p = a which is the same as &a[0], therefore it is true/returns 1
+
+c. *p == a[0]
+this one checks if the value that p points to is equal to the first item of array a
+since p = a (&a[0]) it dereferences that value and get the 1st items value -> *(&a[0])
+so this one istrue/returns 1
+
+
+d. p[0] == a[0]
+since p is a pointer reference to array a p[0] is the same as a[0]
+so this is also returns true/1
+
 
 */
 
@@ -65,21 +103,12 @@ if its int * -> move 4 byte when pointer is incremented
 #include <time.h>
 #include <ctype.h>
 
-#define N 10
 
 int main(void){
-    int a[N], *p;
+    int a[]={1,2,3,4,5}, *p;
+    p = a;
 
-    printf("Enter %d numbers", N);
-    for(p=&a[0]; p<&a[N]; p++){
-        scanf("%d", p);
-    }
-
-    printf("In reverse order: ");
-    for(p=&a[N-1]; p>=&a[0];p--){
-        printf(" %d", *p);
-    }
-    printf("\n");
+    printf("%d", p[0] == a[0]);
 
     return 0;
 }
