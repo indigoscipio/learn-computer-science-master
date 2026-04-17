@@ -64,28 +64,16 @@ you can perform a subscript coz a[i] = *(a+i)
 */
 
 /*
-Exercise 13
-Section 8.2 had a program fragment in which two nested for loops initialized the array
-ident for use as an identity matrix. Rewrite this code, using a single pointer to step
-through the array one element at a time. Hint: Since we won't be using row and col index
-variables, it won't be easy to tell where to store I. Instead, we can use the fact that the first
-element of the array should be I. the next Nelements shouldbe 0. the next element should
-be 1 and so forth. use a var to keep track of how many consec 0s have been stored;
-when the count reaches N, it's time to store 1
+Exercise 14
+Assume that the following array contains a week' s worth of hourly temperature readings,
+with eachrow containing the readings for one day:
 
-#define N 10
+int temperatures[7][24];
 
-int row, col;
+Write a statement that uses the search function (see Exercise 7)to search the entire
+temperatures array for the value 32.
 
-for(row=0;row<N;row++){
-    for(col=0;col<N;col++){
-        if(row==col){
-            ident[row][col] = 1.0;
-        }else{
-            ident[row][col] = 0.0;
-        }
-    }
-}
+
 
 */
 
@@ -94,25 +82,27 @@ for(row=0;row<N;row++){
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
-#define N 10
+#define DAYS 7
+#define HOURS 24
+
+bool search(const int a[], int n, int key){
+    int *p;
+
+    for(p=a; p<a+n;p++){
+        if(key == *p){
+            return true;
+        }
+    }
+
+    return false;
+}
 
 
 int main(void){
-    double ident[N][N]={[0][0] = 1.0};
-    double *p
-    int zero_count = N;
+    int temperatures[DAYS][HOURS] = {0};
+    temperatures[1][7] = 32;
 
-
-    for(p=&ident[0][1] ; p<&ident[0][0]+(N*N); p++){
-        //decide to store 1 or 0
-        if(zero_count == N){
-            *p = 1.0;
-            zero_count=0;
-        }else{
-            *p=0.0;
-            zero_count++;
-        }
-    }
+    printf("%d", search(&temperatures[0][0], DAYS*HOURS, 32));
 
     return 0;
 }

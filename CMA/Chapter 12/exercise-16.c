@@ -61,31 +61,15 @@ ARRAY DECAY
 When passed into a functin, a[] is automatically treated as *a
 decays into a pointer to its first element
 you can perform a subscript coz a[i] = *(a+i)
+
+
 */
 
 /*
-Exercise 13
-Section 8.2 had a program fragment in which two nested for loops initialized the array
-ident for use as an identity matrix. Rewrite this code, using a single pointer to step
-through the array one element at a time. Hint: Since we won't be using row and col index
-variables, it won't be easy to tell where to store I. Instead, we can use the fact that the first
-element of the array should be I. the next Nelements shouldbe 0. the next element should
-be 1 and so forth. use a var to keep track of how many consec 0s have been stored;
-when the count reaches N, it's time to store 1
-
-#define N 10
-
-int row, col;
-
-for(row=0;row<N;row++){
-    for(col=0;col<N;col++){
-        if(row==col){
-            ident[row][col] = 1.0;
-        }else{
-            ident[row][col] = 0.0;
-        }
-    }
-}
+Exercise 16
+Write a loop that prints the highest temperature in the temperatures array (see Exercise
+14)for each day of the week. The loop body should call the find_largest function,
+passing it one row of the array at a time.
 
 */
 
@@ -94,25 +78,41 @@ for(row=0;row<N;row++){
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
-#define N 10
+#define DAYS 7
+#define HOURS 24
+
+int find_largest(int a[], int n ){
+    int *p, i, max;
+
+    max = *a;
+    for(p=a+1;p<a+n;p++){
+        if(*p>max){
+            max = *p;
+        }
+    }
+
+    return max;
+}
 
 
 int main(void){
-    double ident[N][N]={[0][0] = 1.0};
-    double *p
-    int zero_count = N;
+    int temperatures[DAYS][HOURS] = {
+    {65, 64, 63, 63, 62, 62, 63, 65, 68, 70, 72, 75, 77, 78, 79, 80, 79, 77, 75, 72, 70, 68, 67, 66}, // Day 0
+    {65, 64, 63, 62, 61, 61, 62, 64, 67, 69, 71, 74, 76, 77, 78, 78, 77, 75, 73, 71, 69, 67, 66, 65}, // Day 1
+    {64, 63, 62, 62, 61, 61, 62, 63, 66, 68, 70, 73, 75, 76, 77, 78, 77, 75, 73, 71, 69, 67, 66, 65}, // Day 2
+    {63, 62, 61, 61, 60, 60, 61, 63, 65, 67, 69, 72, 74, 75, 76, 77, 76, 74, 72, 70, 68, 66, 65, 64}, // Day 3
+    {64, 63, 62, 62, 61, 61, 62, 64, 67, 69, 71, 74, 76, 77, 78, 79, 78, 76, 74, 72, 70, 68, 67, 66}, // Day 4
+    {65, 64, 63, 63, 62, 62, 63, 66, 69, 71, 73, 76, 78, 79, 80, 81, 80, 78, 76, 74, 72, 70, 69, 68}, // Day 5
+    {67, 66, 65, 65, 64, 64, 65, 68, 71, 73, 75, 78, 80, 81, 82, 83, 82, 80, 78, 76, 74, 72, 71, 70}  // Day 6
+};
+    int *p;
 
-
-    for(p=&ident[0][1] ; p<&ident[0][0]+(N*N); p++){
-        //decide to store 1 or 0
-        if(zero_count == N){
-            *p = 1.0;
-            zero_count=0;
-        }else{
-            *p=0.0;
-            zero_count++;
-        }
+    // initialize with p points at row 0
+    for(int i=0; i<DAYS; i++){
+        // inner loop
+        printf("Largest tmepearture in day %d is : %d\n", i+1, find_largest(temperatures[i], HOURS));
     }
+
 
     return 0;
 }

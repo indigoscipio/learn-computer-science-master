@@ -61,31 +61,20 @@ ARRAY DECAY
 When passed into a functin, a[] is automatically treated as *a
 decays into a pointer to its first element
 you can perform a subscript coz a[i] = *(a+i)
+
+
 */
 
 /*
-Exercise 13
-Section 8.2 had a program fragment in which two nested for loops initialized the array
-ident for use as an identity matrix. Rewrite this code, using a single pointer to step
-through the array one element at a time. Hint: Since we won't be using row and col index
-variables, it won't be easy to tell where to store I. Instead, we can use the fact that the first
-element of the array should be I. the next Nelements shouldbe 0. the next element should
-be 1 and so forth. use a var to keep track of how many consec 0s have been stored;
-when the count reaches N, it's time to store 1
+PP 1
+(a) Writeaprogram that reads a message, then prints the reversalof the message:
+Enter a message: Don't get mad, get even.
+Reversal is: .neve teg ,dam teg t1noD
+Him: Read the message one character at alime (usinggetchar)and store the characters in
+an array. Stop reading when the array is full or the character read is ' \n'.
 
-#define N 10
-
-int row, col;
-
-for(row=0;row<N;row++){
-    for(col=0;col<N;col++){
-        if(row==col){
-            ident[row][col] = 1.0;
-        }else{
-            ident[row][col] = 0.0;
-        }
-    }
-}
+(b) Revise the program to use a pointer instead of an integer to keep track of the current
+position in the array.
 
 */
 
@@ -94,26 +83,17 @@ for(row=0;row<N;row++){
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
-#define N 10
+#define N 8
 
 
 int main(void){
-    double ident[N][N]={[0][0] = 1.0};
-    double *p
-    int zero_count = N;
+
+    //ask for input
+    // read one at a time
+    //store in array
+    // stop when arr is full/ \n
 
 
-    for(p=&ident[0][1] ; p<&ident[0][0]+(N*N); p++){
-        //decide to store 1 or 0
-        if(zero_count == N){
-            *p = 1.0;
-            zero_count=0;
-        }else{
-            *p=0.0;
-            zero_count++;
-        }
-    }
 
     return 0;
 }
-
