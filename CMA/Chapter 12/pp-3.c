@@ -66,15 +66,19 @@ you can perform a subscript coz a[i] = *(a+i)
 */
 
 /*
-PP 1
+PP 3
+Simplify Programming Project I ( b) by taking advantage of the fact that an array name can
+be used as a pointer.
+
+refrence-PP1
 (a) Writeaprogram that reads a message, then prints the reversalof the message:
 Enter a message: Don't get mad, get even.
 Reversal is: .neve teg ,dam teg t1noD
 Him: Read the message one character at alime (usinggetchar)and store the characters in
 an array. Stop reading when the array is full or the character read is ' \n'.
-
 (b) Revise the program to use a pointer instead of an integer to keep track of the current
 position in the array.
+
 
 */
 
@@ -84,19 +88,14 @@ position in the array.
 #include <time.h>
 #include <ctype.h>
 
-
 int main(void){
-    char ch, a[100] = {0};
-    int n = 0;
-    //ask for input
-    // read one at a time
-    //store in array
-    // stop when arr is full/ \n
+    char ch, a[100] = {0}, *p;
+    int n=0;
 
     printf("Enter a message: \n");
     while(true){
         ch = getchar();
-        a[n] = ch;
+        *(a+n) = ch;
         n++;
 
         if(ch == '\n'){
@@ -104,12 +103,9 @@ int main(void){
         }
     }
 
-    for(int i=n;i>=0;i--){
-        printf("%c",a[i]);
+    for(p=a+n-1;p>=a;p--){
+        printf("%c",*p);
     }
-
-
-
 
     return 0;
 }

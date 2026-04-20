@@ -86,29 +86,24 @@ position in the array.
 
 
 int main(void){
-    char ch, a[100] = {0};
-    int n = 0;
-    //ask for input
-    // read one at a time
-    //store in array
-    // stop when arr is full/ \n
+    char ch, a[100] = {0}, *p = a;
+    int n=0;
 
     printf("Enter a message: \n");
     while(true){
         ch = getchar();
-        a[n] = ch;
+        *p = ch;
         n++;
+        p++;
 
         if(ch == '\n'){
             break;
         }
     }
 
-    for(int i=n;i>=0;i--){
-        printf("%c",a[i]);
+    for(p=a+n-1;p>=a;p--){
+        printf("%c",*p);
     }
-
-
 
 
     return 0;

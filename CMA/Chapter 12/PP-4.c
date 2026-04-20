@@ -66,15 +66,27 @@ you can perform a subscript coz a[i] = *(a+i)
 */
 
 /*
-PP 1
-(a) Writeaprogram that reads a message, then prints the reversalof the message:
-Enter a message: Don't get mad, get even.
-Reversal is: .neve teg ,dam teg t1noD
-Him: Read the message one character at alime (usinggetchar)and store the characters in
-an array. Stop reading when the array is full or the character read is ' \n'.
+PP4
+Simplify Programming Project 2(b) by taking advantage of the fact that an array name can
+be used as a pointer.
 
-(b) Revise the program to use a pointer instead of an integer to keep track of the current
-position in the array.
+reference - from pp2b
+PP 2
+( a) Write a program that reads a message,then checks whether it’s a palindrome (the letters
+in the message are the same from left to right as from right to left):
+
+Enter a message: He lived as a devil, eh?
+Palindrome
+
+Enter a message: Madam, I am Adam.
+Not a palindrome
+
+Ignore all characters that aren 't letters.Use integer variables to keep track of positionsin the
+array.
+
+( b) Revise the program to use pointers instead of integers to keep track of positions in the
+array.
+
 
 */
 
@@ -84,32 +96,55 @@ position in the array.
 #include <time.h>
 #include <ctype.h>
 
+void get_input(char a[], int *n){
+    char ch;
+
+    do{
+        ch = getchar();
+        if(isalpha(ch)){
+            //store it
+            *(a+*n) = tolower(ch);
+            (*n)++;
+        }
+    }while(ch != '\n');
+}
+
+bool is_palindrome(char a[], int n){
+    char *p_left=a, *p_right=a+n-1;
+
+    while(p_left<p_right){
+        if(*p_left == *p_right){
+        p_left++;
+        p_right--;
+    }else{
+        return false;
+    }
+    }
+
+    return true;
+}
+
 
 int main(void){
-    char ch, a[100] = {0};
-    int n = 0;
-    //ask for input
-    // read one at a time
-    //store in array
-    // stop when arr is full/ \n
+    char a[100], *p;
+    int n=0;
 
-    printf("Enter a message: \n");
-    while(true){
-        ch = getchar();
-        a[n] = ch;
-        n++;
+    // filter
+    get_input(a,&n);
 
-        if(ch == '\n'){
-            break;
-        }
-    }
 
-    for(int i=n;i>=0;i--){
-        printf("%c",a[i]);
+    // check
+    if(is_palindrome(a,n)){
+        printf("Palindrome");
+    }else{
+        printf("Not a palindrome");
     }
 
 
-
+    printf("%d\n", n);
+    for(p=a; p<a+n; p++){
+        printf("%c\n", *p);
+    }
 
     return 0;
 }
