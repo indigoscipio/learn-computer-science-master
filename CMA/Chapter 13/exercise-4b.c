@@ -78,23 +78,11 @@ answer:
 int read_line(char str[], int n){
     int ch, i = 0;
 
-    //skip space at the beginning
-    while((ch = getchar()) != '\n'){
-        if(isspace(ch) != 0){
-            continue;
-        }else{
-            break;
-        }
-    }
-
-    if(ch != '\n'){
-        str[0] = ch;
-        i++;
-    }
-
-
     while( (ch = getchar()) != '\n'){
         if(i<n){
+            if(isspace(ch)){
+                break;
+            }
             str[i++] = ch;
         }
     }
