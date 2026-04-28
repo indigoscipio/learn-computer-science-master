@@ -41,7 +41,7 @@ STRCPY
 replaces the destination with source
 depends on the source lenght
 if source < destination source wins.
-
+can accept char memory address eg &str[4]
 
 STRCAT
 finds the first null char ('\0') and replaces it with arg
@@ -51,29 +51,29 @@ finds the first null char ('\0') and replaces it with arg
 
 ============================================
 
-Exercise 8
-What will be the value ofthe stringstr after the following statements have been executed?
+Exercise 9
+What will be the value of the string si after the following statements have been executed?
 
-1. strcpy(str, "tire-bouchon");
-2. strepy(&str[4], "d-or-wi");
-3. streat(str, "red?");
+strcpy(s1, "computer");
+strcpy(s1, science);
+if(strcmp(s1, s2) < 0){
+    strcat(s1, s2)
+}else{
+    strcat(s2,s1)
+}
+s1[strlen(s1-6) = '\0'];
 
 answer:
-lets say we have str = "";
+ok lets analyze this one by one
+so the first 2 lines we have
+s1 = "computer", s2 = "science"
 
-1. strcpy(str, "tire-bouchon");
-this one  copies the source to destination which is str
-so it replaces the whole str with tire-bouchon. so str now = "tire-bouchon"
-
-2. so this one replaces the 4th index memory addres of the str
-which is the char '-' with the string "d-or-wi" so it acts like a stitch
-so the new str now is "tired-or-wi"
-
-3. so this one concatenates the string "red?" into str
-so at the end of str we stitch it on at the end of "tired-or-wi" so
-something like "tired-or-wired?"
-
-
+then the if statment it checks using strcmp(s1, s2)
+if negative -> str1 comes before str2
+if positive -> str1 comes after str2
+"computer" vs "science" -> 1st letter = "c" vs "s" -> c comes first, so this results in negative
+goes into the 1st block -> strcat(s1,s2) -> so the new s1 becomes "computerscience"
+and last line we go back 6 chars ot add a null char so "computers"
 */
 
 #include <stdbool.h>
@@ -86,10 +86,20 @@ something like "tired-or-wired?"
 #define N 99
 
 int main(void){
-    char str[] = "";
-    strcpy(str,"tire-bouchon");
-    strcpy(str,"d-or-wi");
-    printf("%s", str);
+    char s1[100] = "", s2[100]= "";
+
+    strcpy(s1, "computer");
+    strcpy(s2, "science");
+
+    if(strcmp(s1, s2)< 0){
+        strcat(s1,s2);
+    }else{
+        strcat(s2,s1);
+    }
+    s1[strlen(s1)-6] = '\0';
+
+    printf("%s", s1);
+
 
     return 0;
-}
+    }

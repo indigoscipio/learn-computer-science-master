@@ -41,38 +41,37 @@ STRCPY
 replaces the destination with source
 depends on the source lenght
 if source < destination source wins.
-
+can accept char memory address eg &str[4]
+In C, strcpy (string copy) doesn't want the actual character data passed directly to it.
+Instead, it needs to know where the data is.
 
 STRCAT
 finds the first null char ('\0') and replaces it with arg
 
+INC C, a string and a pointer/address ARE THE SAME THING
+char s1[] = "computer"
+strcpy(q, s1)
+
+String name = address of first char
+strcpy, strlen, strcat all expect addresses, not characters
 
 
 
 ============================================
 
-Exercise 8
-What will be the value ofthe stringstr after the following statements have been executed?
+Exercise 11
+The Q&A section at the end of this chapter shows how the stremp function might he writ
+12.
+ten using array subscripting. Modify the function to use pointer arithmetic instead.
 
-1. strcpy(str, "tire-bouchon");
-2. strepy(&str[4], "d-or-wi");
-3. streat(str, "red?");
+int strcmp(char *s, char *t){
+    int i;
 
-answer:
-lets say we have str = "";
-
-1. strcpy(str, "tire-bouchon");
-this one  copies the source to destination which is str
-so it replaces the whole str with tire-bouchon. so str now = "tire-bouchon"
-
-2. so this one replaces the 4th index memory addres of the str
-which is the char '-' with the string "d-or-wi" so it acts like a stitch
-so the new str now is "tired-or-wi"
-
-3. so this one concatenates the string "red?" into str
-so at the end of str we stitch it on at the end of "tired-or-wi" so
-something like "tired-or-wired?"
-
+    for (i = 0; s[i] == t[i]; i++)
+        if (s[i] == ’\0')
+            return 0;
+    return s[i]- t[i];
+}
 
 */
 
@@ -81,15 +80,23 @@ something like "tired-or-wired?"
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
-#include <string.h>
+//#include <string.h>
 
 #define N 99
 
+int strcmp(char *s, char *t){
+
+    //start with 1st letter of s, compare with t
+    for (; *s == *t; s++,t++)
+        if (*s == '\0')
+            return 0;
+
+    return *s-*t;
+}
+
+
 int main(void){
-    char str[] = "";
-    strcpy(str,"tire-bouchon");
-    strcpy(str,"d-or-wi");
-    printf("%s", str);
+    printf("%d", strcmp("a", "b"));
 
     return 0;
-}
+    }
