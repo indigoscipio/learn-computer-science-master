@@ -84,18 +84,19 @@ by a null character.
 
 void remove_filename(char *url){
     //search each char
-    //find remove the last slash (after .com)
-    //extract the string up to that point
+    //find remove the last slash
+    //extract the string
+    char *p = url;
 
-    while(*url){
-        //locate the .com
-        if(*url == 'c' && *(url+1) == 'o' && *(url+2) == 'm'){
-            strcpy(url, "com/");
+    while(*p) p++;
+
+    while(p!=url){
+        if(*p == '/'){
+            *p = '\0';
+            break;
         }
-
-        url++;
+        p--;
     }
-
 }
 
 
