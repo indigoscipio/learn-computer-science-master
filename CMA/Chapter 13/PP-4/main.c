@@ -59,20 +59,15 @@ strcpy, strlen, strcat all expect addresses, not characters
 
 ============================================
 
-Programming Project 3
-Modify the deal .c program of Section 8.2 so that it prints the full names of the cards it
-deals:
+Programming Project 4
+Write a program named reverse.c that echoes its command-line arguments in reverse
+order. Running the program by typing
 
-Enter number of cards in hand: 5.
-Your hand:
-Seven of clubs
-Two of spades
-Five of diamonds
-Ace of spades
-Two of hearts
+reverse void and null
 
-answer:
-lets keep this simple
+should produce the following output:
+null and void
+
 */
 
 #include <stdbool.h>
@@ -86,37 +81,13 @@ lets keep this simple
 #define NUM_RANKS 13
 
 
-int main(void){
+int main(int argc, char *argv[]){
+    char **p; //first letter of each arg
 
-    bool in_hand[NUM_SUITS][NUM_RANKS] = {false};
-    int num_cards, rank, suit;
-
-    const char *rank_code[] = {
-        "two","three","four","five","six","seven","eight","nine","ten","jack","queen","king","ace"
-    };
-
-    const char *suit_code[] = {"clubs","diamonds","hearts","spades"};
-
-    srand((unsigned) time(NULL));
-
-    printf("Enter number of cards in hand: ");
-    scanf("%d", &num_cards);
-
-    printf("Your hand:");
-
-    while (num_cards > 0) {
-        suit = rand() % NUM_SUITS;
-        rank = rand() % NUM_RANKS;
-
-        if (!in_hand[suit][rank]) {
-            in_hand[suit][rank] = true;
-            num_cards--;
-
-            printf("%s of %s\n", rank_code[rank], suit_code[suit]);
-        }
+    for(p=&argv[argc-1];p>=&argv[1];p--){
+        printf("%s ",*p);
     }
 
-    printf("\n");
 
     return 0;
 }

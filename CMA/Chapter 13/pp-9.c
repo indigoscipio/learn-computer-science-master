@@ -24,7 +24,6 @@ ILEGAL
 str1 = "abc"
 str2 = str1
 
-
 '\0' is the same as 0 int
 '\0' is FALSE
 *p = *s2
@@ -59,20 +58,19 @@ strcpy, strlen, strcat all expect addresses, not characters
 
 ============================================
 
-Programming Project 3
-Modify the deal .c program of Section 8.2 so that it prints the full names of the cards it
-deals:
+Programming Project 9
+Modify Programming Project 10 from Chapter 7so that it includes the following function:
+int compute_vowel_count (const char *sentence) ;
+The function returns the number of vowels in the string pointed to by the sentence
+parameter
 
-Enter number of cards in hand: 5.
-Your hand:
-Seven of clubs
-Two of spades
-Five of diamonds
-Ace of spades
-Two of hearts
+reference
+PP10
+Write a program that counts the number of vowels (u. e. i.o. and u) in a sentence:
+Enter a sentence: And that’s the way it is.
+Your sentence contains 6 vowels
 
-answer:
-lets keep this simple
+
 */
 
 #include <stdbool.h>
@@ -81,42 +79,44 @@ lets keep this simple
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-
-#define NUM_SUITS 4
-#define NUM_RANKS 13
+#define N 100
 
 
-int main(void){
+// returns the number of vowels in the string poitned to by sentence
+int compute_vowel_count(const char *sentence){
+    int vowels = 0;
 
-    bool in_hand[NUM_SUITS][NUM_RANKS] = {false};
-    int num_cards, rank, suit;
-
-    const char *rank_code[] = {
-        "two","three","four","five","six","seven","eight","nine","ten","jack","queen","king","ace"
-    };
-
-    const char *suit_code[] = {"clubs","diamonds","hearts","spades"};
-
-    srand((unsigned) time(NULL));
-
-    printf("Enter number of cards in hand: ");
-    scanf("%d", &num_cards);
-
-    printf("Your hand:");
-
-    while (num_cards > 0) {
-        suit = rand() % NUM_SUITS;
-        rank = rand() % NUM_RANKS;
-
-        if (!in_hand[suit][rank]) {
-            in_hand[suit][rank] = true;
-            num_cards--;
-
-            printf("%s of %s\n", rank_code[rank], suit_code[suit]);
+    while(*sentence){
+        if(*sentence == 'A' ||
+           *sentence == 'I' ||
+           *sentence == 'U' ||
+           *sentence == 'E' ||
+           *sentence == 'O' ){
+                vowels+=1;
+            }
+        sentence++;
         }
-    }
 
-    printf("\n");
+    return vowels;
+}
+
+int main(void) {
+    char sent[N];
+    char ch;
+    int i=0;
+
+    printf("Enter a sentence: \n");
+
+    do{
+        ch = toupper(getchar());
+        sent[i] = ch;
+        i++;
+    }while(ch != '\n');
+    sent[i-1] = '\0'
+
+
+    printf("Your sentence contains %d vowels.\n", compute_vowel_count(sent));
 
     return 0;
 }
+

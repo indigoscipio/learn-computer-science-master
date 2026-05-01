@@ -59,20 +59,16 @@ strcpy, strlen, strcat all expect addresses, not characters
 
 ============================================
 
-Programming Project 3
-Modify the deal .c program of Section 8.2 so that it prints the full names of the cards it
-deals:
+Programming Project 5
+Write a program named sum.c that adds up its command-line arguments, which are
+assumed to be integers. Running the program by typing
 
-Enter number of cards in hand: 5.
-Your hand:
-Seven of clubs
-Two of spades
-Five of diamonds
-Ace of spades
-Two of hearts
+sum 8 24 62
+should produce the following output:
+Total: 94
 
-answer:
-lets keep this simple
+hint: Use the atoi function to convert each command-line argument from string form to
+integer form.
 */
 
 #include <stdbool.h>
@@ -86,37 +82,13 @@ lets keep this simple
 #define NUM_RANKS 13
 
 
-int main(void){
+int main(int argc, char *argv[]){
+    int i;
 
-    bool in_hand[NUM_SUITS][NUM_RANKS] = {false};
-    int num_cards, rank, suit;
-
-    const char *rank_code[] = {
-        "two","three","four","five","six","seven","eight","nine","ten","jack","queen","king","ace"
-    };
-
-    const char *suit_code[] = {"clubs","diamonds","hearts","spades"};
-
-    srand((unsigned) time(NULL));
-
-    printf("Enter number of cards in hand: ");
-    scanf("%d", &num_cards);
-
-    printf("Your hand:");
-
-    while (num_cards > 0) {
-        suit = rand() % NUM_SUITS;
-        rank = rand() % NUM_RANKS;
-
-        if (!in_hand[suit][rank]) {
-            in_hand[suit][rank] = true;
-            num_cards--;
-
-            printf("%s of %s\n", rank_code[rank], suit_code[suit]);
-        }
+    for(i=1;i<argc;i++){
+        printf("%s\n", argv[i]);
     }
 
-    printf("\n");
 
     return 0;
 }
