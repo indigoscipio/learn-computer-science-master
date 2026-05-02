@@ -302,5 +302,77 @@ answer:
   )
 (f6b '(1 2 3 4 5 6 7 8 9))
 
+#|
+g. Write a procedure that will find the position of the largest element in a nonempty
+list. Specify how you are breaking ties.
+
+|#
 ; PART G
 ; finds index of largest element in inonempty list
+; how it break ties: it reutrns whichever is larger than previous
+(define (f7 xs)
+  (define (loop lst largest-element largest-idx curr-idx)
+    (cond [(null? lst) largest-idx] ;no more to check, return largest index
+          [(> (car lst) largest-element) (loop (cdr lst) (car lst) curr-idx (+ 1 curr-idx) )] ; update the index & largest element
+          [else (loop (cdr lst) largest-element largest-idx (+ 1 curr-idx) )]
+          )
+    )
+  (loop (cdr xs) (car xs) 0 1)
+  )
+(f7 '(123456 1 3 8 0 9 55 7 999))
+
+; PART G, recursive style
+; a result is a (cons value index)
+; xs -> result
+(define (f7b xs)
+  (cond [(null? (cdr xs)) (cons (car xs) 0)] ;one item left
+        [else (let ((max-rest (f7b (cdr xs)) ))
+                (if (> (car xs) (car max-rest))
+                    (cons (car xs) 0)
+                    (cons (car max-rest) (+ 1 (cdr max-rest)))
+                    )
+                )]
+        )
+  )
+(f7b '(5 8 2))
+(f7b '(5 8 99 0 564 99999))
+
+
+; ===========================================================
+
+#|
+Exercise 7.9
+This exercise involves cdring down two lists
+a.  Write a procedure that gets two lists of integers of the same size and returns true
+when each element in the first list is less than the corresponding element in the
+second list. For example,
+
+(list-< '(1 2 3 4) '(2 3 4 5))
+#t
+
+b. eneralize this procedure to one called lists-compare?. This procedure should
+get three arguments; the first is a predicate that takes two arguments (such as <)
+and the other two are lists. It returns true if and only if the predicate always
+returns true on corresponding elements of the lists. We could redefine list-< in
+the following manner:
+
+(define list-<
+  (lambda (l1 l2)
+    (lists-compare? < l1 l2)))
+
+answer:
+|#
+
+; with iter
+; list-of-x list-of-y -> boolean
+; walk through xs
+(define (list< xs ys)
+  (cond [(null? xs) #t] 
+        [(< (car xs) (car ys)) (list< (cdr xs) (cdr ys))]
+        [else #f]
+        )
+  )
+(list< '(1 2 3 4) '(2 3 4 5))
+
+; PART B
+
