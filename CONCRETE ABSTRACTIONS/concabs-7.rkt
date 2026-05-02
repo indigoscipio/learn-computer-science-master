@@ -221,38 +221,86 @@ answer:
 |#
 
 ; PART A
-(define (my-member x xs)
+(define (f1 x xs)
   (cond [(empty? xs) #f]
         [(equal? x (car xs)) #t]
-        [else (my-member x (cdr xs))]
+        [else (f1 x (cdr xs))]
         )
   )
-(my-member 3 '(1 2 3 4 5))
+(f1 3 '(1 2 3 4 5))
 
 
 ; PART B
-(define (my-member2 xs pred)
+(define (f2 xs pred)
   (cond [(empty? xs) #f]
         [(pred (car xs)) #t]
-        [else (my-member2 (cdr xs) pred)]
+        [else (f2 (cdr xs) pred)]
         )
   )
-(my-member2 '(1 2 3 4 5) even?)
+(f2 '(1 2 3 4 5) even?)
 
 ; PART C
-(define (my-member3 xs pred)
+(define (f3 xs pred)
   (cond [(empty? xs) '()]
         [(pred (car xs)) (car xs)]
-        [else (my-member3 (cdr xs) pred)]
+        [else (f3 (cdr xs) pred)]
         )
   )
-(my-member3 '(1 2 3 4) even?)
+(f3 '(1 2 3 4) even?)
 
 ; PART D
-(define (my-member3 xs pred)
-  (cond [(empty? xs) '()]
-        [(pred (car xs)) (car xs)]
-        [else (my-member3 (cdr xs) pred)]
+(define (f4 xs pred)
+  (cond [(empty? xs) #t]
+        [(pred (car xs)) (and (f4 (cdr xs) pred))]
+        [else #f]
         )
   )
-(my-member3 '(1 2 3 4) even?)
+(f4 '(1 2 3 4) even?)
+(f4 '(2 4 6 8) even?)
+
+; PART E
+(define (f5 x xs)
+
+  (define (loop idx lst)
+    (cond [(null? lst) #f]
+          [(equal? x (car lst)) idx]
+          [else (loop (+ 1 idx) (cdr lst))]
+          )
+    )
+  (loop 0 xs)
+  
+  )
+(f5 50 '(10 20 30 40 50 3 2 1))
+(f5 0 '(10 20 30 40 50 3 2 1 50))
+
+; PART F
+; input is nonempty
+(define (f6 xs)
+
+  (define (loop curr-largest lst)
+    (cond [(null? lst) curr-largest]
+          [(> (car lst) curr-largest ) (loop (car lst) (cdr lst))] ;1st is larger then 2nd, update curr largest
+          [else (loop curr-largest (cdr lst))]
+          )
+    )
+  
+  ; initialize (car xs) as curr-largest
+  (loop (car xs) (cdr xs))
+  
+  )
+(f6 '(1 2 3 4 5 6 7 8 9))
+
+(define (f6b xs)
+  (cond [(null? (cdr xs)) (car xs) ]
+        [else (let ((max-rest (f6b (cdr xs))))
+                (if (> (car xs)  max-rest)
+                    (car xs)
+                    max-rest
+                    )
+                )])
+   
+  )
+(f6b '(1 2 3 4 5 6 7 8 9))
+
+; PART G
+; finds index of largest element in inonempty list

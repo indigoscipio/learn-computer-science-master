@@ -58,17 +58,12 @@ strcpy, strlen, strcat all expect addresses, not characters
 
 ============================================
 
-Programming Project 9
-Modify Programming Project 10 from Chapter 7so that it includes the following function:
-int compute_vowel_count (const char *sentence) ;
-The function returns the number of vowels in the string pointed to by the sentence
-parameter
+Programming Project 11
+Modify Programming Project 13 from Chapter 7 so that it includes the following function:
 
-reference
-PP10
-Write a program that counts the number of vowels (u. e. i.o. and u) in a sentence:
-Enter a sentence: And that’s the way it is.
-Your sentence contains 6 vowels
+double compute_average_word_length(const char *sentence);
+
+The function returns the average length of the words in the siring pointed to by sentence.
 
 
 */
@@ -81,41 +76,44 @@ Your sentence contains 6 vowels
 #include <string.h>
 #define N 100
 
+double compute_average_word_length(const char*sentence){
+    char prev_ch = ' ';
+    int total_words = 0, total_letters = 0;
+    double length = 0.0;
 
-// returns the number of vowels in the string poitned to by sentence
-int compute_vowel_count(const char *sentence){
-    int vowels = 0;
-
-    while(*sentence){
-        if(*sentence == 'A' ||
-           *sentence == 'I' ||
-           *sentence == 'U' ||
-           *sentence == 'E' ||
-           *sentence == 'O' ){
-                vowels+=1;
-            }
-        sentence++;
+    while(*sentence!='\0'){
+        if(*sentence != ' '){
+            total_letters++;
+        };
+        if(*sentence != ' ' && prev_ch == ' '){
+            total_words++;
         }
 
-    return vowels;
+        prev_ch = *sentence;
+        sentence++;
+    }
+
+    length = (double)total_letters/total_words;
+    return length;
 }
 
 int main(void) {
     char sent[N];
-    char ch;
     int i=0;
+    char ch;
 
     printf("Enter a sentence: \n");
 
     do{
-        ch = toupper(getchar());
+        ch = getchar();
         sent[i] = ch;
         i++;
     }while(ch != '\n');
     sent[i-1] = '\0';
 
+    printf("%s", sent);
+    printf("Average length is %.2f\n", compute_average_word_length(sent));
 
-    printf("Your sentence contains %d vowels.\n", compute_vowel_count(sent));
 
     return 0;
 }

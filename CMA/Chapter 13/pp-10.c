@@ -58,17 +58,15 @@ strcpy, strlen, strcat all expect addresses, not characters
 
 ============================================
 
-Programming Project 9
-Modify Programming Project 10 from Chapter 7so that it includes the following function:
-int compute_vowel_count (const char *sentence) ;
-The function returns the number of vowels in the string pointed to by the sentence
-parameter
+Programming Project 10
+Modify Programming Project 11 from Chapter 7 so that it includes the following function:
 
-reference
-PP10
-Write a program that counts the number of vowels (u. e. i.o. and u) in a sentence:
-Enter a sentence: And that’s the way it is.
-Your sentence contains 6 vowels
+void reverse name(char *name) ;
+
+The function expects name to point to a siring containing a first name followed by a last
+name. It modifies the string so that the last name comes first, followed by a comma,a space,
+the first initial, and a period. The original string may contain extra spaces before the first
+name, between the first and last names, and after the last name.
 
 
 */
@@ -82,40 +80,53 @@ Your sentence contains 6 vowels
 #define N 100
 
 
-// returns the number of vowels in the string poitned to by sentence
-int compute_vowel_count(const char *sentence){
-    int vowels = 0;
+    void reverse_name(char *name){
+        char result[N]= "";
+        char *p;
+        char initials[3];
 
-    while(*sentence){
-        if(*sentence == 'A' ||
-           *sentence == 'I' ||
-           *sentence == 'U' ||
-           *sentence == 'E' ||
-           *sentence == 'O' ){
-                vowels+=1;
-            }
-        sentence++;
-        }
+        //get last name, start from the back and decrement until it hits a space
+        //then combine it with first initial, followed by space.
 
-    return vowels;
-}
+        // skip spaces
+        for(p=&name[strlen(name)-1];*p==' '; p--);
+        *(p+1) = '\0';
+
+        // scans char
+        for(; *p != ' ';p--);
+
+        p++;
+
+        strcpy(result, p);
+        strcat(result, ", ");
+
+        //build the initials
+        initials[0] = *name;
+        initials[1] = '.';
+        initials[2] = '\0';
+
+
+        strcat(result, initials);
+        printf("%s", result);
+    }
 
 int main(void) {
-    char sent[N];
+    char name[N];
     char ch;
     int i=0;
 
-    printf("Enter a sentence: \n");
+    printf("Enter your first and last name: \n");
+
 
     do{
-        ch = toupper(getchar());
-        sent[i] = ch;
+        ch = getchar();
+        name[i] = ch;
         i++;
     }while(ch != '\n');
-    sent[i-1] = '\0';
+    name[i-1] = '\0';
 
-
-    printf("Your sentence contains %d vowels.\n", compute_vowel_count(sent));
+    reverse_name(name);
+    //printf("%s\n", name); //for debug
 
     return 0;
 }
