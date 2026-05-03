@@ -7,6 +7,7 @@ The words are anagrams.
 Enter first word: dumbest
 Enter second word: stumble
 The words are not anagrams.
+
 Write a loop that reads the first word, character by character, using an array of 26 integers to
 keep track of how many times each letter has been seen. (For example, after the word smart
 est has been read, the array should contain the values 1 0 0 0 1 0 000 00 0 I 000 0 I 2 20
@@ -20,65 +21,53 @@ the array are zero. If so. the words are anagrams. Hint: You may wish to use fun
 
 */
 
-
+#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
+#define STACK_SIZE 100
+
+int stack[STACK_SIZE];
+int top = 0;
+
+void push(int value) {
+    if (top == STACK_SIZE) {
+        printf("Expression is too complex\n");
+        exit(EXIT_FAILURE);
+    }
+    stack[top++] = value;
+}
+
+int pop(void) {
+    if (top == 0) {
+        printf("Not enough operands in expression\n");
+        exit(EXIT_FAILURE);
+    }
+    return stack[--top];
+}
 
 int main(void) {
-    char alphabet[26] = {'A','B','C','D','E','F','G','H','I','J','K','L',
-                        'M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-    char arr0[26] = {0}, arr1[26] = {0}, arr2[26] = {0};
     char ch;
-    int i=0,j,k,m, ch_idx, is_anagram=1;
+    int operand1, operand2;
 
-    printf("Enter first word: ");
-    //put in arr0 to track the count
-    while((ch = getchar()) != '\n'){
-
-        // ignore all except for letteres
-        if(isalpha(ch)){
-            ch = tolower(ch);
-            ch_idx = ch - 'a';
-            arr0[ch_idx]++;
-        }
-
-    }
-
-    //for quick test: print arr0
-    for(j=0;j<26;j++){
-        printf("%d", arr0[j]);
-    }
-
-    printf("Enter second word: ");
-    //put in arr1 to track the count
-    while((ch = getchar()) != '\n'){
-        // ignore all except for letteres
-        if(isalpha(ch)){
-            ch = tolower(ch);
-            ch_idx = ch - 'a';
-            arr1[ch_idx]++;
-        }
-    }
-
-    //for quick test: print arr0
-    for(k=0;k<26;k++){
-        printf("%d", arr1[k]);
-    }
-
-    //subtract both and check if its' all zeroes
-    for(m=0;m<26;m++){
-        //check each
-        arr2[m] = arr0[m] - arr1[m];
-        if(arr2[m] != 0){
-            printf("The words are not anagrams");
-            is_anagram = 0;
+    printf("Enter an RPN expression: ");
+    while (scanf(" %c", &ch) == 1) {
+        if (isdigit(ch)) {
+            push(ch - '0');
+        } else if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+            operand2 = pop();
+            operand1 = pop();
+            if      (ch == '+') push(operand1 + operand2);
+            else if (ch == '-') push(operand1 - operand2);
+            else if (ch == '*') push(operand1 * operand2);
+            else                push(operand1 / operand2);
+        } else if (ch == '=') {
+            printf("Value of expression: %d\n", pop());
+            top = 0;
+            printf("Enter an RPN expression: ");
+        } else {
             break;
         }
-
     }
-
-    if(is_anagram) printf("The words are anagrams.");
-
-
     return 0;
 }

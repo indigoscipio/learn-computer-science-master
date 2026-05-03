@@ -119,7 +119,6 @@ bool is_palindrome(char a[], int n){
     return true;
 }
 
-
 int main(void){
     char a[100];
     int n=0;
