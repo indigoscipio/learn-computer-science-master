@@ -49,28 +49,38 @@ for debug -> #define LOG_START() printf("Entering: %s\n", __func__)
 #ifdef & IFNDEF
 */
 
+
+/*
+Exercise 1
+Write parameterized macros that compute the following values.
+
+(a) The cube of x.
+(b) The remainder when n is divided by 4.
+(c) l if the product of x and y is less than 100. 0 otherwise.
+
+do your macros always work? If not.describe what arguments would make them fail.
+
+a. #define CUBE(x) ((x)*(x)*(x))
+b.
+
+answer:
+
+*/
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-#define MAX(x,y) ( (x) > (y) ? (x) : (y) )
-#define IS_EVEN(n) ((n)%2==0)
+#define CUBE(x) ((x)*(x)*(x))
 
 #define LOG_START() printf("Entering: %s\n", __func__)
 
-void start_engine() {
-    LOG_START();
-}
-
-void stop_engine() {
-    LOG_START();
-}
-
 int main(void){
 
-    start_engine();
+
+    printf("%d", CUBE(8));
 
     return 0;
 }

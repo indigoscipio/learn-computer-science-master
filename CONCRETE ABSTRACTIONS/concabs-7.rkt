@@ -375,4 +375,82 @@ answer:
 (list< '(1 2 3 4) '(2 3 4 5))
 
 ; PART B
+(define (lists-compare? pred xs ys)
+  (cond [(empty? xs) #t]
+        [(pred (car xs) (car ys)) (lists-compare? pred (cdr xs) (cdr ys))]
+        [else #f]
+        )
+  )
+(lists-compare? < '(1 2 3 4) '(2 3 4 5))
 
+
+; ============================
+
+
+
+#|
+Exrecise 7.10
+Write the procedure list-tail, that gets a list and an integer n and returns the
+list of all but the first n elements in the original list. (List-tail is actually already
+built into Scheme.)
+
+answer:
+|#
+
+; given a list, returns all but thefirst leemnets in the original list
+; basically like drop
+(define (list-tail n xs)
+  (cond [(empty? xs) '()]
+        [(zero? n) xs]
+        [else (list-tail (- n 1) (cdr xs))]
+        )
+  )
+(list-tail 3 '(1 2 3 4 5 6)) ;should return '(4 5 6)
+(list-tail 0 '(1 2 3)) ; nothing to drop, keep as it is
+(list-tail 7 '(1 2 3)) ; exceeds, reutrn empty list?
+
+
+; =========================
+
+; assume list is same length and nonempty
+;; zip: list-of-x list-of-y -> list-of-z
+; interweaves two list into one with alternating
+(define (zip xs ys)
+  (define (iter lst1 lst2  result)
+    (cond [(and (empty? lst1) (empty? lst2)) (reverse result)]
+          [else (iter lst2 (cdr lst1) (cons (car lst1) result))] ; weave right
+
+          )
+    )
+  (iter xs ys '())
+  
+  )
+(zip '(1 2 3) '(4 5 6))
+
+
+; recursive version
+(define (zip-rec xs ys)
+  (cond [(and (empty? xs) (empty? ys)) '()]
+        [else (cons (car xs) (zip-rec ys (cdr xs)) )]
+        )
+  )
+(zip-rec '(1 2 3 4) '(5 6 7 8))
+
+; =========================
+
+#|
+Exercise 7.11
+We have written shuffle so that it can operate on decks of any size. In fact, decks
+of all sizes have the property that after a certain number of perfect shuffles, the
+deck is returned to its original order. In this exercise you will write procedures that
+will automate the process of finding the number of shuffles, which we call the
+shuffle-number, required for a deck of a given size.
+
+a. Given that you start with an ordered deck, the first thing you will need is a
+predicate, called in-order?, that determines whether a list of integers is in
+increasing order. Write this procedure.
+
+b.  Using in-order?, write a procedure shuffle-number that, when passed a pos
+itive integer n, returns the shuffle-number for n. You should start off with an
+ordered deck of size n and repeatedly shuffle until the deck is in order.
+|#
