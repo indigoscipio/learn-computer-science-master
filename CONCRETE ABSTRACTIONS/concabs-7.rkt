@@ -525,10 +525,93 @@ a deck is a pair
 |#
 
 ; CONSTRUCTOR
+; number -> pair-of deck number
 (define (make-deck deck)
   (cons deck (length deck))
   )
 
+; SELECTORS
+(define (deck-length deck)
+  (cdr deck)
+  )
+
+
+(define (deck-content deck)
+  (car deck)
+  )
 
 
 ; ======================================================
+
+#|
+Exercise 7.13
+The procedure map is extraordinarily handy for creating lists of all sorts. Each of the
+following problems can be solved by using map.
+
+a.  Write a procedure that, when given a positive integer n, returns a list of the first
+n perfect squares
+b. Write a procedure that, when given a positive integer n, returns a list of the first
+n even integers.
+c.  Write a procedure called sevens that, when given a positive integer n, returns a
+list of n sevens. For example
+ (sevens 5)
+(7 7 7 7 7)
+
+d.  Write a procedure that, when given a list of positive integers, returns a list of lists
+of integers. Each of these lists should be the positive integers from 1 to whatever
+was in the original list. For example,
+
+(list-of-lists '(1 5 3))
+((1) (1 2 3 4 5) (1 2 3))
+
+answer:
+|#
+
+; PART A
+; returns the list of the first n perfect squares given a positive integer n
+(define (fun1 n)
+  (map sqr (range 1 (+ n 1)))
+  )
+(fun1 10) (fun1 1)
+
+
+; PART B
+; idontthink we even need mapforthis
+(define (fun2 n)
+  (range 2 (*(+ n 1) 2) 2) 
+  )
+(fun2 10)
+
+(define (fun2b n)
+  (map (λ (x) (* x 2)) (range 1 (+ n 1)))
+  )
+(fun2b 3)
+
+
+; PART C
+(define (sevens n)
+  (map (λ (x) 7) (range 1 (+ n 1)))
+  )
+(sevens 1)
+
+
+; PART d
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
