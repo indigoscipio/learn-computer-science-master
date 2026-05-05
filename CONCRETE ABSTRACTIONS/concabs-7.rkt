@@ -453,4 +453,82 @@ increasing order. Write this procedure.
 b.  Using in-order?, write a procedure shuffle-number that, when passed a pos
 itive integer n, returns the shuffle-number for n. You should start off with an
 ordered deck of size n and repeatedly shuffle until the deck is in order.
+
+answer:
 |#
+
+
+(define (in-order? xs)
+  ; check if curr item is greater than the previous
+  ; ifso, move and keep checking
+  ; else return false
+  (cond [(null? xs) #t] ; no more item to check; allin correct order
+        [(null? (cdr xs)) #t] ; lastone on the list
+        [else (let ((curr (car xs))
+                    (next (cadr xs))
+                    (rest (cdr xs))
+                    )
+                (and (< curr next)
+                    (in-order? rest))
+                    
+                )]
+
+        )
+  )
+(in-order? '(1 2 3 4 5))
+
+
+; PART B
+; xs number -> xs
+(define (shuffle deck size)
+  (let ((half (quotient (+ size 1) 2)))
+    (zip (take deck half) (drop deck half))))
+(shuffle '(1 2 3 4 5 6 7 8) 8)
+
+
+; number -> number
+(define (shuffle-number n)
+  (let* ((original-deck (range 1 (+ 1 n)))
+        (original-shuffled-deck (shuffle original-deck n))
+        ) ;create var for orignal deck
+    (define (loop deck count)
+      (cond [(in-order? deck) count] ;base case: deck is in order
+            [else (loop (shuffle deck n) (+ 1 count)) ] ; else keep shuffling and increase the count
+            )
+      )
+    (loop original-shuffled-deck 1)
+    )
+  
+  )
+(shuffle-number 52)
+
+; ======================================================
+
+#|
+Exercise 7.12
+Throughout this section on perfect shuffles, we’ve been passing in the size of the
+deck as well as the list representing the deck itself in order to avoid computing the
+length of the list when we already knew it. Another approach would be to create a
+new compound data type for decks, with two selectors: one to get the list of elements
+and the other to get the length. That way we could pass in just a single thing,
+the deck, but could still find the length without counting. Flesh out the remaining
+details of this idea, implement it, and try it out.
+
+answer:
+
+a deck is a pair
+(cons deck length)
+;interpretation list of deck and length of deck
+;example (cons '(1 2 3 4) 4)
+
+
+|#
+
+; CONSTRUCTOR
+(define (make-deck deck)
+  (cons deck (length deck))
+  )
+
+
+
+; ======================================================
