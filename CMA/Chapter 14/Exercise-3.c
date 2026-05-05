@@ -56,20 +56,25 @@ wrap epxr in () - protect associativity
 
 
 /*
-Exercise 1
-Write parameterized macros that compute the following values.
-
-(a) The cube of x.
-(b) The remainder when n is divided by 4.
-(c) l if the product of x and y is less than 100. 0 otherwise.
-
-do your macros always work? If not.describe what arguments would make them fail.
-
-a. #define CUBE(x) ((x)*(x)*(x))
-b. #define REMAINDER4(n) ((n) % 4)
+Exercise 3
+let DOUBLE be the following macro:
+#define DOUBLE(x) 2*x
+a. what is the vale of DOUBLE(1+2)?
+b. what is the vale of 4/DOUBLE(2)?
+c. fix the definition of double
 
 
 answer:
+a. DOUBLE(1+2) ->
+2*1+2 -> 2+2 -> 4
+
+b. 4/DOUBLE(2) ->
+4/2*2 -> by oder of operation division happens first ->
+2 * 2 -> 4
+
+c. DOUBLE(x) (2 * (x))
+fixed: argument x in the body is now wrapped in parenthesis
+the whole expression 2 * x is now wrapped in parenthesis
 
 */
 
@@ -79,16 +84,12 @@ answer:
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-#define CUBE(x) ((x)*(x)*(x))
-#define REMAINDER4(n) ((n) % 4)
-#define IS_LT_100(x,y) (((x) * (y)) < 100 ? 1 : 0)
+#define NELEMS(a) (sizeof(a)/sizeof(a[0]))
 
 int main(void){
+    int a[5] = {0};
 
-
-    printf("%d\n", CUBE(8));
-    printf("%d\n", REMAINDER4(8));
-    printf("%d\n", IS_LT_100(2,400));
+    printf("%d\n", NELEMS(a));
 
     return 0;
 }

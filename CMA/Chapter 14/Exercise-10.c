@@ -56,20 +56,22 @@ wrap epxr in () - protect associativity
 
 
 /*
-Exercise 1
-Write parameterized macros that compute the following values.
+Exercise 9
+Write the following parameterized macros.
 
-(a) The cube of x.
-(b) The remainder when n is divided by 4.
-(c) l if the product of x and y is less than 100. 0 otherwise.
-
-do your macros always work? If not.describe what arguments would make them fail.
-
-a. #define CUBE(x) ((x)*(x)*(x))
-b. #define REMAINDER4(n) ((n) % 4)
-
+a. CHECK(x,y,n) -> has value 1 if both x and y fall between 0 and n-1 inclusive
+b. MEDIAN(x,y,z) -> finds the median of x,y, and z
+c. POLYNOMIAL(x) -> computes polynomial 3x^5 + 2x^4 + 5x^3 - x^2 + 7x - 6
 
 answer:
+a. #define CHECK(x,y,n) ( ((x) >= 0) && ((x) <= ((n)-1)) ) && ( ((y) >= 0) && ((y) <= ((n)-1)) ) ? 1 : 0
+b. #define MEDIAN(x,y,z) (x >= y && x <= z || x >= z && x <= y) ? x :
+(y >= x && y <= z || y >= z && y <= x) ? y : z
+c. #define POLYNOMIAL(x) (x*(x*(x*(x*((3*x) + 2) + 5) - 1) + 7) - 6)
+
+
+
+howdoi write exponent macro here
 
 */
 
@@ -79,16 +81,12 @@ answer:
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-#define CUBE(x) ((x)*(x)*(x))
-#define REMAINDER4(n) ((n) % 4)
-#define IS_LT_100(x,y) (((x) * (y)) < 100 ? 1 : 0)
+#define NELEMS(a) (sizeof(a)/sizeof(a[0]))
 
 int main(void){
+    int a[5] = {0};
 
-
-    printf("%d\n", CUBE(8));
-    printf("%d\n", REMAINDER4(8));
-    printf("%d\n", IS_LT_100(2,400));
+    printf("%d\n", NELEMS(a));
 
     return 0;
 }

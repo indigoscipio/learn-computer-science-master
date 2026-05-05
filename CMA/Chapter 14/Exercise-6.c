@@ -56,20 +56,23 @@ wrap epxr in () - protect associativity
 
 
 /*
-Exercise 1
-Write parameterized macros that compute the following values.
+Exercise 6
+a. Write a macro DISP( f ,x) that expands into a call of printf that displays the value
+of the function f when called with argument x. For example.
 
-(a) The cube of x.
-(b) The remainder when n is divided by 4.
-(c) l if the product of x and y is less than 100. 0 otherwise.
+DISP( sqrt, 3.0) should expand into
+printf ( "sqrt (%g) = %g\n", 3.0, sqrt(3.0) ) ;
 
-do your macros always work? If not.describe what arguments would make them fail.
-
-a. #define CUBE(x) ((x)*(x)*(x))
-b. #define REMAINDER4(n) ((n) % 4)
-
+b. Write a macro DISP2(f ,x, y) that's similar to DISP but works for functions with
+twoarguments.
 
 answer:
+lets focus on a first
+a. #define DISP(f,x) printf(("%s(%g) = %g\n)", #f, x, f(x))
+
+b. #define DISP2(f,x,y) printf("%s(%g,%g) = %g\n", #f, x, y, f(x,y))
+
+#
 
 */
 
@@ -79,16 +82,12 @@ answer:
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-#define CUBE(x) ((x)*(x)*(x))
-#define REMAINDER4(n) ((n) % 4)
-#define IS_LT_100(x,y) (((x) * (y)) < 100 ? 1 : 0)
+#define NELEMS(a) (sizeof(a)/sizeof(a[0]))
 
 int main(void){
+    int a[5] = {0};
 
-
-    printf("%d\n", CUBE(8));
-    printf("%d\n", REMAINDER4(8));
-    printf("%d\n", IS_LT_100(2,400));
+    printf("%d\n", NELEMS(a));
 
     return 0;
 }

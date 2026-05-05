@@ -56,20 +56,47 @@ wrap epxr in () - protect associativity
 
 
 /*
-Exercise 1
-Write parameterized macros that compute the following values.
+Exercise 5
+Let TOUPPER be the following macro
+#define TOUPPER (c) ( •a •<= (c) &&(c) <= 1 z 1? (c)- *a1+ ’A •: (c) )
 
-(a) The cube of x.
-(b) The remainder when n is divided by 4.
-(c) l if the product of x and y is less than 100. 0 otherwise.
+Let s be a string and let i be an ir.t variable.Show the output produced by each of the fol
+lowing program fragments.
 
-do your macros always work? If not.describe what arguments would make them fail.
+(a) strcpy (s, "abed") ;
+    i = 0;
+    putchar (TOUPPER (s[++i])) ;
 
-a. #define CUBE(x) ((x)*(x)*(x))
-b. #define REMAINDER4(n) ((n) % 4)
 
+(b) strcpy(s, "0123") ;
+    i = 0;
+    putchar(TOUPPER(s[++i])) ;
 
 answer:
+sobasicaly the macro converts alphabetical ascii to uppercase with simple ternary operator, lets analyze onebyone
+a. we have s = "abcd"
+and i = 0
+then inside putchar we have passin the toupper with arg (s[++i]) -> lets expand
+'a' <= (s[++i]) && (s[++i]) <= 'z' ? (s[++i]) - 'a' + 'A' : (s[++i])
+'a' is less than 'b' -> increment 1
+'c' is less than 'z' -> increment
+goes to 1st case -> increment 1 -> 'd' -> convert to uppercase 'D'
+
+
+b. we have s = "0123"
+and i=0;
+then putchar call similar to a. same arg to putchar. same arg to toupper.
+'a' <= (s[++i]) && (s[++i]) <= 'z' ? (s[++i]) - 'a' + 'A' : (s[++i])
+a < 1? false. 2nd and skipped
+goes to else case
+increment again -> now becomes 2
+prints '2'
+
+
+
+
+b.
+
 
 */
 
@@ -79,16 +106,12 @@ answer:
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-#define CUBE(x) ((x)*(x)*(x))
-#define REMAINDER4(n) ((n) % 4)
-#define IS_LT_100(x,y) (((x) * (y)) < 100 ? 1 : 0)
+#define NELEMS(a) (sizeof(a)/sizeof(a[0]))
 
 int main(void){
+    int a[5] = {0};
 
-
-    printf("%d\n", CUBE(8));
-    printf("%d\n", REMAINDER4(8));
-    printf("%d\n", IS_LT_100(2,400));
+    printf("%d\n", NELEMS(a));
 
     return 0;
 }

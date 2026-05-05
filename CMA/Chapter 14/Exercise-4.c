@@ -56,20 +56,29 @@ wrap epxr in () - protect associativity
 
 
 /*
-Exercise 1
-Write parameterized macros that compute the following values.
+Exercise 4
+Foreach of thefollowing macros, give an example that illustratesa problem with the macro
+and show how to fix it.
+a. #define AVG(x,y) (x-y) / 2
+b. #define AREA(x,y) (x)*(y)
 
-(a) The cube of x.
-(b) The remainder when n is divided by 4.
-(c) l if the product of x and y is less than 100. 0 otherwise.
+a. arg is not individualy wrapped in parnthesiss
+example -> AVG(1+2, 3+4)
+AVG(x,y) (1+2-3+4) / 2 -> 3-3+4 -> 4
 
-do your macros always work? If not.describe what arguments would make them fail.
+corect version should be
+#define AVG(x,y) (((x)-(y)) / 2)
 
-a. #define CUBE(x) ((x)*(x)*(x))
-b. #define REMAINDER4(n) ((n) % 4)
+b. the whole expression isnot wrapped in parentehsis
+example -> x=3, y=-5
+
+AVG is being put inside anothe expression
+something like (2 * AVG + 3) -> (2 * 3 * -5 + 3) -> associativity error
+
+corect version sould be
+#define AREA(x,y) ((x)*(y))
 
 
-answer:
 
 */
 
@@ -79,16 +88,12 @@ answer:
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-#define CUBE(x) ((x)*(x)*(x))
-#define REMAINDER4(n) ((n) % 4)
-#define IS_LT_100(x,y) (((x) * (y)) < 100 ? 1 : 0)
+#define NELEMS(a) (sizeof(a)/sizeof(a[0]))
 
 int main(void){
+    int a[5] = {0};
 
-
-    printf("%d\n", CUBE(8));
-    printf("%d\n", REMAINDER4(8));
-    printf("%d\n", IS_LT_100(2,400));
+    printf("%d\n", NELEMS(a));
 
     return 0;
 }

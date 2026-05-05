@@ -56,20 +56,37 @@ wrap epxr in () - protect associativity
 
 
 /*
-Exercise 1
-Write parameterized macros that compute the following values.
+Exercise 7
+Let GENERIC MAX be the following macro:
+#define GENERIC_MAX(type)           \
+type type##_max(type x, type y)     \
+{                                   \
+    return x > y ? x : y            \
+}                                   \
 
-(a) The cube of x.
-(b) The remainder when n is divided by 4.
-(c) l if the product of x and y is less than 100. 0 otherwise.
-
-do your macros always work? If not.describe what arguments would make them fail.
-
-a. #define CUBE(x) ((x)*(x)*(x))
-b. #define REMAINDER4(n) ((n) % 4)
-
+a. show the preprocessor expansion of GENERIC_MAX(long)
+b. explain why GENERIC_MAX doesn't work for  basic types such as unsigned long
+c. describe a technique that would allow us to use GENERIC_MAX with basic types such as
+unsigned long. int: don't change the definition of GENERIC_MAX
 
 answer:
+a. expansion. with macro arg = long
+long long_max(long x, long y)
+{
+    return x > y ? x : y
+}
+
+b. it doesn't work because ifweuse 'unsigned long' as arg it becomes
+unsigned long unsigned long_max(unsigned long x, unsigned long y)
+{
+    return x > y ? x : y
+}
+where unsigned <space> long_max is not a valid syntax/proper function
+
+c. notsure about this one. im guessing if the type is morethan 2 word, just concat it using the ##?
+actually wecan just use typedef here
+typedef unsigned long ulong. and then pass ulong as the argument
+
 
 */
 
@@ -79,16 +96,12 @@ answer:
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-#define CUBE(x) ((x)*(x)*(x))
-#define REMAINDER4(n) ((n) % 4)
-#define IS_LT_100(x,y) (((x) * (y)) < 100 ? 1 : 0)
+#define NELEMS(a) (sizeof(a)/sizeof(a[0]))
 
 int main(void){
+    int a[5] = {0};
 
-
-    printf("%d\n", CUBE(8));
-    printf("%d\n", REMAINDER4(8));
-    printf("%d\n", IS_LT_100(2,400));
+    printf("%d\n", NELEMS(a));
 
     return 0;
 }

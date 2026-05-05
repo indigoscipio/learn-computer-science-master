@@ -56,20 +56,28 @@ wrap epxr in () - protect associativity
 
 
 /*
-Exercise 1
-Write parameterized macros that compute the following values.
+Exercise 8
+Suppose we want a macro that expands intoa string containing the current line number and
+file name. In other words, we'd like to write
 
-(a) The cube of x.
-(b) The remainder when n is divided by 4.
-(c) l if the product of x and y is less than 100. 0 otherwise.
+const char *str = LINE_FILE;
+and have it expand into
+const char *str = "Line 10 of file foo.c";
 
-do your macros always work? If not.describe what arguments would make them fail.
 
-a. #define CUBE(x) ((x)*(x)*(x))
-b. #define REMAINDER4(n) ((n) % 4)
-
+where foo.c is the tile containing the program and 10 is the line on which the invocation
+of LINE FILE appears. Warning: this exercise is for experts only
+be sure to read the Q&A section carefully before attempting
 
 answer:
+yeah i dontthink im gonna attmept totryit lol, but im gonna try
+
+__LINE__ -> expands to curr line number
+__FILE__ -> expands to current filename as str
+
+#define SHOW_STR_LINE(line_num, fn) printf("Line %d of file %s", line_num, fn)
+maybe something likethis
+
 
 */
 
@@ -79,16 +87,12 @@ answer:
 #include <time.h>
 #include <ctype.h>
 #include <string.h>
-#define CUBE(x) ((x)*(x)*(x))
-#define REMAINDER4(n) ((n) % 4)
-#define IS_LT_100(x,y) (((x) * (y)) < 100 ? 1 : 0)
+#define NELEMS(a) (sizeof(a)/sizeof(a[0]))
 
 int main(void){
+    int a[5] = {0};
 
-
-    printf("%d\n", CUBE(8));
-    printf("%d\n", REMAINDER4(8));
-    printf("%d\n", IS_LT_100(2,400));
+    printf("%d\n", NELEMS(a));
 
     return 0;
 }
