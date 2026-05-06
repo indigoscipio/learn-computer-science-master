@@ -56,22 +56,42 @@ wrap epxr in () - protect associativity
 
 
 /*
-Exercise 9
-Write the following parameterized macros.
-
-a. CHECK(x,y,n) -> has value 1 if both x and y fall between 0 and n-1 inclusive
-b. MEDIAN(x,y,z) -> finds the median of x,y, and z
-c. POLYNOMIAL(x) -> computes polynomial 3x^5 + 2x^4 + 5x^3 - x^2 + 7x - 6
+Exercise 10
+Functions can often—but not always— be written as parameterized macros. Discuss what
+characteristics of a function would make it unsuitable as a macro
 
 answer:
-a. #define CHECK(x,y,n) ( ((x) >= 0) && ((x) <= ((n)-1)) ) && ( ((y) >= 0) && ((y) <= ((n)-1)) ) ? 1 : 0
-b. #define MEDIAN(x,y,z) (x >= y && x <= z || x >= z && x <= y) ? x :
-(y >= x && y <= z || y >= z && y <= x) ? y : z
-c. #define POLYNOMIAL(x) (x*(x*(x*(x*((3*x) + 2) + 5) - 1) + 7) - 6)
+ok so i know not all functions can be defined as macro even if so
+some of them can behave unstably. now for a example and characterstics
+
+if we have a standard square function then itshoud be no problem to be macro
+#define SQR(n) ((n)*(n)) we can put this anywhere it will just evaulte to a number eventualy
+as long as guarantees to take a number as an argument. we cant do "S" * "S"
+
+so function that can evaluate number can be substited as macro easily
+so i guess the type guarantee is the first one
+
+but how about function that retunrs function? wait c is not like racket it cannot return function
+let me see what if theres another example. how about function that performs side effect. yes this might be it
+
+take standard printf
+#define PRINT(ARG) printf("something", ARG) - thisone can only take fixed number of argment
+which is counterintuitive whereas the generic printf("str", arg1,arg2, ..., argn) can take n amount of argument
+
+
+another one is side effect lets take #define SQR(x++) ((x++) * (x++))
+if theres a few ocurence of SQR, the macro will keep substituting and increment x++
+however in a normal function, it is scoped so the increment will only happen inside the scope.
+int sqrt(int n){return n * n;}
+sqr(x++); this only happens once
+
+next is recursive function
+if we define recursive function in macro then a wihin that is another call to macro itself
+macro cannot evaluate revusrive function. it will just expand forever, can detect no state change to the args.
+functions have their own stack and local environment and scope. macro is just substitution. function is just evaluation.
 
 
 
-howdoi write exponent macro here
 
 */
 
