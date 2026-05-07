@@ -29,6 +29,23 @@ extern seperate those
 */
 
 
+/*
+Exercise 2
+Whichof the following should not be put in a header file? Why not?
+
+a. function prototypes
+b. function definitions.
+c. macro definitions.
+d. type definitions.
+
+answer:
+let me try to analyze this one by one.
+a.
+
+
+*/
+
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

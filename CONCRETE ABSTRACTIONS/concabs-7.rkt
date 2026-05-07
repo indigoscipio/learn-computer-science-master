@@ -595,23 +595,69 @@ answer:
 (sevens 1)
 
 
-; PART d
+; PART D
+(define (list-of-lists xs)
+  (map (λ (n) (range 1 (+ n 1)) ) xs)
+  )
+(list-of-lists '(0))
 
 
 
 
+; =================================================================
+
+; Exercise 7.14
+; Even though map is built into Scheme, it is a good exercise to write it yourself. Do so.
+
+;; my-map: [x -> y] list-of-x -> list-of-y
+(define (my-map f xs)
+  (cond [(null? xs) '()]
+        [else (cons (f (car xs)) (my-map f (cdr xs)))]
+        )
+  )
+(my-map sqr '(1 2 3 4 5))
+
+
+; =================================================================
 
 
 
+; 7.4
+; adds x to the every end of the list xs
+(define (add-to-end x xs)
+  (cond [(null? xs) (cons x xs)] ; list is empty, just cons it with the empty list
+        [else (cons (car xs) (add-to-end x (cdr xs)))])
+  )
+(add-to-end 3 '(1 2))
+(add-to-end 1 '())
 
 
+(define (my-reverse xs)
+  (cond [(null? xs) '()]
+        [else (add-to-end (car xs) (my-reverse (cdr xs)) )]
+        )
+  )
+(my-reverse '())
+(my-reverse '(1))
+(my-reverse '(1 2))
+(my-reverse '(1 2 3 4 5))
 
+(define (my-reverse2 xs)
+  (define (loop lst result)
+    (cond [(null? lst) result]
+          [else (loop (cdr lst) (cons (car lst) result))])
+    )
+  (loop xs '())
+  )
+(my-reverse2 '(1 2 3 4 5))
 
+#|
+first take 1 and put it to the end of the list.
+new list = 2 3 4 5 1
+next take 2 and put it to the end of the list
+new list = 3 4 5 1 2
 
+|#
 
-
-
-
-
-
+; TREE LIST RECURSION
 
