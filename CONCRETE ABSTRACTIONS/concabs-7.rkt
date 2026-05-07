@@ -661,3 +661,67 @@ new list = 3 4 5 1 2
 
 ; TREE LIST RECURSION
 
+; example 1 : Merge Sort
+; merge-sort : the main function that sorts the unsorted list
+; merge: takes two sorted list and glue it to produce larger sorted list.
+; divide list into half -> can use either even/odd technique or just split in half with take and drop
+
+
+; Example 2: partition/change combinatoric problem
+; 2 branching possibilies -> take it vs leave it.
+
+
+#|
+Exercise 7.15
+What values should be returned in each of these cases? Using your answer, finish
+writing the procedure count-combos
+
+(definecount-combos
+(lambda(prize-listamount)
+.
+.
+.
+(+(count-combosprize-list(-amount(carprize-list)))
+(count-combos(cdrprize-list)amount))))
+|#
+
+(define (count-combos prize-list amount)
+  (cond [(equal? amount 0) 1] ; used our amount perfectly
+        [(null? prize-list) 0] ; prize list is empty, nothing else to pick - return the count.
+        [(< amount 0) 0] ; amount <= 0, overspent;
+        [else (+ (count-combos prize-list (- amount (car prize-list)))
+                 (count-combos (cdr prize-list) amount))]; else, keep exploring the branch
+
+        )
+  )
+(count-combos '(5 3 1 1) 10)
+
+
+#|
+
+Exercise 7.16
+Which representation is best? Why? Can you think of any other, better way of
+representing the data? Think about what the corresponding procedures would look
+like as well as entering the data.
+
+
+using pairs -> can represent the (item . quantity) -> less recursive call. take can be more complex
+flat list -> simpler, more recursive call. take is only yes or no
+
+
+|#
+
+
+#|
+
+Exercise 7.17
+
+
+|#
+
+
+#|
+
+Exercise 7.18
+
+|#
