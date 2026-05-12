@@ -1,0 +1,366 @@
+#lang racket
+
+; Exercise 7.3
+; TREE LIST RECURSION
+
+; example 1 : Merge Sort
+; merge-sort : the main function that sorts the unsorted list
+; merge: takes two sorted list and glue it to produce larger sorted list.
+; divide list into half -> can use either even/odd technique or just split in half with take and drop
+
+
+; Example 2: partition/change combinatoric problem
+; 2 branching possibilies -> take it vs leave it.
+
+
+#|
+Exercise 7.15
+What values should be returned in each of these cases? Using your answer, finish
+writing the procedure count-combos
+
+(definecount-combos
+(lambda(prize-listamount)
+.
+.
+.
+(+(count-combosprize-list(-amount(carprize-list)))
+(count-combos(cdrprize-list)amount))))
+|#
+
+(define (count-combos prize-list amount)
+  (cond [(equal? amount 0) 1] ; used our amount perfectly
+        [(null? prize-list) 0] ; prize list is empty, nothing else to pick - return the count.
+        [(< amount 0) 0] ; amount <= 0, overspent;
+        [else (+ (count-combos prize-list (- amount (car prize-list)))
+                 (count-combos (cdr prize-list) amount))]; else, keep exploring the branch
+
+        )
+  )
+(count-combos '(5 3 1 1) 10)
+
+
+#|
+
+Exercise 7.16
+Which representation is best? Why? Can you think of any other, better way of
+representing the data? Think about what the corresponding procedures would look
+like as well as entering the data.
+
+
+using pairs -> can represent the (item . quantity) -> less recursive call. take can be more complex
+flat list -> simpler, more recursive call. take is only yes or no
+
+
+
+|#
+
+
+#|
+
+Exercise 7.17
+
+Write the procedure that would generate the list needed for count-combos given
+the data in Table 7.1. Check to see that there really are 1778 possible combinations
+of prizes that are worth 10 tickets.
+|#
+
+(count-combos '(1 1 2 2 2 2 3 3 3 4 4 4 5 5 5 5 6 6 6 7 7 7 7 8 8 9 9 9 10 10 10 10 10 10 10 10 10 ) 10)
+
+
+#|
+
+Exercise 7.18
+One of our children has learned that he doesn’t need to spend all of his tickets
+because he can save them up for his next trip. Thus, instead of finding the number
+of combinations that he can get with one particular amount he would like to know
+the number of combinations that he can get for any amount that is less than or equal
+to the number of tickets he has. Write a procedure that is given a prize list and a
+maximum amount and returns the number of combinations of prizes that you can
+buy using no more than than the maximum amount of tickets.
+
+answer:
+|#
+
+; given a number of tickets, how mayn ways can i spend at most n tickets?
+; number -> number
+(define (ways-to-spend prize-list max-amt)
+  (cond [(zero? max-amt) 1]
+        [else  (+ (count-combos prize-list max-amt) (ways-to-spend prize-list (- max-amt 1)) ) ])
+  )
+(ways-to-spend '(1 2 3 3 3) 0)
+
+
+
+#|
+Eercise 7.21
+Asimilar problem to this is to imagine that you have an unlimited amount of quarters,
+dimes, nickels, and pennies and that you need to come up with a combination of
+these coins to make a certain amount. How many different ways can you do this?
+Write a procedure that will count the number of ways to make change for a given
+amount using only quarters, dimes, nickels, and pennies.
+
+answer:
+|#
+
+(count-combos '(1 5 10 25) 15)
+
+; =====================================================
+
+; a movie is a struct
+; make-movie list list number list-of-list
+(define (make-movie title director year-made actors)
+  (list title director year-made actors))
+(define movie-title car)
+(define movie-director cadr)
+(define movie-year-made caddr)
+(define movie-actors cadddr)
+
+(define our-movie-database
+  (list (make-movie '(amarcord)
+                    '(federico fellini)
+                    1974
+                    '((magali noel) (bruno zanin)
+                                    (pupella maggio)
+                                    (armando drancia)))
+        (make-movie '(the big easy)
+                    '(jim mcbride)
+                    1987
+                    '((dennis quaid) (ellen barkin)
+                                     (ned beatty)
+                                     (lisa jane persky)
+                                     (john goodman)
+                                     (charles ludlam)))
+        (make-movie '(the godfather)
+                    '(francis ford coppola)
+                    1972
+                    '((marlon brando) (al pacino)
+                                      (james caan)
+                                      (robert duvall)
+                                      (diane keaton)))
+        (make-movie '(boyz n the hood)
+                    '(john singleton)
+                    1991
+                    '((cuba gooding jr.) (ice cube)
+                                         (larry fishburne)
+                                         (tyra ferrell)
+                                         (morris chestnut)))))
+
+#|
+Exercise 7.22
+We can use the procedure filter defined in Section 7.3 to do any one of these
+searches. For example, to find all the movies that were made in 1974, we would
+evaluate
+(filter (lambda (movie) (= (movie-year-made movie) 1974))
+our-movie-database)
+
+a. Write a procedure called movies-made-in-year that takes two parameters, the
+list of movies and a year, and finds all the movies that were made in that year.
+
+b. Use the procedure filter to find all the movies that were directed by John
+Singleton.
+
+c. Write a procedure called movies-directed-by that takes two parameters, the
+list of movies and the name of a director, and finds all of the movies that were
+directed by that director.
+
+d. Write a procedure called movies-with-actor that takes two parameters, a list
+of the movies and the name of an actor, and finds all the movies that have that
+actor in them. You could use the Scheme predicate member, which tests to see
+whether its first argument is equal to any element of its second argument (which
+must be a list).
+
+|#
+
+; PART A
+; list-of-movies number -> list-of-movies
+(define (movies-made-in-year movie-db year)
+  (filter (λ (movie) (equal? (movie-year-made movie) year)) movie-db)
+  )
+;(movies-made-in-year our-movie-database 1991)
+
+; PART B
+;(filter (λ (movie) (equal? (movie-director movie) '(john singleton)) ) our-movie-database)
+
+; PART C
+(define (movies-directed-by movie-db dir-name)
+  (filter (λ (movie) (equal? (movie-director movie) dir-name)) movie-db)
+  )
+;(movies-directed-by our-movie-database '(john singleton))
+
+; PART D
+; list-of-movies list-of-symbol -> list-of-movies
+(define (movies-with-actor movie-db actor-name)
+  (filter (λ (movie) (member actor-name (movie-actors movie))) movie-db)
+  )
+(movies-with-actor our-movie-database '(ice cube))
+
+
+; ==========================================================================================
+
+
+#|
+
+7.23
+The biggest problem with the previous procedures is that they return a list of the
+actual movie records, when we often would prefer just a list of the titles of the
+movies. Write a procedure called titles-of-movies-satisfying that takes two
+arguments, a list of movies and a predicate, and returns a list of the titles of the
+movies satisfying the predicate argument. For example, evaluating the expression
+
+|#
+
+(define (titles-of-movies-satisfying lom pred)
+  (map movie-title (filter pred lom))
+  )
+(titles-of-movies-satisfying our-movie-database (λ (movie) (= (movie-year-made movie) 1974 ) ))
+
+
+; ==========================================================================================
+
+#|
+7.24
+Sometimes we want some attribute other than the title when we’re searching for the
+movies that satisfy a given property. Generalize titles-of-movies-satisfying
+to a procedure movies-satisfying that takes three arguments: a list of movie
+records, a predicate, and a selector. Evaluating the expression
+
+(movies-satisfying our-movie-database
+                   (lambda (movie)
+                     (= (movie-year-made movie) 1974))
+                   movie-title)
+
+should have the same result as the previous exercise.
+; answer:
+|#
+
+(define (movies-satisfying lom pred selector)
+  (map selector (filter pred lom))
+  )
+(movies-satisfying our-movie-database (λ (movie) (= (movie-year-made movie) 1974)) movie-title)
+
+; ==========================================================================================
+
+
+
+(define (make-p/a pattern action)
+  (cons pattern action)
+  )
+(define pattern car)
+(define action cdr)
+
+(define (answer-by-pattern query p/a-list)
+  (cond ((null? p/a-list) (display '(i do not understand)))
+        ((matches? (pattern (car p/a-list)) query) (let* ((subs (substitutions-in-to-match
+                                                                 (pattern (car p/a-list)) query))
+                                                          (result (apply (action (car p/a-list))
+                                                                         subs)))
+                                                     (if (null? result)
+                                                         (display '(i do not know))
+                                                         (display result))
+                                                     ))
+        (else (answer-by-pattern query (cdr p/a-list))))
+  )
+
+
+; ==========================================================================================
+
+
+#|
+xercise 7.25
+Add a pattern of the form (who acted in ...) to your program by adding the
+appropriate pattern/action pair to movie-p/a-list and reevaluating this definition.
+What other patterns can you add?
+
+answer: lets keep it simple and lets just do the who acted in
+|#
+
+(define movie-p/a-list
+  (list (make-p/a '(who is the director of ...)
+                  (lambda (title) (movies-satisfying our-movie-database
+                                                     (λ (movie) (equal? (movie-title movie) title))
+                                                     movie-director)))
+        (make-p/a '(who acted in ...)
+                  (lambda (title) (movies-satisfying our-movie-database
+                                                     (λ (movie) (equal? (movie-title movie) title))
+                                                     movie-actors))))
+  )
+
+
+
+
+#|
+Exercise 7.26
+Write the procedure substitutions-in-to-match. Be sure to return a list con
+taining the list of symbols that are matched by the ... symbol. Note: You needn’t
+use the whole query system to test whether substitutions-in-to-match works.
+Instead, you could check whether you have interactions like the preceding one.
+This note applies as well to later exercises that ask you to extend matches? and
+substitutions-in-to-match.
+|#
+
+;; substitutions-in-to-match : list-of-symbols list-of-symbols -> list-of-lists
+(define (substitutions-in-to-match pattern query)
+  (cond [(null? pattern) '()] ; no ..., no substitution
+        [(equal? (car pattern) '...) (list query)]
+        [else (substitutions-in-to-match (cdr pattern) (cdr query))]
+        )
+  )
+
+
+#|
+Exercise 7.27
+
+Test the whole query system by evaluating the expression (query-loop).
+|#
+
+(define (exit? query)
+  (member query '((bye) (quit) (exit) (so long) (farewell)))
+  )
+
+(define (query-loop)
+  (newline)
+  (newline)
+  (let ((query (read)))
+    (cond ((exit? query) (display '(see you later)))
+          (else (answer-by-pattern query movie-p/a-list)
+                (query-loop)))))
+
+
+
+#|
+Eercise 7.28
+What should it return if there are no elements in the list? What if there are two or
+more? Write this procedure, and use it to modify the action for finding the actors of
+a particular movie.
+
+
+|#
+
+(define (the-only-element-in xxs)
+  (cond [(null? xxs) (error "nothing in the list")] ;nothing, return as it is or error?
+        [(null? (cdr xxs)) (car xxs)] ; one element left
+        [else (error "more than one element in the list")] ;at least 2, just return the first one maybe?
+        )
+  )
+
+
+;========================================================================================
+
+#|
+Exercise 29
+Extend matches? so that it also checks for the _ wild card. Remember that this is a
+wild card for a single word. Also, remember that there can be more than one _ in a
+single pattern and that they need not be at the end of the pattern.
+
+|#
+
+; MATCHER
+(define (matches? pattern question)
+  (cond ((null? pattern) (null? question))
+        ((null? question) #f)
+        ((list? (car pattern)) (if (member (car question) (car pattern))
+                                   (matches? (cdr pattern) (cdr question))
+                                   #f))
+        ((equal? (car pattern) '...) #t)
+        ((equal? (car pattern) (car question)) (matches? (cdr pattern) (cdr question)))
+        (else #f)))
