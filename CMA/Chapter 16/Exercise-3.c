@@ -30,33 +30,39 @@ print_part((struct part) {528, "Disk drive", 10})
 
 
 /*
+Exercise 3
+a. how how to declare a tag named complex for a structure with two members, real
+and imaginary, of typedouble.
+b. Use the complex tag to declare variables namedcl.c2.and c3.
+c. Write a function named make complex that stores its two arguments (both of type
+double) in acomplex structure, then returns the structure.
+d. Write a function named add complex that adds the corresponding members of its
+arguments (both complex structures), then returns the result (another complex structure).
 
-Exercise 2
-
-(a) Declare structure variables named cl. c2. and c3. each having members real and
-imaginary of typedouble.
-(b) Modify the declaration in part (a )so thatcl’s members initially have the values ().() and
-1.0. while c2's members are I.Oand 0.0 initially. (c3 is not initialized.)
-(c) Write statements that copy the members of c2 intocl. Can this be done in one state
-ment .or does it require two?
-(d) Write statements that add the corresponding members of cl and c2 . storing the result
-in c3
+answer:
+lets keep it simple
 */
 
 
 
 // PART A
-//struct part {double real; double imaginary;} c1,c2,c3;
+struct complex {double real; double imaginary;};
 
 // PART B
-struct part {double real; double imaginary;} c1 = {0.0, 1.0},c2={1.0,0.0},c3;
+struct complex c1, c2 ,c3;
 
 // PART C
-c1 = c2;
+struct complex make_complex(double real, double imaginary){
+    struct complex new_complex;
+    new_complex.real = real;
+    new_complex.imaginary = imaginary;
+    return new_complex;
+}
 
 // PART D
-c3.real = c1.real + c2.real;
-c3.imaginary = c1.imaginary + c2.imaginary;
+struct complex add_complex(struct complex a, struct complex b){
+    return make_complex(a.real + b.real, a.imaginary + b.imaginary);
+}
 
 
 int main(void) {

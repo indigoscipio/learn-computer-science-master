@@ -30,41 +30,29 @@ print_part((struct part) {528, "Disk drive", 10})
 
 
 /*
-
-Exercise 2
-
-(a) Declare structure variables named cl. c2. and c3. each having members real and
-imaginary of typedouble.
-(b) Modify the declaration in part (a )so thatcl’s members initially have the values ().() and
-1.0. while c2's members are I.Oand 0.0 initially. (c3 is not initialized.)
-(c) Write statements that copy the members of c2 intocl. Can this be done in one state
-ment .or does it require two?
-(d) Write statements that add the corresponding members of cl and c2 . storing the result
-in c3
+Exercise 4
+Repeat Exercise 3, but this time using a type named Complex.
 */
 
-
-
 // PART A
-//struct part {double real; double imaginary;} c1,c2,c3;
+typedef struct {double real; double imaginary;} complex;
 
 // PART B
-struct part {double real; double imaginary;} c1 = {0.0, 1.0},c2={1.0,0.0},c3;
+complex c1, c2, c3;
 
 // PART C
-c1 = c2;
+complex make_complex(double real, double imaginary){
+    complex new_complex;
+    new_complex.real = real;
+    new_complex.imaginary = imaginary;
+    return new_complex;
+}
 
 // PART D
-c3.real = c1.real + c2.real;
-c3.imaginary = c1.imaginary + c2.imaginary;
-
-
-int main(void) {
-
-    printf("%f", c1.real);
-
-    return 0;
+complex add_complex(complex a, complex b){
+    return make_complex(a.real + b.real, a.imaginary + b.imaginary);
 }
+
 
 /*
 void print_part(struct part p){
