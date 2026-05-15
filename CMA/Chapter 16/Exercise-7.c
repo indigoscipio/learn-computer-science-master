@@ -57,10 +57,65 @@ struct fraction {int numerator;
                  int denominator;
                  };
 
+int compute_gcd(int a, int b){
+    if(a == b){
+        return a;
+    }
+    else if(a > b){
+        return compute_gcd(a-b, b);
+    }else{
+        return compute_gcd(a, b-a);
+    }
+ }
 
+// PART A
+struct fraction reduce_fraction(struct fraction f){
+    int gcd = compute_gcd(f.numerator, f.denominator);
+
+    return (struct fraction) {f.numerator/gcd , f.denominator/gcd};
+}
+
+// PART B
+// 1/2 + 3/4 -> 4/8 + 6/8
+struct fraction add_fraction(struct fraction f1, struct fraction f2){
+
+    int f1_new_numerator = f1.numerator * f2.denominator;
+    int f2_new_numerator = f2.numerator * f1.denominator;
+    int common_denominator = f1.denominator * f2.denominator;
+
+    return reduce_fraction((struct fraction) {f1_new_numerator + f2_new_numerator, common_denominator});
+}
+
+// PART C
+struct fraction subtract_fraction(struct fraction f1, struct fraction f2){
+
+    int f1_new_numerator = f1.numerator * f2.denominator;
+    int f2_new_numerator = f2.numerator * f1.denominator;
+    int common_denominator = f1.denominator * f2.denominator;
+
+    return reduce_fraction((struct fraction) {f1_new_numerator - f2_new_numerator, common_denominator});
+}
+
+// PART D
+// 1/2 * 3/4 -> 3/8
+struct fraction multiply_fraction(struct fraction f1, struct fraction f2){
+    return reduce_fraction((struct fraction) {f1.numerator * f2.numerator, f1.denominator * f2.denominator});
+}
+
+// PART E
+// 1/2 : 1/3 -> 1/2 * 3/1
+struct fraction divide_fraction(struct fraction f1, struct fraction f2){
+    // reverse f2's nominator with denominator
+    // just multiply them manually
+    struct fraction f2_inv = {f2.denominator, f2. numerator};
+
+    return reduce_fraction(multiply_fraction(f1, f2_inv));
+
+}
 
 
 int main(void){
+    printf("%d", compute_gcd(48,16));
 
     return 0;
 }
