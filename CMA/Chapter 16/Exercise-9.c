@@ -109,7 +109,10 @@ struct color color_brighter(struct color c){
 
 // PART E
 struct color color_darker(struct color c){
-    return;
+
+    return (struct color) {clamp(c.red*0.7),
+                           clamp(c.green*0.7),
+                           clamp(c.blue*0.7)};
 }
 
 
