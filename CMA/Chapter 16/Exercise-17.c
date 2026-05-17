@@ -30,27 +30,38 @@ print_part((struct part) {528, "Disk drive", 10})
 
 
 /*
-Exercise 16
-Which of the following statementsabout enumeration constants are true?
+Exercise 17
+suppose b and i are declared as follows:
 
-a.  An enumeration constant may represent any integer specified by the programmer.
-b.  Enumeration constants have exactly the same properties as constants created using
-#define
-c. Enumeration constants have the values 0. I . 2. ... by default.
-d. all constants in an enumeration must have different values
-e.  Enumeration constants may be used as integers in expressions
+enum {FALSE, TRUE} b;
+int i;
+
+Which of the following statements are legal? Which ones arc "safe"( always yield a mean
+ingful result)?
+
+(a) b = FALSE;
+(b) b = i;
+(C) b++;
+(d) i = b;
+(e) i = 2 * b + 1;
 
 answer:
-icould beeworng here since imostly skimmed the enum chapter but let me give a try
+ok let me try this one
+a. since b is an enum it has unintialized value
+then we assign value to false so new value of b is now false
+so its legal
 
-a. true. i read that you can actually define your own enum value when defining.
-b. they are different. #define is used at preprocessing time while
-enum happens during the compile time
-c. this on im notsure if it starts from 1 by default but itmakes sense touse like 0based
-like array so im gonna say yes it starts from 0,1,2 ... etc by default
-d. it is legal but considered bad practice, bad readibility.
-e.yes you can use / substitute as integers in expr
+b. here we assign i to b
+and since we know i is a type of int
+ithink its elgal but but i value is not initialized
 
+c. here we increment the vale of b
+since we know b is a enum it has initialized value and when we increase it
+still elgal but junk value i think
+
+d. meaningful since i can take any integer value
+
+e. i can hold 1 or 3 so it s legal and valud
 
 */
 
