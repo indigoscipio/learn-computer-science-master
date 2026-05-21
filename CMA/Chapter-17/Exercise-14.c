@@ -53,36 +53,32 @@ dont forget to also update first (head pointer) everytime
 
 /*
 
-Exercise 12
+Exercise 14
 
-struct node *find_last(struct node *list, int n);
+Modify the delete_from_list function so that its first param has struct node ** and its return type is void
+delete_from_list must modify its first arg to point to the list after the desired node has been deleted
 
-The list parameter points to a linked list. The function should return a pointer to the last
-node that contains n: it should return NULL if ndoesn't appear in the list. Assume that the
-node structure is the one defined in Section 17.5
-
-answer:
-ok let me try this one and keep it simple
-in racket/scheme you just gotta do a check if (cdr lst) is null and just return the (car lst) if so
-otherwise keep recursing but in c its a different one.
 */
 
 struct node {int value; struct node *next;};
 struct node *first = NULL;
 
-struct node *find_last(struct node *list, int n){
+void delete_from_list(struct node **list, int n){
+    struct node *cur, *prev;
 
-    struct node *p, *last_match = NULL;
-
-    for(p = list; p != NULL;  p = p->next){
-        if(p->value == n){
-            last_match = p;
-        }
+    for(cur = *list, prev = NULL; cur != NULL && cur->value != n; prev = cur, cur = cur->next){
+        ;
     }
 
-    return last_match;
+    if(cur == NULL){
+        return;
+    }if (prev == NULL){
+        *list = *(list).next;
+    }else{
+        prev->next = curr->next;
+    }
+    free(cur);
 }
-
 
 int main(void){
 
