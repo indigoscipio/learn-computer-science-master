@@ -3,8 +3,39 @@ binary values - presence vs absence
 as it is it doesn't mean anything
 but when its given context it changes the meaning
 
-unsigned encoding
-floating point encoding
-twos compomemnt encoding
+unsigned encoding -> all bits are positive
+floating point encoding -> split into sign, scale and fraction
+twos compomemnt encoding -> first bit is negative, the rest is positive
+
+what is encoding?
+chip can only understand 2 states: 1 or 0
+encoding is the secret 'recipe' we use to assigne meaning to those groups of 1s and 02s
+
+example
+3 bits
+000 -> 0
+101 -> 5
+111 -> 7
+
+in unsigned it let us represent the value 0 - 7
+
+in unsigned, need to store the 'negative state'
+so need to sacrifice 1 bit. the MSB (leftmost) is sacrificed
+leftmost = 0 -> positive
+leftmost = 1 -> negative
+
 
 computer arithmetic does not equal real math
+
+
+;=============================
+
+BYTE
+computers compute in bit which is like unit of compute
+bit = smallest but the cpu packs them into eights 
+8 bit = 1 byte, each byte live in different address
+cpu grabs them byte-by-byte (not bit-by-bit)
+
+HEX
+each digit in hex packs 4 bit of memory
+2 digit = 8 bit = 1 byte of memory
