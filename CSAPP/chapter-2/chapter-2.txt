@@ -39,3 +39,13 @@ cpu grabs them byte-by-byte (not bit-by-bit)
 HEX
 each digit in hex packs 4 bit of memory
 2 digit = 8 bit = 1 byte of memory
+
+WORD SIZE
+is a natural 'bite size' for data
+32 bit -> holds up to 4 billion bytes
+this means  its data highways are 32 bits wide, processes data in 32 bit chunks
+64 bits -> holds up to 2^64 bytes
+
+ENDIANS
+big endian -> stores most significant bit first
+little endian -> stores least significant bit first
