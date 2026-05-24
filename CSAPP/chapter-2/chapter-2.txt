@@ -49,3 +49,86 @@ this means  its data highways are 32 bits wide, processes data in 32 bit chunks
 ENDIANS
 big endian -> stores most significant bit first
 little endian -> stores least significant bit first
+
+Practice Problem 2.2
+0 x 12 34 56 78
+
+a. 1
+little endian: 78
+big endian: 12
+
+b. len = 2
+little endian: 78 56
+big endian: 12 34
+
+c. len = 3 -> 3 byte
+little endian: 78 56 34
+big endian: 12 34 56
+
+-----
+
+Practice PRoblem 2.3
+Usingshow_intandshow_float,wedeterminethat theinteger3490593hashexadecimalrepre
+sentation0x00354321,whilethefloating-pointnumber3490593:0hashexadecimal representation
+representation0x4A550C84.
+A.Writethebinaryrepresentationsofthesetwohexadecimalvalues.
+B. Shiftthesetwostringsrelativetooneanothertomaximizethenumberofmatchingbits.
+C. Howmanybitsmatch?Whatpartsofthestringsdonotmatch?
+
+
+answer:
+
+int 3490593 -> 0x00354321
+float 3490593.0 -> 0x4A550C84
+
+a. binary representation
+refrence from the previous table
+00 35 43 21 -> 0000 0000 0011 0101 0100 0011 0010 0001
+4A 55 0C 84 -> 0100 1010 0101 0101 0000 1100 1000 0100
+
+b. shifted like 4bit to the right i think we get
+00 35 43 21 -> 0000 0000 0011 0101 0100 0011 0010 0001
+4A 55 0C 84 -> xx0100 1010 0101 0101 0000 1100 1000 0100
+
+c.
+0101 0100 0011 0010 0001 are identical so 4*5 = 20 bits +1 = 21 bits are identical and the rest of the 11 bits are not
+
+for the integer
+11 bits on the left = leading zeroes
+3490593 does not consume the full 32 bits to be expressed so it 'pads' with leading zeroes
+
+for the float
+it stores the sign bit and expo fields
+its the scaling factor
+
+INT
+uses 32 bits as a continuos number syste
+eats 1 bit for sign
+remaining 32 bit = the magnitude of the whole number
+
+FLOAT
+1 bit for the sign
+8 bits for the expo
+23 bits for the fraction
+
+
+=====
+
+Practice Problem 2.4:
+What would be printed as a result of the following call to show_bytes:
+char *s = "ABCDEF";
+show_bytes(s, strlen(s));
+Note that letters `A' through `Z' have ASCII codes 0x41 through 0x5A
+
+answer:
+ok so we have s which is a pointer to a string that holds the value "ABCDEF"
+basically we just mpa the value of each letter in hex
+
+A -> 41
+B -> 42
+C -> 43
+D -> 44
+E -> 45
+F -> 46
+
+so it prits 41 42 43 44 45 46
