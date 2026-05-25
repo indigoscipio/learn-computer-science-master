@@ -132,3 +132,68 @@ E -> 45
 F -> 46
 
 so it prits 41 42 43 44 45 46
+
+BOOLEAN ALGEBRA
+AND is like multiplication
+OR is like addition
+
+0 & 0 = 0
+1 & 0 = 0
+
+0 | 0 = 0
+1 | 0 = 1
+
+modulo 2 arithmetic
+1 vs 0 (even vs odd)
+
+additive inverse - 'undo' button for addition
+if you take an umber, its additive inverse is the value you must add to get it back to 0 (the identity el)
+
+In modulo arithmetic,
+1 is its own additive inverse
+
+
+=============
+
+Practice Problem 2.5:
+Fill in the following table showing the results of evaluating Boolean operations on bit vectors.
+
+
+Operation Result
+a [01101001]
+b [01010101]
+
+1. ~a ??
+2. ~b ??
+
+3. a & b ??
+4. a | b ??
+5. a ^ b ??
+
+answer:
+
+1. 
+ok lets do the ~a first
+since we know a [01101001]
+~ is the negation of each bits so just inverse each of thme
+~s = [10010110]
+
+2.
+b  = [01010101]
+~b = [10101010]
+
+3
+a     = [01101001]
+b     = [01010101]
+a & b = [01000001]
+
+4. a | b 
+a     = [01101001]
+b     = [01010101]
+a | b = [01111101]
+
+5. a ^ b
+a     = [01101001]
+b     = [01010101]
+a ^ b = [00111100]
+
