@@ -18,9 +18,9 @@ int bic(int x, int m){
 
 // PROBLEM 2.10
 // write c expr that is equivalent to x == y. return 1 when x and y are equal and 0 otherwise
-
-int is-equal(int x, int y){
-
+int is_equal(int x, int y){
+    int result = x ^ y;
+    return !result;
 }
 
 int main(void){
@@ -39,7 +39,7 @@ int main(void){
     printf("%X\n", 0x98FDECBA & ~0xFF);
 
 
-
+    printf("%d\n", is_equal(12,13));
 
     return 0;
 }

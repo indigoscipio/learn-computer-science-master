@@ -299,3 +299,21 @@ Practive problem 2.19
 Using only bit-level and logical operations, write a C expression that is equivalent to x== y.Thatis,
 it will return 1 when x and y are equal and 0 otherwise.
 
+=====
+
+BIT SHIFTING
+LOGICAL RIGHT SHIFT >>
+- just fill empty space with clean zeroes
+- doesn't care about what number it represents
+- if var is unsigned, compiler must use a logical right shift
+
+1100 0101 >> 4pos >> 0000 1100
+
+ARITHMETIC RIGHT SHFIT >>
+- designed to protect the 'sign'
+- depending on the sign, isntead of padding with zeroes it pads with the MSB
+
+1100 0101 >> (arithmetic) 4pos -> 1111 1100
+
+like in math
+-400 -> shift right -> -40 (sign still stays)
