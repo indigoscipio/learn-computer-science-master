@@ -197,3 +197,105 @@ a     = [01101001]
 b     = [01010101]
 a ^ b = [00111100]
 
+Boolean ring is a math structure
+where algebra & logic merges
+
+step 1 -> x holds the combined state a ^ b (initial xor)
+step 2 -> equals to (a ^ b) ^ b
+simplifies to a ^ (b ^ b) -> a ^ 0 -> a, so *y holds a
+step 3 ->  (a ^ b) ^ a
+(a ^ a) ^ b
+0 ^ b
+b
+
+so x holds b and y holds a
+
+
+ON XOR
+any value xored with 0 remains iteslf
+1 ^ 0 = 1
+0 ^ 0 = 0
+
+any value xored with itself remained 0
+1 ^ 1 = 0
+0 ^ 0 = 0
+
+any value xored with 1 remains negation
+1 ^ 1 = 0
+0 ^ 1 = 1
+
+! vs ~
+! -> always result in either 0 or 1 (true or false)
+~ -> flip the whole bits
+
+
+=====
+
+PracticeProblem2.9:
+Supposethatxandyhavebytevalues0x66and0x93,respectively.Fillinthefollowingtableindicat
+ingthebytevaluesofthedifferentCexpressions
+
+x = 0x66
+b = 0x93
+
+expression value
+x & y = ?
+x | y = ?
+~x | ~y = ?
+x & !y = ?
+
+x && y = ?
+x || y = ?
+!x || !y = ?
+x && ~y = ?
+
+
+answer:
+
+1.
+x     = 0110 0110
+y     = 1001 0011
+x & y = 0000 0010
+
+2.
+x     = 0110 0110
+y     = 1001 0011
+x | y = 1111 0111
+
+3. 
+~x      = 1001 1001
+~y      = 0110 1100
+~x | ~y = 1111 1101
+
+4. 
+x      = 0110 0110
+!y     = 0000 0000 -> false
+x & !y = 0000 0000
+
+5. 
+x      = 0110 0110
+y      = 1001 0011
+x && y = 0000 0001 since x and y are both nonzero
+
+6. 
+x      = 0110 0110
+y      = 1001 0011
+x || y = 0000 0001 since atelast one of them nonzero
+
+7. 
+!x       = 0000 0000 -> false
+!y       = 0000 0000 -> false
+!x || !y = 0000 0000
+
+8.
+x        = 0110 0110
+~y       = 0110 1100
+x && ~y  = 0000 0001 -> true
+
+
+=====
+
+Practive problem 2.19
+Using only bit-level and logical operations, write a C expression that is equivalent to x== y.Thatis,
+it will return 1 when x and y are equal and 0 otherwise.
+
