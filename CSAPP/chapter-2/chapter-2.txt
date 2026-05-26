@@ -306,6 +306,7 @@ LOGICAL RIGHT SHIFT >>
 - just fill empty space with clean zeroes
 - doesn't care about what number it represents
 - if var is unsigned, compiler must use a logical right shift
+- default for unsigned
 
 1100 0101 >> 4pos >> 0000 1100
 
@@ -317,3 +318,77 @@ ARITHMETIC RIGHT SHFIT >>
 
 like in math
 -400 -> shift right -> -40 (sign still stays)
+
+=====
+
+
+Practice problem 2.11
+Fill in the table below showing the effects of the different shift operations on single-byte quantities.
+Write each answer as two hexadecimal digits.
+
+X   x<<3    x>>2(logical)    x>>2 (arith)
+0xF0 ? ? ?
+0x0F ? ? ?
+0xCC ? ? ?
+0x55 ? ? ?
+
+answer:
+a. 0xF0
+x<<3
+ok so in binary we know that's
+1111 0000 and we want to tshift left by 3 so thats
+= 1000 0000
+
+x>>2 (logical)
+1111 0000  shift right logical so just pad with zero
+= 0011 1100
+
+x >> 2 (arithmetic)
+1111 0000 shift right arith here the msb is 1 so pad with 1
+= 1111 1100
+
+b. 0x0F
+in binary thats 0000 1111
+
+x<<3
+0000 1111
+= 0001 1110
+
+x>>2 (logical) - pad with zero
+0000 1111
+= 0000 0011
+
+x>>2 (arith) - here the msb is 0 so pad with zero also
+0000 1111
+= 0000 0011
+
+c. 0xCC
+in binary thats 1100 1100
+
+x<<3
+1100 1100
+= 0110 0000
+
+x>>2 (logical) - pad with zeor
+1100 1100
+= 0011 0011
+
+x>>2 (arith) - msb here is 1 so pad with 1
+1100 1100
+= 1111 0011
+
+
+d. 0x55
+in binary thats 0101 0101
+
+x<<3
+0101 0101
+= 1010 1000
+
+x>>2 (logical) - pad with zero
+0101 0101
+= 0001 0101
+
+x>>2 (arith) - msb is zero so pad with zero
+0101 0101
+= 0001 0101
