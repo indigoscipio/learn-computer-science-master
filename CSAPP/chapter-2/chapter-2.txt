@@ -352,7 +352,7 @@ in binary thats 0000 1111
 
 x<<3
 0000 1111
-= 0001 1110
+= 0111 1000
 
 x>>2 (logical) - pad with zero
 0000 1111
@@ -392,3 +392,234 @@ x>>2 (logical) - pad with zero
 x>>2 (arith) - msb is zero so pad with zero
 0101 0101
 = 0001 0101
+
+
+======
+
+INTEGER REPRESENTATIONS 
+2 MAIN ENCODING:
+
+Unsigned - positive only
+Signed (two's complement) - positive and negative integer
+
+1111 = -8 +4 +2 +1 = -8+7 = -1
+
+they both hold the total exact number
+example: 8 bit number (2^8)
+
+unsigned: 0 to 255
+signed: -128 to 127 (slot for the positive is taken as zero)
+positive: 0 - 127
+negative: -1 - 128
+
+0111 1111 - signed bit off -> 127 total
+1000 0000 - signed bit on -> -128
+thats where you get the total range
+
+====
+
+UNSIGNED ENCODING
+B2Uw
+from slot right to slot left
+i=0 to i = w-1
+
+same as decimal number
+352 = 3*10^2 + 5*10^1 + 2*10^0
+
+its a bijection - unique two way matching game
+you can't add more word size eg 2^8 = 256-1 = 255 -> if you add 1 more it will overflow
+
+TWOS COMPLEMENT
+B2Tw
+left term: isolate last bit on the left (MSB) at index w-1
+right term: handle the remaining bits starting from right side (i=0)
+up to w-2 (excluding the MSB)
+i'ts a tug of war between one giant negative msb and the remaining positive bits
+
+example
+4bit word size (w=4)
+msb = 2^4-1 = -2^3 = -8
+
+TMin (lowest possible val)
+we wanna make the MSB as big as possible and only turn this on
+and make ther esto f the bits off
+like this 1000
+= -8 + 0 + 0 + 0 = -8
+
+Tmax (highest possible val)
+turn off the MSB and make the rest of the bit turn on
+0111 -> 0 + 4 +2 + 1 = 7
+
+The Assymetery
+TMin = TMax + 1
+as noted previously negative value has more 'range' from -128 to -1
+so theres 1 less for positive number
+
+The All Ones Constant
+1111 = -1 -> why?
+-8 + 4 + 2 + 1 = -1 turning all to 1 will always leave you with 1 short of canceling out the negative
+
+
+Bit Vector (x->)
+is a fixed length sequence of bits (1 or 0)
+eg x = [1,1,1,0,0,0,1]
+
+=====
+
+Practice PRoblem 2.12
+Assuming w =4,wecanassigna numericvalueto each possible hexdigit, assuming either an unsigned
+or two's complement interpretation. Fill in the following table according to these interpretations
+Bit Vector = (x->)
+
+x->(Hex) B2U4(x->) B2T4(x->)
+0 ? ?
+3 ? ?
+8 ? ?
+A ? ?
+F ? ?
+
+answer:
+a. 0
+in binary thats just 0000
+Unsigned: 0 + 0 + 0 + 0 = 0
+twos complement: 0 + 0 + 0 + 0 = 0
+
+b. 3
+in binary thats just 0011
+Unsigned: 0 + 0 + 2 + 1 = 3
+twos complement: 0 + 0 + 2 + 1 = 3
+
+c.8
+in binary thats just 1000
+Unsigned: 8 + 0 + 0 + 0 = 8
+twos complement: -8 + 0 + 0 + 0 = -8
+
+d. A
+in binary thats just 1010
+Unsigned: 8 + 0 + 2 + 0 = 10
+twos complement: -8 + 0 + 2 + 0 = -6
+
+e. F
+in binary thats just 1111
+Unsigned: 8 + 4 + 2 + 1 = 15
+twos complement: -8 + 4 + 2 + 1 = -1
+
+
+==
+
+OTHER REPRESEENTATIONS
+Sign-Magnitude
+first bit is for the sign
+remaining bit is for the magniture (valude)
+just like how humans think about negative int
+if we think if -5 we just think of 5 and slap a minus in front of it
+
+1101 -> MSB 1 is negative, 101 is 5, so -5
+
+the flaw, there aare 2 way to represent 0
+0000 -> 0
+1000 -> -0
+
+-----
+
+One's complement
+to make a number negative, just flip every single bit
+0101 -> + 5
+1010 -> flip every bit to get negative five
+-7 +4 +2 +1 (MSB is -7 here)
+
+=====
+
+CONVERSION BETWEEN SIGNED AND UNSIGNED
+T2U -> twos complment to unsigned
+U2T -> unsigned to twos complement
+
+example: -12345 (twos copmlement) has equal bit pattern as unsigned 53191
+T2U converts the negative MSB to large positive number
+
+=====
+
+Practice problems 2.13
+usingthetableyoufilledinwhensolvingProblem2.12,fillinthefollowingtabledescribingthefunction
+T2U4
+
+x   T2U4(x)
+-8 ?
+-6 ?
+-1 ?
+0 ? 
+3 ?
+
+answer:
+a.
+ok from the previous table we know -8 in TC is
+1000 convert to unsigned thatmeans
+8 + 0 + 0 + 0 = 8
+
+b. we know -6 in TC is
+1010, which means in unsigned thats
+8 + 0 + 2 + 0 = 10
+
+c. -1
+1111 TC
+so unsigned thats 8+6+4+1 = 15
+
+d.  0000 TC
+in unsighed thats just 0+0+0+0 = 0
+
+e. 0011
+in unsigned thats 
+0+0+2+1 = 3
+
+the pattern
+Unsigned Value = Signed Value + 2^w
+eg for 4 bit system (2^4) = 16
+-8 + 16 = 8
+-6 + 16 = 10
+-1 + 16 = 15
+
+another approach of understanding
+-5 = 1011
+-8 + 0 + 2 + 1 = 5
+
+add 16 (2^4)
+new value = (-8 + 0 + 2 + 1) + (8 + 8)
+new value = (8 + 0 + 2 + 1)
+= 11
+
+
+
+Practice Problem 2.14
+Explain how Equation 2.4 applies to the entries in the table you generated when solving Problem 2.13
+
+answer:
+from the previous one using the formula
+Unsigned Value = Signed Value + 2^w
+
+since word size = 4 so 2^4 = 16
+a. x = -8
+-8 + 16 = 8
+
+b. x = -6
+-6 + 16 = 10
+
+c. x = -1
+-1 + 16 = 15
+
+d. x = 0
+since this is zero/positive the value willnot change
+
+e. x = 3
+since this is zero/positive the value willnot change
+
+CONVERSION FROM UNSGIED TO TWOS COMPLEMENT (U2T)
+for w=4 the threshold is 2^3 = 8 and combinaions is 2^4 = 16
+split into 2
+x<8 have furthest left bit/MSB nonactive (0111)
+x>=8 have a furthest left bit active (1011)
+
+so 2 cases
+{
+    x if x < 2^w-1
+    x-2^w if x>= 2^w-1
+}
