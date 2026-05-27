@@ -23,6 +23,17 @@ int is_equal(int x, int y){
     return !result;
 }
 
+float sum_elements(float a[], int length){
+    int i;
+    float result = 0;
+
+    for(i=0;i<length;i++){
+        result+=a[i];
+    }
+
+    return result;
+}
+
 int main(void){
 
     // PART A
@@ -40,6 +51,10 @@ int main(void){
 
 
     printf("%d\n", is_equal(12,13));
+
+    // PROBLEM 2.16
+    float a[8] = {1,2,3,4,5,6,7,8};
+    printf("%f\n",sum_elements(a,8));
 
     return 0;
 }

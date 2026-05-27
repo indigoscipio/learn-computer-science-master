@@ -652,6 +652,18 @@ then converts to unsigned. nothings changes.
 
 =====
 
+TRUNCATING UNSIGNED
+result = x mod 2^k
+like odometer with limit 999, if you drive 1234, it only shows 234 (thousandth digit is gone)
+in 4bit -> 1011 -> truncate to 3bit -> 011
+
+TRUNCATING SIGNED
+chop then interpret
+
+
+=====
+
+
 Practice problem 2.15
 Supposewetruncateafour-bitvalue(representedbyhexdigits0throughF)toathree-bitvalue(repre
 sentedashexdigits0through7).Fill inthetablebelowshowingtheeffectofthistruncationforsome
@@ -673,7 +685,6 @@ original truncated
 10 ?
 15 ?
 
-
 Twos complement
 original truncated
 0 ?
@@ -681,3 +692,77 @@ original truncated
 -8 ?
 -6 ?
 -1 ?
+
+answer:
+lets do unsigned first
+UNSIGNED
+1. 0 -> in 4bit thats 0000
+chop into 3bit -> 000
+in unsigned thats 0 + 0 + 0 = 0
+
+2. 3 -> 0011
+chop into 3 bit -> 011
+in unsigned thats = 0 + 2 + 1 = 3
+
+3. 8 -> 1000
+chop into 3 bit -> 000
+in unsigned thats = 0 + 0 + 0 = 0
+
+4. 10 -> 1010
+chop into 3 bit -> 010
+in unsigned thats = 0 + 2 + 0 = 2
+
+5. 15 -> 1111
+chop into 3 bit -> 111
+in unsigned thats = 4 + 2 + 1 = 7
+
+
+TWOS COMPLEMENT
+1. 0 -> in 4bit thats 0000
+chop into 3bit -> 000
+in signed thats 0 + 0 + 0 = 0
+
+2. 3 -> 0011
+chop into 3 bit -> 011
+in signed thats = 0 + 2 + 1 = 3
+
+3. -8 -> 1000
+chop into 3 bit -> 000
+in signed thats = 0 + 0 + 0 = 0
+
+4. -6 -> 1010
+chop into 3 bit -> 010
+in signed thats = 0 + 2 + 0 = 2
+
+5. -1 -> 1111
+chop into 3 bit -> 111
+in signed thats = -4 + 2 + 1 = -1
+
+
+=====
+
+WHY NORMAL MATH BREAKS DOWN ON computers
+Int Arithmetic
+
+Word Size Inflation
+so in normal math you can just add number into infinite
+1 + 10 = 10 + 100 = 110 etc
+
+but in computer they have fixed size
+in 4 bit unsigned it can hold 0 - 15
+so if you have 8 -> 1000
+if you add like 8 more itb ecomes 16 = add extra bit to be 5 bit = 10000
+however this consumes alot of memory so computer freeze it to that same bit
+
+
+Unsgined Overflow
+when you have 9 + 12 thats 21
+in 4bit the maximum is 0 - 15
+since its past the limit, the number 16 resets to 0, then ticks forward again
+so 21 mod 16 = 5
+
+to visualize
+21 = 10101 -> 0101 = 5
+
+Detecting Unsigned Overflow
+
