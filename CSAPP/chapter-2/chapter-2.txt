@@ -594,7 +594,10 @@ Explain how Equation 2.4 applies to the entries in the table you generated when 
 
 answer:
 from the previous one using the formula
+
+======================================
 Unsigned Value = Signed Value + 2^w
+======================================
 
 since word size = 4 so 2^4 = 16
 a. x = -8
@@ -623,3 +626,58 @@ so 2 cases
     x if x < 2^w-1
     x-2^w if x>= 2^w-1
 }
+
+by default, when theres operation that involves
+signed and unsigned
+c will auto 'cast' the signed into unsgined
+
+example
+-1 < 0U -> -1 gets casted into unsigned so around 4 billion < 0
+
+-2 billion in unsigned = 100.... followed by zeroes = 2 billion
+
+
+EXPANDING BIT REPRESENTATION OF A number
+
+zero extension - pad with zero
+
+sign extension - pad with MSB
+theres a complicated math proof for this but basically
+by adding a new sign bit / new MSB
+the old largest bit they net out to exactly the same value as the original negative bit
+
+(unsigned)(int) sx
+(int) sx -> converts short signed int into int, pads through sign extension (1111...)
+then converts to unsigned. nothings changes.
+
+=====
+
+Practice problem 2.15
+Supposewetruncateafour-bitvalue(representedbyhexdigits0throughF)toathree-bitvalue(repre
+sentedashexdigits0through7).Fill inthetablebelowshowingtheeffectofthistruncationforsome
+cases,intermsoftheunsignedandtwo'scomplementinterpretationsofthosebitpatterns
+
+HEX
+original truncatedd
+0 0
+3 3
+8 0
+a 2 
+f 7
+
+Unsigned
+original truncated
+0 ?
+3 ?
+8 ?
+10 ?
+15 ?
+
+
+Twos complement
+original truncated
+0 ?
+3 ?
+-8 ?
+-6 ?
+-1 ?
