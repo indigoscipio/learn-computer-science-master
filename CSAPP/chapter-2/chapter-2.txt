@@ -764,5 +764,73 @@ so 21 mod 16 = 5
 to visualize
 21 = 10101 -> 0101 = 5
 
-Detecting Unsigned Overflow
+Unsigned NEgative
+there is no unsigned negative, every value must be >= 0
+so how do we get back to 0? use the odometer effect
+in 4 bit, if we have 6 and want to go back to 0 , just add 10 to become 16
 
+=====
+
+Practice Problem 2.17:
+We can represent a bit pattern of length w =4with a single hex digit. For an unsigned interpretation of
+these digits use Equation 2.10 fill in the following table giving the values and the bit representations (in
+hex) of the unsigned additive inverses of the digits shown.
+
+equation 2.10
+
+-u/w x = {x, x = 0 ; 2^w - x, x > 0} -> the odometer rest
+if x = 0 -> no need toadd anything to make it 0
+x > 0, use the 2^w - x thing to reset to 0
+
+x
+hex decimal
+0 ?
+3 ?
+8 ?
+A ?
+F ?
+
+-u/4x
+decimal hex
+? ?
+? ?
+? ?
+? ?
+? ?
+
+answer:
+ok lets start with X - decimal
+a. 0 is 0 in decimal
+b. 3 is 3 in decimal
+c. 8 is 8 in decimal
+d. A is 10 in decimal
+e. F is 15 in decimal
+
+now -U/4x DECIMAL
+a. since we know its 0 then theres no need to add anything
+b. 3 -> since w is 4 subtract by 16-3 = add 13 to reset to 0
+c. 8 -> subtract by 16-8 = add 8 to reset to 0
+d. A -> subtract by 16-10 = add 6 to reset to 0
+e. F -> subtract by 16-15 = add 1 to reset to 0
+
+-U/4x HEX
+a. 0 
+b. add 13=D
+c. add 8
+d. add 6
+e. add 1
+
+
+TWOS COMPLEMENT ADDITION
+why adding two pos nums can give you negative number
+and why adding two negs can turn pos
+
+w = 4 -> value = -8 to 7
+
+case 1: negative overflow
+negative + negative -> negative overflow -> turns to positive value
+
+case 2: normal
+
+
+case 3: positive overflow
