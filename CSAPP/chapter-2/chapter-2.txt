@@ -867,37 +867,92 @@ answer:
 ok lets tackle this one by one
 
 x in integer
-a. [10000] = 16 
-b. [10000] = 16 
-c. [11000] = 16+8=24
-d. [11110] = 16+8+4+2 = 30
+a. [10000] = -16 
+b. [10000] = -16 
+c. [11000] = -16+8=-8
+d. [11110] = -16+8+4+2 = -2
 e. [01000] = 8
 
 y in integer
-a. [10101] = 16+4+1 = 21
-b. [10000] = 16
+a. [10101] = -16+4+1 = -11
+b. [10000] = -16
 c. [00111] = 4+2+1 = 7
 d. [00101] = 4+1 = 5
 e. [01000] = 8
 
 x+y
-a. 16+21 = 
-b.
-c.
-d.
-e.
-
+a. -16-11 = -27
+b. -16-16 = -32
+c. -8+7 = -1
+d. -2+5 = 3
+e. 8+8 = 16
 
 x + t4y
-a.
-b.
-c.
-d.
-e.
+ok since this is 5bit the range is fom -16 to +15
+a. we have neg + neg so it causes negative overflow
+-27 + 32 = 5
+in 5bit thats 00101
+
+b. another negative + negative
+-32 + 32 = 0
+in 5bit thats 00000
+
+c. -1 -> since this is within range no change needed
+in 5bit thats 11111
+
+
+d. 3 -> also no change needed, stil within range
+00011
+
+e. 16 -> positive overflow, above +15
+16 - 32 = -16
+10000
 
 case
-a.
-b.
-c.
-d.
-e.
+a. negative overflow
+b. negative overflow
+c. within range
+d. within range
+e. positive overflow
+
+TWOS COMPLEMENT negation
+to cancel out a number and get back to zero, you normally take its oppositve
+
+normal case: perfect pair
+-5 + 5 = 0
+-3 + 3 = 0
+
+odd case (min value)
+since signed hold -8 to +7 (assymetric)
+there are 8 negative and 7 positive number
+
+example: we wanna negate -8
+but there is not +8 in 4 bit representation
+so it 'loops' back to itself
+
+
+1. invert the bits
+2. add 1
+3. we end up back at our number - this number is its own inverse 
+
+================================================
+
+Practice Problem 2.19
+x
+HEX     DECIMAL
+0       ?
+3       ?
+8       ?
+A       ?
+F       ?
+
+-t4x
+DECIMAL     HEX
+?           ?
+?           ?
+?           ?
+?           ?
+?           ?
+
+answer:
+ok lets go trough this one by one
