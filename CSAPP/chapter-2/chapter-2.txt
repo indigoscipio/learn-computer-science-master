@@ -1000,3 +1000,80 @@ carry over to the left
 1111 + 1 = 10000
 0111 + 1 = 1000
 safe zone
+
+BIT EXPANSION
+when adding two wbit number, the result needs to be w+1 bit at most
+1111 + 1111 = 31 + 31 = 62 11110
+
+but when we multiply two wbit number, the size can double
+suppose we mult 15 * 15
+
+thats 
+15*15 = 255 -> we'd need 8bit word size (2.w)
+1111 * 1111 = 11100001
+
+
+TRUNCATION SOLUTION
+15 * 15 = 255
+just truncate it to 255 mod 2^4 = 255 mod 16 = 1 (throw the rest of the bit)
+result mod 2^w
+
+
+======
+
+PracticeProblem2.20:
+Fill inthefollowingtableshowingtheresultsofmultiplyingdifferent3-bitnumbers, inthestyleof
+Figure2.21
+
+mode            X           y       x.y     truncated x.y
+unsigned        [110]       [010]   ?       ?
+two's comp      [110]       [010]   ?       ?
+unsigned        [001]       [111]   ?       ?
+two's comp      [001]       [111]   ?       ?
+unsigned        [111]       [111]   ?       ?
+two's comp      [111]       [111]   ?       ?
+
+answer:
+ok lets answe r this one by one
+since w=3 the range is from 0 - 7 for unsigned
+and -4 to +3 for signed
+
+lets do 1st + 2nd row (a & b)
+x
+[110] -> in unsigned  thats 4 + 2 + 0 = 6
+[110] -> in twos comp  thats -4 + 2 + 0 = -2
+
+y
+[010] -> in unsigned  thats 0 + 2 + 0 = 2
+[010] -> in twos comp  thats 0 + 2 + 0 = 2
+
+x.y
+in unsigned thats 6*2 = 12 -> 001100
+in twos comp0 thats -2*2 = -4 -> 111100
+
+truncated x.y
+unsigned ->  001100 -> truncate -> 100 -> 4
+twos complement ->  111100 -> truncate -> 100 -> -4
+
+-----
+
+3rd + 4th row (c & d.)
+x
+[001] -> in unsigned  thats 4 + 2 + 0 = 6
+[001] -> in twos comp  thats -4 + 2 + 0 = -2
+
+y
+[111] -> in unsigned  thats 0 + 2 + 0 = 2
+[111] -> in twos comp  thats 0 + 2 + 0 = 2
+
+x.y
+in unsigned thats 6*2 = 12 -> 001100
+in twos comp0 thats -2*2 = -4 -> 111100
+
+truncated x.y
+unsigned ->  001100 -> truncate -> 100 -> 4
+twos complement ->  111100 -> truncate -> 100 -> -4
+
+-----
+
+5th & 6th row (e & f)
