@@ -1059,21 +1059,58 @@ twos complement ->  111100 -> truncate -> 100 -> -4
 
 3rd + 4th row (c & d.)
 x
-[001] -> in unsigned  thats 4 + 2 + 0 = 6
-[001] -> in twos comp  thats -4 + 2 + 0 = -2
+[001] -> in unsigned  thats 0 + 0 + 1 = 1
+[001] -> in twos comp  thats 0 + 0 + 1 = 1
 
 y
-[111] -> in unsigned  thats 0 + 2 + 0 = 2
-[111] -> in twos comp  thats 0 + 2 + 0 = 2
+[111] -> in unsigned  thats 4 + 2 + 1 = 7
+[111] -> in twos comp  thats -4 + 2 + 1 = -1
 
 x.y
-in unsigned thats 6*2 = 12 -> 001100
-in twos comp0 thats -2*2 = -4 -> 111100
+in unsigned thats 1*7 = 7 -> 000111
+in twos comp thats 1*-1  = -1 -> 111111
 
 truncated x.y
-unsigned ->  001100 -> truncate -> 100 -> 4
-twos complement ->  111100 -> truncate -> 100 -> -4
+unsigned ->  000111 -> truncate -> 111 -> 7
+twos complement ->  111111 -> truncate -> 111 -> -1
 
 -----
 
 5th & 6th row (e & f)
+x
+[111] -> in unsigned  thats 4 + 2 + 1 = 7
+[111] -> in twos comp  thats -4 + 2 + 1 = -1
+
+y
+[111] -> in unsigned  thats 4 + 2 + 1 = 7
+[111] -> in twos comp  thats -4 + 2 + 1 = -1
+
+x.y
+in unsigned thats 7*7 = 49 -> 110001
+in twos comp thats -1*-1  = +1 -> 000001
+
+truncated x.y
+unsigned ->  110001 -> truncate -> 001 -> 1
+twos complement ->  000001 -> truncate -> 001 -> 1
+
+=====
+
+MULT THROUGH BIT SHIFTING
+standard mult can take 10 times longer in cpu
+bit shifting is faster
+
+IN BASE 10
+45 * 10 = 450 -> add 1 digit to the right
+45 * 100 = 4500 -> add 2 digit to the right
+
+IN BINARY (OPTIMIZAITN)
+not always happening, but when computer encounters a power of two it performs optimization
+shifting bit pattern to the left by k places multiplies value by 2^k
+
+example: suppose in 4bit machine we have 3
+0111 -> we wanna mulitply by 2 (2^1)
+just shift the bit to the left (3 << 1)
+
+original    [0011] -> 3
+<<          [0110] -> 6
+
