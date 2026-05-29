@@ -1139,6 +1139,7 @@ k = 0 -> a + a = 2a
 k = 1 -> 2a + a = 3a
 k = 2 -> 4a + a = 5a
 
+====================================================
 
 DIVISION (SHIFT RIGHT)
 in real life, if we divide 452/10 = 45.2 -> decimal
@@ -1162,11 +1163,20 @@ example:
 
 The fix = 'biasing' the number (only for negative number)
 2^k - 1
+>>1 -> 2^1
+>>2 -> 2^2, etc
 
-1. apply bias (+1)
+1. apply bias (+1 or can be any number)
 2. shift bit
 
 example:
 -5 (1011)
 add1 = -4 (1110)
 shift right = 1110 = -2
+
+
+====================================================
+
+FLOATING POINT
+
+

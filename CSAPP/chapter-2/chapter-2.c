@@ -34,6 +34,8 @@ float sum_elements(float a[], int length){
     return result;
 }
 
+// PROBLEM 2.22
+
 int main(void){
 
     // PART A
