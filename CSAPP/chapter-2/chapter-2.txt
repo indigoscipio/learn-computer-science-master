@@ -1114,3 +1114,59 @@ just shift the bit to the left (3 << 1)
 original    [0011] -> 3
 <<          [0110] -> 6
 
+everytime we shift to the left
+we multiply the total value by exactly two
+
+Practice Problem 2.21:
+As we will see in Chapter 3, the leal instruction on an Intel-compatible processor can perform com
+putations of the form a<<k + b,wherekis either 0, 1, or 2, and b is either 0 or some program value.
+The compiler often uses this instruction to perform multiplications by constant factors. For example, we
+can compute 3*a as a<<1 + a.
+What multiples of a can be computed with this instruction?
+
+answer:
+
+ok so we know
+a . 2^k + b
+
+b = 0 -> identity ->  a . 2^k + 0 = a . 2^k
+k=0 -> a
+k = 1 -> 2a
+k = 2 -> 4a
+
+b = a -> a . 2^k + a = a . 2^k + a
+k = 0 -> a + a = 2a
+k = 1 -> 2a + a = 3a
+k = 2 -> 4a + a = 5a
+
+
+DIVISION (SHIFT RIGHT)
+in real life, if we divide 452/10 = 45.2 -> decimal
+in cpu we chop off the decimal (rounding issue) - this is what right shifting does
+
+lets say we have a 4bit system of 13
+1101 -> >>1
+0110 -> the LSB 'falls off'
+
+13/2 = 6 (6.5 with the bits chopped of)
+
+Negative Division
+INT division must awlays round toward zero, so instead of 
+-2.5 -> -3
+c does the rounding close to 0
+-2.5 -> -2
+
+example:
+1011 (-5) >> logical right shift 1
+1101 (-3)
+
+The fix = 'biasing' the number (only for negative number)
+2^k - 1
+
+1. apply bias (+1)
+2. shift bit
+
+example:
+-5 (1011)
+add1 = -4 (1110)
+shift right = 1110 = -2
