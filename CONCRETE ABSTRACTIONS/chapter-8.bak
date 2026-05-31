@@ -1,607 +1,313 @@
 #lang racket
 
-; REVIEW PROBLEMS
-; Exercise 7.39
-; Prove using induction on n that the following procedure produces a list of length n.
-(define (sevens n)
-  (if (= n 0)
-      '()
-      (cons 7
-            (sevens (- n 1)))
-      )
+; BST - sorted
+; some tress aresn't sorted
+
+; a BST is one of the following:
+; '()
+; (list value left right) where left and right are a type of BST and value is 'sorted'
+
+
+(define (make-empty-tree)
+  '()
+  )
+
+(define (make-nonempty-tree root left right)
+  (list root left right)
+  )
+
+(define empty-tree? null?)
+(define root car)
+(define left-subtree cadr)
+(define right-subtree caddr)
+
+(define sample-bst '(4
+                    (2 (1 () ()) (3 () ()))
+                    (6 (5 () ()) (7 () ()))))
+
+#|
+Exercise 8.1
+Write a procedure called minimum that will find the smallest element in a nonempty
+binary search tree of numbers.
+
+answer:
+|#
+
+(define (minimum tree)
+  (cond [(empty-tree? (left-subtree tree)) (root tree)] ;tree is empty, return the value
+        [else (minimum (left-subtree tree))] ;keep recursing to the left
+        )
+  )
+(minimum sample-bst)
+
+; ==========================================================
+
+#|
+Exercise 8.2
+Write a procedure called number-of-nodes that will count the number of elements
+in a binary search tree
+
+answer:
+|#
+
+(define (number-of-nodes bst)
+  (cond [(empty-tree? bst) 0]
+        [else (+ 1 (number-of-nodes (left-subtree bst))
+                 (number-of-nodes (right-subtree bst))
+                 ) ])
+  )
+(number-of-nodes sample-bst)
+
+
+
+
+; ==========================================================
+
+#|
+exercixe 8.3
+|#
+
+(define (list-by-key-onto tree list)
+  (cond [(empty-tree? tree) list]
+        [else (cons (root tree) (list-by-key-onto (left-subtree tree) (list-by-key-onto (right-subtree tree) list)) )]
+        )
   )
 
 
+(define (inorder tree)
+    (if (empty-tree? tree)
+        '()
+        (append (inorder (left-subtree tree))
+                (cons (root tree)
+                (inorder (right-subtree tree))))))
+
+; ==========================================================
+
+
 #|
+Exercise 8.4
+Again, eliminate append by using an “onto” parameter
+|#
+
+
+(define (inorder-onto tree lst)
+  ; lst is the accumulator
+  (cond [(empty-tree? tree) lst]
+        [else (inorder-onto (left-subtree tree) (cons (root tree) (inorder-onto (right-subtree tree) lst)) )]
+        )
+  )
+(inorder-onto sample-bst '())
+
+
+; ==========================================================
+
+
+#|
+Exercise 8.5
+The third standard way of traversing a tree is called a postorder traversal. Here, you
+enumerate the left subtree, then the right subtree, and finally the root. Write a
+procedure that takes a binary search tree and produces the list of nodes that describe
+a postorder traversal of the tree.
+|#
+
+(define (postorder tree)
+  ;rebuild the tree on each iteratio
+  (cond [(empty-tree? tree) '()]
+        [else (append (postorder (left-subtree tree))
+                      (postorder (right-subtree tree))
+                      (list (root tree))
+                      ) ] ; L -> R -> C
+        )
+  )
+(postorder sample-bst) ;(1 3 2 5 7 6 4)
+
+(define (postorder-onto tree lst)
+  (cond [(empty-tree? tree) lst]
+        [else (postorder-onto (left-subtree tree) (postorder-onto (right-subtree tree) (cons (root tree) lst) ) ) ])
+  )
+(postorder-onto sample-bst '())
+
+; ==========================================================
+
+#|
+Exercise 8.6
+Suppose we want to create a new binary search tree by adding another element to
+an already existing binary search tree. Where is the easiest place to add such an
+element? Write a procedure called insert that takes a number and a binary search
+tree of numbers and returns a new binary search tree whose elements consist of the
+given number together with all of the elements of the binary search tree. You may
+assume that the given number isn’t already in the tree.
+|#
+
+
+(define (insert n tree)
+  ;is root empty? insert it with make-nonempty-tree
+  ;is curr root < n? traverse left
+  ;is root > n? traverse right
+  (cond [(empty-tree? tree) (make-nonempty-tree n '() '()) ]
+        [(> n (root tree)) (make-nonempty-tree (root tree) (left-subtree tree) (insert n (right-subtree tree))) ]
+        [else (make-nonempty-tree (root tree) (insert n (left-subtree tree)) (right-subtree tree))]
+        )
+  )
+(insert 100 sample-bst)
+
+; ==========================================================
+
+#|
+Exercise 8.7
+Using the procedure insert, write a procedure called list->bstree that takes a
+list of numbers and returns a binary tree whose elements are those numbers. Try this
+on several different lists and draw the corresponding tree diagrams. What kind of list
+gives you a short bushy tree? What kind of list gives a tall skinny tree?
+
+;im guessing 'bushy' is where the numebrs are evenly distrubuted (maybe even randomt)
+; and the tall skinny is when it's weighted/ balanced on one side (like sorted) maybe
+|#
+
+; list-of-number -> BST
+(define (list->bstree lon)
+  (cond [(empty? lon) (make-empty-tree)] ;no more number in the list, done 
+        [else (insert (car lon) (list->bstree (cdr lon)) )]
+        )
+  )
+(list->bstree '(1 2 3))
+
+
+#|
+tree having single node -> depth = 0
+emptty tree -> depth undefined
+assume all trees are nonempty
+Exercise 8.8
+Write a predicate that will return true if the root node of a tree is a leaf (i.e., the tree
+has only one node).
+|#
+
+(define (is-leaf? tree)
+  ; a tree is a leaf it its childrens left subtree is empty and its right subtree is empty
+  (and (empty-tree? (left-subtree tree))
+       (empty-tree? (right-subtree tree))
+       )
+  )
+
+#|
+Exercise 8.9
+Write a procedure that will compute the height of a tree.
+|#
+
+(define (tree-height tree)
+  ; base case: tree is a leaf, return 0
+  (cond [(is-leaf? tree) 0]
+        [else (+ 1 (max (tree-height (left-subtree tree)) (tree-height (right-subtree tree))) )  ]
+        )
+  )
+(tree-height sample-bst)
+
+#|
+Exercise 8.10
+You can also use the recurrence relatin together with induction to prove that nodes(h) = 2^h+1 - 1. do so
+
+reference from the book:
+nodes(h) = {1 if h = 0, leaves(h) + nodes(h-1) if h > 0}
+
+number of leaves = 2^h (only thw bottom row)
+
 answer:
+ok lets keep this simple
 
 BASE CASE
-n = 0 -> return '() which is a list of length 0
-therefore the base case is true
+h = 0 (root only)
+has a node of 1 and leaf = 1
+
+nodes(0) = 2^0+1 - 1 = 2^1 - 1 = 2 - 1 = 1
+so the base case holds true.
 
 INDUCTIVE HYPOTHESIS
-assume that (sevens k) returns a list of length k.
+assume that for any input height of k, nodes(k) = 2^k+1 - 1 holds true
 
 INDUCTIVE STEP
-we must show that (sevens k+1) returns a list of length k + 1
+we want to show that for any input k+1, nodes(k+1) = 2^((k+1)+1) - 1 holds true
+since the height is > 0
 
-since k is >0 it goes into the else case
+go to the else case
+leaves(h) + nodes(h-1)
 
-(cons 7 (sevens (- k 1))) ->
-(cons 7 (sevens (- (+ k 1) 1))) ->
-(cons 7 (sevens k))
+leaves(k+1) + nodes(k+1-1)
+leaves(k+1) + nodes(k)
 
-since we assume (sevens k) returns a list of length k
-(cons 7 (sevens k)) returns  a list of length k plus the operation cons add 1
-so it returns a list of length k + 1
+since we know from the previous one subtitute nodes(k)
+leaves(k+1) + 2^k+1 - 1
 
-QED.
-
+since we know the total leaves, substitute leave
+2^k+1 + 2^k+1 - 1
+2(2^k+1) - 1
+2^1 . 2^k+1 - 1
+2^(k+1+1) - 1
+2^k+2 - 1
 |#
 
-
-; ==================================================================================
-
-#|
-Exercise 7.40
-
-Suppose that f1,f2,...,fn are all functions from real numbers to real numbers. The
-functional sum of f1,f2,...,fn is the function that, when given a number x, returns
-the value f1(x) f2(x) 
-fn(x). Write a procedure function-sum that takes a
-list of functions and returns the functional sum of those functions. For example
-
-(define square
-  (lambda (x) (* x x)))
-(define cube
-  (lambda (x) (* x (* x x))))
-((function-sum (list square cube)) 2)
-12
-
-
-answer:
-|#
-
-(define (cube x)
-  (* x (* x x))
-  )
-
-(define (function-sum lof)
-  ; apply each function to n first
-  ; then just sum the result using fold
-  (λ (n) 
-    (foldr + 0 (map (lambda (f) (f n)) lof)))
-  )
-((function-sum (list sqr cube)) 2) ;should return 12
-
-; ==================================================================================
-
+;=================================================================================
 
 #|
-Exercise 7.41
-Write an iterative version of the following procedure:
+Exercise 8.11
 
-(define square-sum
-  (lambda (lst)
-    (if (null? lst)
-        0
-        (+ (square (car lst))
-           (square-sum (cdr lst))))))
-|#
-
-(define (square-sum-iter lst)
-  (define (loop xs  result)
-    (cond [(null? xs) result]
-          [else (loop (cdr xs) (+ (sqr (car xs)) result))]
-          )
-    )
-  (loop lst 0)
-  )
-(square-sum-iter '(1 2 3)) ;1^2 + 2^2 + 3^2 = 1+4+9 = 14
-
-; ==================================================================================
-
-#|
-Exercise 7.42
-Write a procedure called apply-all that, when given a list of functions and a
-number, will produce the list of the values of the functions when applied to the
-number. For example,
-
-(apply-all (list sqrt square cube) 4)
-(2 16 64)
-
-|#
-
-(define (apply-all lof n)
-  ; map version
-  ;(map (λ (f) (f n) ) lof)
-
-  ; recursive version
-  (cond [(null? lof) '()]
-        [else (cons ((car lof) n) (apply-all (cdr lof) n)) ])
-  )
-(apply-all (list sqrt sqr cube) 4)
-
-
-; ==================================================================================
-
-#|
-Exercise 7.43
-Prove by induction on n that the following procedure produces a list of 2n seventeens
-
-(define (seventeens n)
-  (if (= n 0)
-      '()
-      (cons 17 (cons 17 (seventeens (- n 1))))))
+In many applications, binary trees aren’t sufficient because we need more than two
+subtrees. An m-ary tree is a tree that is either empty or has a root and m subtrees,
+each of which is an m-ary tree. Generalize the previous results to m-ary trees.
 
 answer:
 
-BASE CASE
-n = 0 -> goes into the first case and return and empty list
-2(0) -> 0 therefore true
+in binary, each node splits into 2 children (m = 2)
+in trinary, each node splits into 3 children (m = 3)
+in m-ary tree, each node splits into m children
 
-INDUCTIVE HYPOTHESIS
-lets assume the function (seventeens k) produces a list of 2k seventeens
+ok since we know
+compute the leaves of binary = 2^h where h is the height and 2 is the 2 possible branch
+in m-ary therefore its m^h where m is the possible branch and h is the height
 
-INDUCTIVE STEP
-we must show that (seventeens (k+1)) produces a list of a list of 2(k+1) seventeens
+next total nodes
+in binary we know its 2^h+1 - 1
+and nodes_binary(h) = {1 if h = 0, leaves(h) + nodes_binary(h-1) if h > 0}
 
-since k > 0 it goes to the else case
-(seventeens (+ k 1))
--> (cons 17 (cons 17 (seventeens (- (+ k 1) 1))))
--> (cons 17 (cons 17 (seventeens k)))
-
-since we assumed (seventeens k) returns a list of 2k seventeens
-therefore seventeens 2(k+1) returns 2k seventeens + the 2 seventeens so
-2k + 2 -> 2(k+1)
-
-therefore proven
-
+in m-ary ttree change the base to m
+1 if h = 0, and m^(h+1) - 1 / m - 1
 
 |#
- 
 
-; ==================================================================================
 
 #|
-Exercise 7.44
-Consider the following two procedures. The procedure last selects the last element
-from a list, which must be nonempty. It uses length to find the length of the list.
+Exercise 8.12
+In Exercise 8.7, you wrote a procedure list->bstree that created a binary search
+tree from a list by successively inserting the elements into the tree. This procedure
+can lead to trees that are far from minimum height—surprisingly, the worst case oc
+curs if the list is in sorted order. However, if you know the list is already in sorted order,
+you can do much better: Write a procedure sorted-list->min-height-bstree
+that creates a minimum height binary search tree from a sorted list of numbers. Hint:
+If the list has more than one element, split it into three parts: the middle element, the
+elements before the middle element, and the elements after. Construct the whole
+tree by making the appropriate recursive calls on these sublists and combining the
+results.
 
-(define (last lst)
-  (if (= (length lst) 1)
-      (car lst)
-      (last (cdr lst))))
-
-
-(define (length lst)
-  (if (null? lst)
-      0
-      (+ 1 (length (cdr lst)))))
-
-a. how many cdrs does (length lst) do when lst has n elements?
-b. how many calls to length does (last lst) make when lst has n elements?
-c.  Express in big theta notation the total number of cdrs done by (last lst), including
-cdrs done by length, again assuming that lst has n elements.
-d. give an exact formula for the total number of cdrs done by (last lst), including
-cdrs done by length, again assuming that lst has n elements.
-
-answer:
-
-ok let me try to answer this it will probably be wrong but ill give this a shot
-
-a. 
-lets do small example where n = 3 items
-(length 3) -> n = 3 items in the list
-is list empt? false
-goes into else case -> (+ 1 (length (cdr lst))) -> 1 cdr
-
-(length 2) -> n = 2
-goes into else case -> (+ 1 (length (cdr lst))) -> 1 cdr
-
-(length 1) -> n = 1
-goes into else case -> (+ 1 (length (cdr lst))) -> 1 cdr
-
-(length 0) -> n = 0, list is empty
-return 0
-
-so total cdr occurence is 3 for n =3
-so it seems when lst has elements, it does exactly n cdrs
-
-0 element -> 0 cdr
-1 eelement -> 1 cdr, etc
-
------
-
-b. ok so we wanna know how many calls to length does (last lst) make when lst has n elements
-lets do small example where lst n = 3
-
-(last lst) -> n = 3 elements
-(last 3)
-check is length 1 ? -> +1 call -> false
-goes to else case -> (last (cdr lst))
-
-(last 2) -> n = 2 elmeents
-check is length 1 ? -> +1 call -> false
-goes to else case -> (last (cdr lst))
-
-(last 1) -> n = 1 elmeents
-check is length 1 ? -> +1 call -> true
-return (car lst)
-
-so total calls to length when last has n=3 is also 3
-so same as a, calls n times
-
------
-
-c. 
-ok so this one since we know
-
-(length lst) -> calls (cdr lst) n times where n is the length of lst
-(last lst) -> calls (length lst) n times + the cdr else case
-
-and cdrs from length clals = n + n-1 + n-2 + ... + 1
-
-so the total is
-(cdrs from all length calls) + (cdrs from last's own recursion)
-n(n+1)/2 + n
-(n^2 +n)/2 + n
-
-therefore the big theta is O(n^2)
-
-|#
-
-; ==================================================================================
-
-#|
-
-Exercise 7.45
-Lists are collections of data accessible by position. That is, we can ask for the first
-element in a list, the second, ..., the last. Sometimes, however, we’d prefer to have
-a collection of data accessible by size. In other words, we’d like to be able to ask for
-the largest element, the second largest, ..., the smallest.
-In this problem, we’ll simplify this goal by restricting ourselves to collections
-containing exactly two real numbers. Thus the two selectors will select the smaller
-and larger of the two numbers. Here are some examples of this data abstraction
-in use; the constructor is called make-couple. Note that the order in which the
-argument values are given to the constructor is irrelevant, because selection is based
-on their relative size.
-
-(define x (make-couple 2 7))
-(define y (make-couple 5 3))
-(define z (make-couple 4 4))
-
-(smaller x)
-2
-(smaller y)
-3
-(smaller z)
-4
-(larger x)
-7
-(larger y)
-5
-(larger z)
-4
-
-Write two versions of make-couple, smaller, andlarger. One version should
-have make-couple compare the two numbers, and the other version should leave
-that to smaller and larger
-
-answer:
-|#
-
-; VERSION 1: make-couple compare the two numbers
-(define (make-couple-v1 x y)
-  (cond [(> x y) (cons y x)] ;x is larger
-        [else (cons x y)] ;x is smaller
+my answer from 8.7
+(define (list->bstree lon)
+  (cond [(empty? lon) (make-empty-tree)] ;no more number in the list, done 
+        [else (insert (car lon) (list->bstree (cdr lon)) )]
         )
   )
+(list->bstree '(1 2 3))
+answer:
 
-(define (smaller-v1 couple)
-  (car couple)
-  )
+|#
 
-(define (larger-v1 couple)
-  (cdr couple)
-  )
-
-
-; VERSION 2: smaller and larger compare the two numbers
-(define (make-couple-v2 x y)
-  (cons x y)
-  )
-
-(define (smaller-v2 couple)
-  (cond [(> (car couple) (cdr couple)) (cdr couple)] ; x > y
-        [else (car couple)] ; x < y
+(define (sorted-list->min-height-bstree lon)
+  (cond [(null? lon) '()]
+        [else (let* ((mid-idx (quotient (length lon) 2))
+                     (mid-val (list-ref lon mid-idx))
+                     (left (take lon mid-idx))
+                     (right (drop lon (+ mid-idx 1))))
+                (make-nonempty-tree mid-val
+                                    (sorted-list->min-height-bstree left)
+                                    (sorted-list->min-height-bstree right))
+                )] ; more than 1 element
         )
   )
-
-(define (larger-v2 couple)
-  (cond [(> (car couple) (cdr couple)) (car couple)] ; x > y
-        [else (cdr couple)] ; x < y
-        )
-  )
-
-; ==================================================================================
-
-
-#|
-Exercise 7.46
-Write a higher-order procedure make-list-scaler that takes a single number scale
-and returns a procedure that, when applied to a list lst of numbers, will return the
-list obtained by multiplying each element of lst by scale. Thus, you might have the
-following interaction:
-
-(define scale-by-5 (make-list-scaler 5))
-(scale-by-5 '(1 2 3 4))
-(5 10 15 20)
-
-answer:
-|#
-
-(define (make-list-scaler scale)
-  (λ (lst) (map (λ (x) (* x scale)) lst) )
-  )
-(define scale-by-5 (make-list-scaler 5))
-(scale-by-5 '(1 2 3 4)) ; should return (5 10 15 20)
-
-; ==================================================================================
-
-#|
-Exercise 7.47
-
-Write a procedure map-2 that takes a procedure and two lists as arguments and
-returns the list obtained by mapping the procedure over the two lists, drawing the
-two arguments from the two lists. For example, it would yield the following results
-
-(map-2 + '(1 2 3) '(2 0-5))
-(3 2 -2)
-(map-2 * '(1 2 3) '(2 0-5))
-(2 0 -15)
-
-Write this procedure map-2. You may assume that the lists have the same length.
-|#
-
-(define (map-2 op xs ys)
-  ;recursive version
-  (cond [ (null? xs) '()] ;both is empty
-        [else (cons (op (car xs) (car ys)) (map-2 op (cdr xs) (cdr ys)) )]
-        )
-  )
-
-(map-2 + '(1 2 3) '(2 0 -5))
-(map-2 * '(1 2 3) '(2 0 -5))
-
-; ==================================================================================
-
-
-#|
-Exercise 7.48
-Given the following procedure:
-
-(define sub1-each (nums)
-  
-  (define (help nums results)
-    (if (null? nums)
-        (reverse results)
-        (help (cdr nums) (cons (- (car nums) 1) results))))
-  
-  (help nums '())
-  )
-
-Evaluate the expression (sub1-each '(5 4 3)) using the substitution model of
-evaluation. Assume reverse operates in a single “black-box” step, but otherwise
-show each step in the evolution of the process. What kind of process is generated by
-this procedure?
-
-answer:
-
-ok let me trace this carefully
-we start with nums = '(5 4 3)  so a list of length 3
-then inside we call a helper function
-
-(help nums '()) -> nums = nums, results = '()
-
-1st iteration
-nums = '(5 4 3), results = '()
-is nums empty? false
-goes to else case -> (help (cdr nums) (cons (- (car nums) 1) results)) ->
-(help '(4 3) (cons (- 5 1) results)) -> (help '(4 3) (cons 4 '()))
-
-2nd interation
-nums = '(4 3), results = '(4)
-is nums empty? false
-goes to else case -> (help (cdr nums) (cons (- (car nums) 1) results)) ->
-(help '(3) (cons (- 4 1) results)) -> (help '(3) (cons 3 (cons 4 '())))
-
-3nd interation
-nums = '(3), results = '(3 4)
-is nums empty? false
-goes to else case -> (help (cdr nums) (cons (- (car nums) 1) results)) ->
-(help '() (cons (- 3 1) results)) -> (help '() (cons 2 (cons 3 (cons 4 '()))))
-
-4th interation
-nums = '(), results = '(2 3 4)
-is nums empty? true. stop and reverse the final result
-reverses the result -> '(4 3 2)
-
-the process is iterative
-the procedure is tail recursive
-no call stack, carries over the value to the 'resulsts'
-
-|# 
-
-
-
-
-; ==================================================================================
-
-
-#|
-Exercise 7.49
-
-Given a predicate that tests a single item, such as positive?, we can construct an
-“all are” version of it for testing a list; an example is a predicate that tests whether all
-elements of a list are positive. Define a procedure all-are that does this; that is, it
-should be possible to use it in ways like the following:
-
-((all-are positive?) '(1 2 3 4))
-#t
-((all-are even?) '(2 4 5 6 8))
-#f
-
-answer: ok so this is basically like andmap thing
-|#
-
-(define (all-are pred)
-  (λ (lst) (cond [(null? lst) #t]
-                 [else (and (pred (car lst)) ((all-are pred) (cdr lst)))]
-                 ))
-  )
-((all-are positive?) '(1 2 3 4))
-((all-are even? )'(2 4 5 6 8))
-
-
-
-
-; ==================================================================================
-
-#|
-Exercise 7.50
-Consider the following procedure (together with two sample calls):
-(define (repeat num times)
-  (if (= times 0)
-      '()
-      (cons num (repeat num (- times 1))))))
-(repeat 3 2) ;(3 3)
-(repeat 17 5) ;(17 17 17 17 17)
-
-a. explain why repeat generates a recursive process
-b. write an iterative version of repeat
-
-a. because on the else case cons is waiting on the result of (repeat num (- times 1)) before it can do anything
-and inside of that its waiting for another recursive functio nagain
-so it waits until it reaches the base case and 'wraps up' and gets evaluated/build the chain of cons from there
-so the pending work accumulates on the call stack then unwinds
-
-|#
-
-; PART B
-(define (repeat-iter num times)
-  (define (helper counter result)
-    (cond [(zero? counter) result]
-          [else (helper (- counter 1) (cons num result))])
-    )
-  ; initialize counter to num
-  (helper times '())
-  )
-(repeat-iter 3 2)
-(repeat-iter 17 5)
-
-; ==================================================================================
-
-#|
-Exercise 7.51
-If a list contains multiple copies of the same element in succession, the list can be
-stored more compactly using run length encoding, in which the repeated element is
-given just once, preceded by the number of times it is repeated. The expand proce
-dure given here is designed to decompress a run-length-encoded list; for example, it
-could be used as follows to expand to full size some 1950s lyrics we got from Abelson
-and Sussman’s text:
-
-(expand '(get a job sha 8 na get a job sha 8 na wah 8 yip sha
-boom))
-(get a job sha na na na na na na na na get a job sha na na na na
-na na na na wah yip yip yip yip yip yip yip yip sha boom)
-
-a. Given the following definition of the expand procedure, show the key steps in
-evaluating (expand '(3 ho merry-xmas)) using the substitution model
-
-b. Does this procedure generate an iterative or recursive process? Justify your answer
-
-(define (expand lst)
-  (cond ((null? lst) lst)
-        ((number? (car lst)) (cons (cadr lst) (expand (if (= (car lst) 1)
-                                                          (cddr lst)
-                                                          (cons (- (car lst) 1)
-                                                                (cdr lst))))))
-        (else (cons (car lst) (expand (cdr lst))))))
-
-answer:
-
-a. lets do a evaluation
-(expand '(3 ho merry-xmas))
-
-
-1st iter
-lst = '(3 ho merry-xmas)
-is list null? false
-is (car lst = number)? true, its three. run the case
-
-(cons (cadr lst) (expand (if (= (car lst) 1)
-                             (cddr lst)
-                             (cons (- (car lst) 1) (cdr lst))))) ->
-(cons 'ho (expand (if (= 3 1)
-                        (cddr lst)
-                        (cons 2 '(ho merry x-mas))))) -> 3 does not equal 1, run false case ->
-
-(cons 'ho (expand (cons 2 '(ho merry x-mas))))
-
-then inside expand, repeat the thing again
-(expand (cons 2 '(ho merry x-mas))) ->(expand '(2 ho merry-xmas)) ->
-lst = '(2 ho merry-xmas)
-is list null? false
-is (car lst = number)? true, its two. run the case
-...
-(cons 'ho '(expand (cons 1 '(ho ho merry x-mas)))) ->
-... until it reaches the case where 1 = 1
-
-return the cddr so it becomes
-'(ho ho ho merry x-mas)
-
-; PART B
-the cons build up chain of stack so it needs to beevalauted so its not tail iterative its recursive
-it needs to xpand before it can finish - so a recursive process.
-
-
-|#
-
-; ==================================================================================
-
-
-#|
-Exercise 7.52
-
-Suppose you have a two-argument procedure, such as + or *, and you want to apply
-it elementwise to two lists. For example, the procedures list+ and list* would
-apply + and *, respectively, to the corresponding elements of two lists as follows:
-
-(list+ '(1 2 3) '(2 4 6))
-(3 6 9)
-(list* '(1 2 3) '(2 4 6))
-(2 8 18)
-
-Because the two procedures list+ and list* are so similar in form, it makes
-sense to write the higher-order procedure “factory” make-list-combiner that gen
-erates the two procedures list+ and list* as follows:
-
-(define list+
-(make-list-combiner +))
-(define list*
-(make-list-combiner *))
-
-Write the procedure make-list-combiner. You may assume that the two list argu
-ments have the same length.
-
-answer:
-|#
-
-(define (make-list-combiner op)
-  (λ (lst1 lst2) (cond [(empty? lst1) '()]
-                       [else (cons (op (car lst1) (car lst2)) ((make-list-combiner op) (cdr lst1) (cdr lst2)) ) ])
-    )
-  )
-((make-list-combiner *) '(1 2 3) '(4 5 6))
-((make-list-combiner +) '(1 2 3) '(4 5 6))
+(sorted-list->min-height-bstree '(1 2 3 4 5 6 7 8 9))

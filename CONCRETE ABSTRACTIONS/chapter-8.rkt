@@ -201,3 +201,246 @@ Write a procedure that will compute the height of a tree.
         )
   )
 (tree-height sample-bst)
+
+#|
+Exercise 8.10
+You can also use the recurrence relatin together with induction to prove that nodes(h) = 2^h+1 - 1. do so
+
+reference from the book:
+nodes(h) = {1 if h = 0, leaves(h) + nodes(h-1) if h > 0}
+
+number of leaves = 2^h (only thw bottom row)
+
+answer:
+ok lets keep this simple
+
+BASE CASE
+h = 0 (root only)
+has a node of 1 and leaf = 1
+
+nodes(0) = 2^0+1 - 1 = 2^1 - 1 = 2 - 1 = 1
+so the base case holds true.
+
+INDUCTIVE HYPOTHESIS
+assume that for any input height of k, nodes(k) = 2^k+1 - 1 holds true
+
+INDUCTIVE STEP
+we want to show that for any input k+1, nodes(k+1) = 2^((k+1)+1) - 1 holds true
+since the height is > 0
+
+go to the else case
+leaves(h) + nodes(h-1)
+
+leaves(k+1) + nodes(k+1-1)
+leaves(k+1) + nodes(k)
+
+since we know from the previous one subtitute nodes(k)
+leaves(k+1) + 2^k+1 - 1
+
+since we know the total leaves, substitute leave
+2^k+1 + 2^k+1 - 1
+2(2^k+1) - 1
+2^1 . 2^k+1 - 1
+2^(k+1+1) - 1
+2^k+2 - 1
+|#
+
+;=================================================================================
+
+#|
+Exercise 8.11
+
+In many applications, binary trees aren’t sufficient because we need more than two
+subtrees. An m-ary tree is a tree that is either empty or has a root and m subtrees,
+each of which is an m-ary tree. Generalize the previous results to m-ary trees.
+
+answer:
+
+in binary, each node splits into 2 children (m = 2)
+in trinary, each node splits into 3 children (m = 3)
+in m-ary tree, each node splits into m children
+
+ok since we know
+compute the leaves of binary = 2^h where h is the height and 2 is the 2 possible branch
+in m-ary therefore its m^h where m is the possible branch and h is the height
+
+next total nodes
+in binary we know its 2^h+1 - 1
+and nodes_binary(h) = {1 if h = 0, leaves(h) + nodes_binary(h-1) if h > 0}
+
+in m-ary ttree change the base to m
+1 if h = 0, and m^(h+1) - 1 / m - 1
+
+|#
+
+
+#|
+Exercise 8.12
+In Exercise 8.7, you wrote a procedure list->bstree that created a binary search
+tree from a list by successively inserting the elements into the tree. This procedure
+can lead to trees that are far from minimum height—surprisingly, the worst case oc
+curs if the list is in sorted order. However, if you know the list is already in sorted order,
+you can do much better: Write a procedure sorted-list->min-height-bstree
+that creates a minimum height binary search tree from a sorted list of numbers. Hint:
+If the list has more than one element, split it into three parts: the middle element, the
+elements before the middle element, and the elements after. Construct the whole
+tree by making the appropriate recursive calls on these sublists and combining the
+results.
+
+my answer from 8.7
+(define (list->bstree lon)
+  (cond [(empty? lon) (make-empty-tree)] ;no more number in the list, done 
+        [else (insert (car lon) (list->bstree (cdr lon)) )]
+        )
+  )
+(list->bstree '(1 2 3))
+answer:
+
+|#
+
+(define (sorted-list->min-height-bstree lon)
+  (cond [(null? lon) '()]
+        [else (let* ((mid-idx (quotient (length lon) 2))
+                     (mid-val (list-ref lon mid-idx))
+                     (left (take lon mid-idx))
+                     (right (drop lon (+ mid-idx 1))))
+                (make-nonempty-tree mid-val
+                                    (sorted-list->min-height-bstree left)
+                                    (sorted-list->min-height-bstree right))
+                )] ; more than 1 element
+        )
+  )
+(sorted-list->min-height-bstree '(1 2 3 4 5 6 7 8 9))
+
+
+#|
+Exercise 8.13
+Using sorted-list->min-height-bstree and inorder (which constructs a
+sorted list from a binary search tree), write a procedure optimize-bstree that
+optimizes a binary search tree. That is, when given an arbitrary binary search tree, it
+should produce a minimum-height binary search tree containing the same nodes.
+
+answer:
+|#
+
+(define (optimize-bstree tree)
+  (sorted-list->min-height-bstree (inorder tree))
+  )
+(optimize-bstree sample-bst)
+
+#|
+Exercise 14
+Usinglist->bstreeandinorder,writeaproceduresortthatsortsagivenlist.
+answer:
+|#
+
+(define (sort lst)
+  (inorder (list->bstree lst))
+  )
+(sort '(5 6 7 0 8 9 10))
+
+; =================================
+;; EXPRESSION TREE (not a bst anymor)
+; has 3 parts: op, left operand, right operand
+; where left operand and right operand itself is a tree
+; in this case well limit to 1 operator that takes only 2 operand (binary operation)
+
+
+(define (make-constant x)
+  x
+  )
+
+(define constant? number?)
+
+(define (make-expr left-operand operator right-operand)
+  (list left-operand operator right-operand)
+  )
+
+(define left-operand car)
+(define operator cadr)
+(define right-operand caddr)
+
+(define (look-up-value name)
+  (cond [(equal? '+ name) +]
+        [(equal? '* name) *]
+        [(equal? '- name) -]
+        [(equal? '/ name) /]
+        [else (error "ERROR: Lookup not found" name)]
+        )
+  )
+
+(define (evaluate expr)
+  (cond [(constant? expr) expr]
+        [else (let ((op (look-up-value (operator expr)))
+                    (lo (left-operand expr))
+                    (ro (right-operand expr)))
+                (op (evaluate lo) (evaluate ro))
+                ) ]
+        )
+  )
+(evaluate (evaluate '(1 + (2 * (3 - 5))) ))
+
+#|
+Exercise 8.15
+In the preceding example, we’ve “cheated” by using a quoted list as the expression to
+evaluate. This method relied on our knowledge of the representation of expression
+trees. How could the example be rewritten to use the constructors to form the
+expression?
+
+
+|#
+;answer:
+(make-expr 1 '+ (make-expr 2 '* (make-expr 3 '- 5) ))
+
+;=================================================
+; prefix -> (- 3 5) -> root left right
+; infix -> (3 - 5) -> left root right
+; postfix -> (3 5 -) -> left right root
+
+(define (post-order tree)
+  
+  (define (post-order-onto tree list)
+    (if (constant? tree)
+        (cons tree list)
+        (post-order-onto (left-operand tree)
+                         (post-order-onto (right-operand tree) (cons (operator tree) list)))))
+  
+  (post-order-onto tree '())
+  
+  )
+
+(post-order '(1 + (2 * (3 - 5))))
+
+#|
+Exercise 8.16
+Define a procedure for determining which operators are used in an expression.
+
+answer:
+|#
+
+; expr -> list-of-symbols
+(define (operators expr)
+  (cond [(constant? expr) '()]
+        [else (append (list (operator expr))
+                      (operators (left-operand expr))
+                      (operators (right-operand expr)) ) ]
+        )
+  )
+(operators '(1 + (2 * (3 - 5))))
+
+
+#|
+Exercise 8.16
+Define a procedure for counting how many operations an expression contains
+answer:
+(- 1 5) -> 1 expr
+(- 1 (* 2 5)) -> 2 expr
+so each time you go down, increment the counter
+|#
+
+(define (operations expr)
+  (cond [(constant? expr) 0]
+        [else (+ 1 (operations (left-operand expr)) (operations (right-operand expr)))]
+        )
+  )
+(operations '(1 + (2 * (3 - 5)))) ;should return 3
