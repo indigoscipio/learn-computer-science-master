@@ -1256,3 +1256,135 @@ c. there are 3,600,000 ticks in 100 hours
 0.343322753906 = ~0.3433 seconds in 100 hours
 
 d. 2000*0.3433 = 686.6
+
+====
+
+IEEE FLOATING POINT
+32bit
+float - 1 sign bit, 8 expo, remaining frac 
+double  - 1 sign bit, 11 expo, remaining for frac\
+
+
+free bit
+1 + fraction -> dont need to store the 1 in front 
+
+NORMALIZED VALUE
+E = e - 127 (whatever max bias for each ssytem)
+treat the bits in expo like a normal unsigned int (e)
+shift the bit by the bias, and when you wanna get the real expo back just subtract again
+
+DENORMALIZED VALUE
+expo bits are all 0s
+m = f
+e = 1 - bias (locked) fixed permanently at -126
+-0.0 and +0.0 is different
+
+1.xx -> NORMALIZED
+0.xx -> denormalizd
+
+SPECIAL VALUES
+NaN
+Infinity
+
+
+=========
+
+Practice PRoblem 2.25
+
+Considera5-bitfloating-pointrepresentationbasedontheIEEEfloating-pointformat,withonesignbit,
+twoexponentbits(k=2),andtwofractionbits(n=2).Theexponentbiasis22 1 1=1.
+Thetablebelowenumeratestheentirenonnegativerangeforthis5-bitfloating-pointrepresentation.Fill
+intheblanktableentriesusingthefollowingdirections
++
+e: Thevaluerepresentedbyconsideringtheexponentfieldtobeanunsignedinteger.
+E: Thevalueoftheexponentafterbiasing.
+f: Thevalueofthefraction.
+M: Thevalueofthesignificand.
+V: Thenumericvaluerepresented.
+Expressthevaluesoff,MandVasfractionsoftheformx
+4
+.Youneednotfillinentriesmarked“—”.
+
+
+answer:
+ok so we know
+5bit
+sign bit = 1
+expo bit (k) = 2
+fraction bits (n) = 2
+exponent bias = 2^2-1 - 1 = 1
+
+bits         e       E       f       M       V
+0 00 00      ?       ?       ?       ?       ?
+0 00 01      ?       ?       ?       ?       ?
+0 00 10      ?       ?       ?       ?       ?
+0 00 11      ?       ?       ?       ?       ?
+
+0 01 00      ?       ?       ?       ?       ?
+0 01 01      ?       ?       ?       ?       ?
+0 01 10      ?       ?       ?       ?       ?
+0 01 11      ?       ?       ?       ?       ?
+
+0 10 00      2       1       0/4     4/4      8/4
+0 10 01      ?       ?       ?       ?       ?
+0 10 10      ?       ?       ?       ?       ?
+0 10 11      ?       ?       ?       ?       ?
+
+0 11 00       -      -       -       -       +infinity
+0 11 01       -      -       -       -       NaN
+0 11 10       -      -       -       -       NaN
+0 11 11       -      -       -       -       NaN
+
+answer:
+
+bits         e       E       f       M       V
+0 00 00      0       0       0/4     0/4     0/4
+0 00 01      0       0       1/4     1/4     1/4
+0 00 10      0       0       2/4     2/4     2/4
+0 00 11      0       0       3/4     3/4     3/4
+
+0 01 00      1       0       0/4     4/4       1  
+0 01 01      1       0       1/4     5/4     5/4
+0 01 10      1       0       2/4     6/4     6/4
+0 01 11      1       0       3/4     7/4     7/4
+
+0 10 00      2       1       0/4     4/4      8/4
+0 10 01      2       1       1/4     5/4      10/4
+0 10 10      2       1       2/4     6/4      12/4
+0 10 11      2       1       3/4     7/4      14/4
+
+0 11 00       -      -       -       -       +infinity
+0 11 01       -      -       -       -       NaN
+0 11 10       -      -       -       -       NaN
+0 11 11       -      -       -       -       NaN
+
+
+Smallest denormalized value
+- make the expo bit all zero
+- make the LSB of the fraction bit 1
+
+largest denormalized value
+- make the expo bit all zero
+- maek fracion bits all packed with 1
+
+smallest normalized
+- expo clicks from all zeroes to 0001 
+
+
+largest normalized vlaue
+111110 -> last bit is reserved for infinity
+
+
+Practice Problem 2.26:
+A. For a floating-point format with a k-bit exponent and an n-bit fraction, give a formula for the
+smallest positive integer that cannot be represented exactly (because it would require an n +1-bit
+fraction to be exact).
+B. What is the numeric value of this integer for single-precision format (k =8,
+n=23)
+
+answer:
+
+a.  2^ n+1 + 1
+
+b. ok so we have 8bit expo and 23bit fraction
+2^24+1
