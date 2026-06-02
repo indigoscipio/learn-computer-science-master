@@ -1388,3 +1388,25 @@ a.  2^ n+1 + 1
 
 b. ok so we have 8bit expo and 23bit fraction
 2^24+1
+
+
+ROUNDING
+APPROACHES TO ROUNDING
+- round to zero
+just slice decimal place
+
+- round to left (-infinity)
+1.50 -> 1
+-1.50 -> -2
+
+- round to right
+1.10 -> 2
+-1.50 -> 1
+
+- round to even
+the winner 'default'
+
+- look at the tail
+- if tie break, look at targget bit (last bit to keep) to decide to leave/change
+
+the tie = 1.5 -> 0.5 form left, 0.5 from right
