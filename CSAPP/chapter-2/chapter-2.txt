@@ -1410,3 +1410,115 @@ the winner 'default'
 - if tie break, look at targget bit (last bit to keep) to decide to leave/change
 
 the tie = 1.5 -> 0.5 form left, 0.5 from right
+
+10.xx -> things that matter
+100 -> we're exactly halfway
+1/2 1/4 1/8 -> were in 1/2
+
+10.11 | 100
+keep | tail
+
+FLOATING POINT MATH
+- assiciation matter - fp math is not associative
+- distribution matter - fp math is not distributive
+Monotonicity
+
+in FP math is different compared to int
+in int math -> overflow = loops back
+in fp math -> overflow = infinite (the trigger 111111 expo field)
+sign bit, frac field, expo field
+
+IEEE FLOATING POINT
+32 bit
+int -> no expo bits. 1 sign bit, 31 bit magniture
+
+32bit
+float - 1 sign bit, 8 expo, 23 bit fraction 
+
+64 bit
+double  - 1 sign bit, 11 expo, 52 bit fraction
+
+FP CONVERSION
+int -> float
+int has 32 bit to store magniture, but float only has 23 bits for fraction
+float can match any size of int
+big int cannot fit inside float
+
+int/float -> double
+safe, both can fit
+
+double -> float
+loss of precision and range
+forcing 64bit into 32bit
+
+float/double -> int
+strip expo, strip everything -> dangerous
+automatic truncation
+
+
+; =======================================
+
+Practice Problem 2.28:
+Assume variables x, f, anddare of type int, float,anddouble, respectively. Their values are
+arbitrary, except that neither f nor d equals +1, 1,orNaN. For eachofthefollowingC expressions,
+either argue that it will always be true (i.e., evaluate to 1) or give a value for the variables such that it is
+not true (i.e., evaluates to 0).
+A. x == (int)(float) x
+B. x == (int)(double) x
+C. f == (float)(double) f
+D. d == (float) d
+E. f ==-(-f)
+F. 2/3 == 2/3.0
+G. (d >= 0.0) || ((d*2) < 0.0)
+H. (d+f)-d == f
+
+answer:
+ok so we know
+x = int
+f = float
+d = double (arbitrary and does not equal pos infinite, neg infinite, or nan)
+
+lets analyze one by one
+a. x == (int)(float) x
+ok so on the left side we have int
+right side we first cast the int to float and cast that float back to int
+
+small int -> x = 1
+1 == (int)(float) 1
+1 == (int) 1.0
+1 == 1
+so this is true
+
+very large int -> x = 2.000.000.000 (almost fillup the whole 32bit int)
+2 billion = (int)(float) 2 billion
+since float can only hold 23 bits of fraction the result changes
+so when it casted back to int it will be diffrent
+so this is the case whre its false.
+
+b. x == (int)(double) x
+similar to the first one but we cast double on the right side first
+
+small int -> x = 1
+1 = (int)(double) 1
+1 = (int) 1.00
+1 = 1
+so this is equal
+
+very large int (TMax) -> around 2+ billion
+this is safe since double can hold up to 52 bit of fractions
+2 billion = (int)(double) 2 billion
+2 billion = (int) 2 billion (still fits)
+2 billion = 2 billion (remainig fraction cuts off)
+
+so this is still equal
+
+c. f == (float)(double) f
+
+small float number (f = 1.00)
+1.00 = (float)(double) 1.00
+1.00 = (float)1.00 -> safely casts, since double can hold more bit/size (52 bits)
+1.00 = 1.00 -> cast back to float, fully preserved
+
+large float number (f = whatever the max value of 23 bits is)?
+its the same logic, since double can hold much more size/bits than float
+when it first cast to double and recast back to float it will still preserve the size
