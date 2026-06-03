@@ -1467,7 +1467,7 @@ A. x == (int)(float) x
 B. x == (int)(double) x
 C. f == (float)(double) f
 D. d == (float) d
-E. f ==-(-f)
+E. f == -(-f)
 F. 2/3 == 2/3.0
 G. (d >= 0.0) || ((d*2) < 0.0)
 H. (d+f)-d == f
@@ -1522,3 +1522,102 @@ small float number (f = 1.00)
 large float number (f = whatever the max value of 23 bits is)?
 its the same logic, since double can hold much more size/bits than float
 when it first cast to double and recast back to float it will still preserve the size
+
+D. d == (float) d
+since we know d is a double
+on the RHS we cast double to float -> since float can only hold up to
+23bit of fractions, al of the remaining 52 bits in the double gets 'truncated'/ cut off
+so the result is not the same
+
+if d has like <= 23bits then i dont think it gets cutoff but if its huge
+
+1.234567890... = (float )1.234567890...
+1.234567890... = 1.123456789.. <- some fraction digits gets cut off
+so it returns false
+
+10^40 -> cast to float -> explodes to infinity
+
+E. f == -(-f)
+here we just do a negation t othe RHS then od another negation
+my instict tellsme this doesn't change anything but lets analyze
+
+ok so we kow float can hold 1 sign bit, 8 expo bits and 23 digit/fraction bits
+lets try small example
+f = 1.00
+1.00 = -(-1.00)
+
+now in normal decimal math you just negate it normally negation + negation is basically return to normal
+notsure howitworks but im assuming its the same.
+
+so it just flips the sign bits off regardless of small or large example here
+so it will always return true
+
+
+F. 2/3 == 2/3.0
+ok so lets analyze LHS
+2/3 - 2 and 3 are integer so this perform integer division
+we know 2/3 is around ~0.6 but depending on how it cuts the fraction
+it can either round to 0 or 1, but in C i think it rounds to 0.
+so LHS = 0
+
+rhs
+this one performs
+2/3.0 -> the 3.0 here is a double (number with decimal defaults to double in C)
+so performs a float division which return
+around ~0.6
+
+so the result is not the same, therefore false.
+
+G. (d >= 0.0) || ((d*2) < 0.0)
+ok so lets analyze this one by one
+
+(d >= 0.0)
+lets find out if this is a true or false expr
+since we know d is arbitrary double
+this really depends on what the value of d is
+but we know 0.0 is a also double so its the same type
+
+case: d >= 0.0 (true)
+stops and does not evaluate the second expr
+returns true
+
+
+case: d >= 0.0 (false)
+then ((d*2) < 0.0) is evaluated
+depending on the value of d here if its negative or not
+if its negative will return true otherweise false
+
+even with -0.0 still true -> in c it treats -0.0 = 0.0
+
+
+H. (d+f) - d == f
+answer:
+ok lets analyze this
+we know d is double and f is float
+
+LHS
+(d + f) - d
+since w have d + f it will be casted to double
+so the result of be positive if d and f is positive
+
+small example
+d = 1.505, f = 0.5
+
+(1.505 + 0.5) - 1.505
+2.005 - 1.505
+0.505
+
+so it just merges the fraction on the float with the one in double
+
+RHS
+since we know f = 0.5
+0.5
+
+so the result is clearly diferent therefore can be false
+
+d = 10^20
+f = 1.0
+float promoted to double
+since double has only 52bit of precision (15-17 decimal digits)
+adding 1.0 needs more precision slot to double
+1.0 gets rounde

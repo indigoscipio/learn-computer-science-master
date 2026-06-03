@@ -18,8 +18,8 @@ ok so we know positive infinity has like all expo bits to 1
 negative infinite not sure, maybe just flip the sign bit to 1
 and negative zero just flip the sign bit to 1 so
 
-#define POS_INFINITY 1.8e308 * 10.00
-#define NEG_INFINITY -1.8e308 * 10.00
+#define POS_INFINITY (1.8e308 * 10.00)
+#define NEG_INFINITY (-1.8e308 * 10.00)
 #define NEG_ZERO -0.00
 
 */
