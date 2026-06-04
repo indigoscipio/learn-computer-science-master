@@ -1621,3 +1621,4 @@ float promoted to double
 since double has only 52bit of precision (15-17 decimal digits)
 adding 1.0 needs more precision slot to double
 1.0 gets rounde
+

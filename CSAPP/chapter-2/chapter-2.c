@@ -1,62 +1,25 @@
-#include <stdio.h>
+#include stdio.h
 
-
-
-// PROBLEM 2.8
-int bis(int x, int m){
-    //write expr in c that computes the effect of bit set
-    // we can just use or here
-    int result = x | m ;
-    return result;
+void show_short(short int n){
+    printf("%x", &n);
 }
 
-int bic(int x, int m){
-    //write expr in c that computes the effect of bit clear
-    int result = x & ~m;
-    return result;
+void show_long(long int n){
+    0
 }
 
-// PROBLEM 2.10
-// write c expr that is equivalent to x == y. return 1 when x and y are equal and 0 otherwise
-int is_equal(int x, int y){
-    int result = x ^ y;
-    return !result;
+void show_double(double d){
+        0
 }
-
-float sum_elements(float a[], int length){
-    int i;
-    float result = 0;
-
-    for(i=0;i<length;i++){
-        result+=a[i];
-    }
-
-    return result;
-}
-
-// PROBLEM 2.22
 
 int main(void){
+    short int s = 32;
+    long int l = 12345678987654321;
+    double d = 1.23e20;
 
-    // PART A
-    printf("%X\n", 0x98FDECBA | ~0xFF);
-
-    // PART B
-    // complement of least significant byte of x (BA)
-    // all other bytes left unchanged
-    printf("%X\n", 0x98FDECBA ^ 0xFF);
-
-    // PART C
-    // all but the lsbyte of x (00)
-    // with the least significant byte set to 0
-    printf("%X\n", 0x98FDECBA & ~0xFF);
-
-
-    printf("%d\n", is_equal(12,13));
-
-    // PROBLEM 2.16
-    float a[8] = {1,2,3,4,5,6,7,8};
-    printf("%f\n",sum_elements(a,8));
+    show_short(s);
+    show_long(n);
+    show_double(d);
 
     return 0;
 }
