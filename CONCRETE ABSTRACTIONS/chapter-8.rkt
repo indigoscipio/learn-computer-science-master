@@ -496,14 +496,20 @@ consists of 2 parts:
 
 (define (look-up-phone-number phone-trie)
   (newline)
-  (if (empty-trie? phone-trie)
-      (display "Sorry we can’t find that name.")
-      (let ((user-input (read)))
-        (if (= user-input 0)
-            (display-phone-numbers (root-values phone-trie))
-            (look-up-phone-number (subtrie-with-label
-                                   phone-trie
-                                   user-input))))))
+
+  (cond [(empty-trie? phone-trie) (display "Sorry we can’t find that name.") ]
+        [(< (number-in-trie phone-trie) 2) (display-phone-numbers (values-in-trie phone-trie))]
+        [else (let ((user-input (read)))
+                (cond [(= user-input 0) (display-phone-numbers (root-values phone-trie))]
+                      [(= user-input 1)
+                       (display-phone-numbers (values-in-trie phone-trie)) (look-up-phone-number phone-trie)]
+                      [else (look-up-phone-number (subtrie-with-label
+                                                   phone-trie
+                                                   user-input))]
+                      )
+                )]
+        )
+  )
 
 
 (define (display-phone-numbers people)
@@ -546,12 +552,12 @@ account the values that are at the root node of the trie.
     MT MT MT MT MT MT))) ; 🌿 Branches 4 through 9 are completely empty
 
 ; trie -> number
-(define (numbers-in-trie trie)
+(define (number-in-trie trie)
   (cond [(empty-trie? trie) 0]
         [else (+ (length (root-values trie))
-                 (foldr + 0 (map numbers-in-trie (subtries trie)))) ])
+                 (foldr + 0 (map number-in-trie (subtries trie)))) ])
   )
-(numbers-in-trie test-trie)
+(number-in-trie test-trie)
 
 
 #|
@@ -589,4 +595,159 @@ b. Further modify look-up-phone-number so that if the user enters 1, the names
 of all the people in the current trie will be reported, but the procedure
 look-up-phone-number will continue to read input from the user. You will
 also want to make appropriate changes to menu.
+
+answer:
 |#
+
+#|
+Exercise 8.21
+Write a procedure letter->number that takes a letter (i.e., a one-letter symbol) and
+returns the number corresponding to it on the telephone keypad. For q and z use 7
+and 9, respectively. Hint: The easiest way to do this exercise is to use a cond together
+with the list membership predicate member we introduced in the previous chapter.
+
+answer:
+|#
+
+; q = 7
+; z = 9
+; ABC = 2
+; DEF = 3
+; GHI = 4
+; JKL = 5
+; MNO = 6
+; PQRS = 7
+; TUV = 8
+; WXYZ = 9
+
+; assume letter is lowercase
+(define (letter->number letter)
+  (cond [(member letter '(a b c)) 2]
+        [(member letter '(d e f)) 3]
+        [(member letter '(g h i)) 4]
+        [(member letter '(j k l)) 5]
+        [(member letter '(m n o)) 6]
+        [(member letter '(p q r s)) 7]
+        [(member letter '(t u v)) 8]
+        [(member letter '(w x y z)) 9]
+        [else (error "letter not supported")]
+        )
+  )
+
+#|
+Exercise 8.22
+To break a symbol up into a list of one-character symbols, we need to use
+some features of Scheme that we’d rather not talk about just now. The follow
+ing explode-symbol procedure uses these magic features of Scheme so that
+(explode-symbol ’ritter) would evaluate to the list of one-letter symbols
+(ritter), for example:
+
+(define (explode-symbol sym)
+  (map string->symbol
+       (map string
+            (string->list (symbol->string sym)))
+       )
+  )
+
+Use this together with letter->number to write a procedure name->labels that
+takes a name (symbol) and returns the list of numbers corresponding to the name.
+You should see the following interaction:
+(name->labels ’ritter)
+(7 4 8 8 3 7)
+
+|#
+
+(define (explode-symbol sym)
+  (map string->symbol
+       (map string
+            (string->list (symbol->string sym)))
+       )
+  )
+
+(define (name->labels name)
+  (map letter->number (explode-symbol name))
+  )
+(name->labels 'ritter)
+
+
+; ======================================
+
+(define (make-labeled-value labels value)
+  (list labels value))
+
+(define labels car)
+
+(define value cdr)
+
+#| Exercise 8.23
+Write a procedure empty-labels? that takes a labeled value and returns true if and
+only if its list of labels is empty.|#
+
+(define (empty-labels? labeled-value)
+  (empty? (labels labeled-value))
+  )
+
+; ======================================
+
+#| Exercise 8.23
+Write a procedure first-label that takes a labeled value and returns the first label
+in its list of labels.|#
+
+(define (first-label labeled-value)
+  (car (labels labeled-value))
+  )
+
+; ======================================
+
+#| Exercise 8.25
+Write a procedure strip-one-label that takes a labeled value and returns the
+labeled value with one label removed. For example, you would have the following
+interaction
+
+(define labeled-ritter
+(make-labeled-value ’(7 4 8 8 3 7)
+(make-person ’ritter 7479)))
+
+(labels (strip-one-label labeled-ritter))
+(4 8 8 3 7)
+(name (value (strip-one-label labeled-ritter)))
+ritter
+(phone-number (value (strip-one-label labeled-ritter)))
+7479
+
+|#
+
+(define labeled-ritter
+  (make-labeled-value '(7 4 8 8 3 7)
+                      (make-person 'ritter 7479)))
+labeled-ritter
+
+
+(define (strip-one-label labeled-value)
+  (make-labeled-value (cdr (labels labeled-value)) (value labeled-value) )
+  )
+(value (strip-one-label labeled-ritter))
+
+; ======================================
+
+#|Exercise 6.26
+Write a procedure value->labeled-value that takes a value (person) and re
+turns the labeled value corresponding to it. You must of course use the procedure
+name->labels|#
+
+(define person-a (make-person 'adam '1234))
+
+(define (value->labeled-value person)
+  (make-labeled-value (name->labels (name person)) person )
+  )
+(value->labeled-value person-a)
+
+
+; ======================================
+
+; ======================================
+
+; ======================================
+
+; ======================================
+
