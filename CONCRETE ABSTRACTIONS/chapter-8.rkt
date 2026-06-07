@@ -430,7 +430,7 @@ answer:
 
 
 #|
-Exercise 8.16
+Exercise 8.17
 Define a procedure for counting how many operations an expression contains
 answer:
 (- 1 5) -> 1 expr
@@ -444,3 +444,149 @@ so each time you go down, increment the counter
         )
   )
 (operations '(1 + (2 * (3 - 5)))) ;should return 3
+
+
+; ========================
+
+#|
+trie
+
+the key are spelled out by the edges/paths
+
+consists of 2 parts:
+- listof-root-values listof-subtries
+- where subtrie is itself a trie
+
+|#
+
+
+(define (make-empty-trie) '())
+
+(define (make-nonempty-trie root-values ordered-subtries)
+  (list root-values ordered-subtries)
+  )
+
+(define empty-trie? null?)
+
+(define root-values car)
+(define subtries cdr)
+
+(define (subtrie-with-label trie label)
+  (list-ref (subtries trie) (- label 2) )
+  )
+
+; PERSON
+(define (make-person name phone-number)
+  (list name phone-number)
+  )
+
+(define name car)
+(define phone-number cadr)
+
+(define (look-up-with-menu phone-trie)
+  (menu)
+  (look-up-phone-number phone-trie))
+
+(define (menu)
+  (newline)
+  (display "Enter the name, one digit at a time.")
+  (newline)
+  (display "Indicate you are done by 0.")
+  (newline))
+
+(define (look-up-phone-number phone-trie)
+  (newline)
+  (if (empty-trie? phone-trie)
+      (display "Sorry we can’t find that name.")
+      (let ((user-input (read)))
+        (if (= user-input 0)
+            (display-phone-numbers (root-values phone-trie))
+            (look-up-phone-number (subtrie-with-label
+                                   phone-trie
+                                   user-input))))))
+
+
+(define (display-phone-numbers people)
+  (define display-loop
+    (lambda(people)
+      (cond((null? people) 'done)
+           (else(newline)
+                (display(name(car people)))
+                (display"’sphonenumberis")
+                (display(phone-number(car people)))
+                (display-loop(cdr people))))))
+  (if(null? people)
+     (display "Sorrywecan’tfindthatname.")
+     (display-loop people)))
+
+
+#|
+Exercise 8.18
+Write the procedure number-in-trie that calculates the total number of values
+in a trie. Hint: In the general case, you can compute the list of numbers in the
+various subtries by using number-in-trie in conjunction with the built-in Scheme
+procedure map. The total number of values in all the subtries can then be gotten
+by applying the sum procedure from Section 7.3. Of course, you have to take into
+account the values that are at the root node of the trie.
+|#
+
+(define MT '())
+
+(define test-trie
+  (make-nonempty-trie
+   (list (make-person 'boss 1111)) ; 👤 Value right at the root node
+   (list
+    (make-nonempty-trie 
+     (list (make-person 'ben 2222)) ; 📞 Value down branch 2 (ABC)
+     (list MT MT MT MT MT MT MT MT))
+    (make-nonempty-trie 
+     (list (make-person 'dan 3333) 
+           (make-person 'eli 3334)) ; 👥 Two values sharing branch 3 (DEF)
+     (list MT MT MT MT MT MT MT MT))
+    MT MT MT MT MT MT))) ; 🌿 Branches 4 through 9 are completely empty
+
+; trie -> number
+(define (numbers-in-trie trie)
+  (cond [(empty-trie? trie) 0]
+        [else (+ (length (root-values trie))
+                 (foldr + 0 (map numbers-in-trie (subtries trie)))) ])
+  )
+(numbers-in-trie test-trie)
+
+
+#|
+Exercise 8.19
+Write the procedure values-in-trie that returns the list of all values stored in a
+given trie. It should be very similar in form to number-in-trie. You may find your
+solution to Exercise 7.5 on page 173 useful. In fact, if you rewrote number-in-trie
+to use Exercise 7.5’s solution in place of sum, values-in-trie would be nearly
+identical in form to number-in-trie.
+
+answer:
+|#
+
+; trie -> list-of-people
+(define (values-in-trie trie)
+  (cond [(empty-trie? trie) (make-empty-trie)]
+        [else (append (root-values trie) (foldr append '() (map values-in-trie (subtries trie))) ) ]
+        )
+  )
+(values-in-trie test-trie)
+
+
+; ====================================
+
+#|
+Exercise 8.20
+Let’s use these procedures to improve what is done in the procedure look-up
+phone-number.
+
+a. Use number-in-trie to determine if there are fewer than two values in phone
+trie and immediately report the appropriate answer if so, using values-in-trie
+and display-phone-numbers.
+
+b. Further modify look-up-phone-number so that if the user enters 1, the names
+of all the people in the current trie will be reported, but the procedure
+look-up-phone-number will continue to read input from the user. You will
+also want to make appropriate changes to menu.
+|#

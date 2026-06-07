@@ -311,3 +311,136 @@ answer:
         )
   )
 (sorted-list->min-height-bstree '(1 2 3 4 5 6 7 8 9))
+
+
+#|
+Exercise 8.13
+Using sorted-list->min-height-bstree and inorder (which constructs a
+sorted list from a binary search tree), write a procedure optimize-bstree that
+optimizes a binary search tree. That is, when given an arbitrary binary search tree, it
+should produce a minimum-height binary search tree containing the same nodes.
+
+answer:
+|#
+
+(define (optimize-bstree tree)
+  (sorted-list->min-height-bstree (inorder tree))
+  )
+(optimize-bstree sample-bst)
+
+#|
+Exercise 14
+Usinglist->bstreeandinorder,writeaproceduresortthatsortsagivenlist.
+answer:
+|#
+
+(define (sort lst)
+  (inorder (list->bstree lst))
+  )
+(sort '(5 6 7 0 8 9 10))
+
+; =================================
+;; EXPRESSION TREE (not a bst anymor)
+; has 3 parts: op, left operand, right operand
+; where left operand and right operand itself is a tree
+; in this case well limit to 1 operator that takes only 2 operand (binary operation)
+
+
+(define (make-constant x)
+  x
+  )
+
+(define constant? number?)
+
+(define (make-expr left-operand operator right-operand)
+  (list left-operand operator right-operand)
+  )
+
+(define left-operand car)
+(define operator cadr)
+(define right-operand caddr)
+
+(define (look-up-value name)
+  (cond [(equal? '+ name) +]
+        [(equal? '* name) *]
+        [(equal? '- name) -]
+        [(equal? '/ name) /]
+        [else (error "ERROR: Lookup not found" name)]
+        )
+  )
+
+(define (evaluate expr)
+  (cond [(constant? expr) expr]
+        [else (let ((op (look-up-value (operator expr)))
+                    (lo (left-operand expr))
+                    (ro (right-operand expr)))
+                (op (evaluate lo) (evaluate ro))
+                ) ]
+        )
+  )
+(evaluate (evaluate '(1 + (2 * (3 - 5))) ))
+
+#|
+Exercise 8.15
+In the preceding example, we’ve “cheated” by using a quoted list as the expression to
+evaluate. This method relied on our knowledge of the representation of expression
+trees. How could the example be rewritten to use the constructors to form the
+expression?
+
+
+|#
+;answer:
+(make-expr 1 '+ (make-expr 2 '* (make-expr 3 '- 5) ))
+
+;=================================================
+; prefix -> (- 3 5) -> root left right
+; infix -> (3 - 5) -> left root right
+; postfix -> (3 5 -) -> left right root
+
+(define (post-order tree)
+  
+  (define (post-order-onto tree list)
+    (if (constant? tree)
+        (cons tree list)
+        (post-order-onto (left-operand tree)
+                         (post-order-onto (right-operand tree) (cons (operator tree) list)))))
+  
+  (post-order-onto tree '())
+  
+  )
+
+(post-order '(1 + (2 * (3 - 5))))
+
+#|
+Exercise 8.16
+Define a procedure for determining which operators are used in an expression.
+
+answer:
+|#
+
+; expr -> list-of-symbols
+(define (operators expr)
+  (cond [(constant? expr) '()]
+        [else (append (list (operator expr))
+                      (operators (left-operand expr))
+                      (operators (right-operand expr)) ) ]
+        )
+  )
+(operators '(1 + (2 * (3 - 5))))
+
+
+#|
+Exercise 8.16
+Define a procedure for counting how many operations an expression contains
+answer:
+(- 1 5) -> 1 expr
+(- 1 (* 2 5)) -> 2 expr
+so each time you go down, increment the counter
+|#
+
+(define (operations expr)
+  (cond [(constant? expr) 0]
+        [else (+ 1 (operations (left-operand expr)) (operations (right-operand expr)))]
+        )
+  )
+(operations '(1 + (2 * (3 - 5)))) ;should return 3
