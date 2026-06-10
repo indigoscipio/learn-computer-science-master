@@ -1,0 +1,118 @@
+running a high-level code
+
+has a lot of abstractions built over the years
+
+[high level]
+[compiler]
+[VM translator]
+[Assembler]
+[CPU]
+[Logic Gates]
+
+what's an abstractions? a tecnique to hide 'complexity'
+so humans brain doesn't melt because its different than computers
+
+the very bottom of compsci: NAND gate
+ALU and RAM can be made from NAND gate
+everything can be made from NAND gates
+
+churc-turing conjecture
+any complex hard problem that can be solved by superocmputer
+can be solved by a simple computer as long as it has enough time and memory
+
+abstract view (interface)
+think microwave
+UI -> button, 30sec, etc (what you see)
+Logic -> implementation, how it works inside it
+
+
+=== 1.1 BOOLEAN ALGBERA ===
+
+theres only 2 possible values -> 1 or 0
+
+boolean function
+;; binary value -> binary value
+
+THE 3 BUILDING BLOCKS
+NOT -> ~
+AND -> .
+OR -> +
+
+How many functions exist?
+n variables -> 2^2^n possible functions
+
+example: 4
+1 0
+0 1
+1 1
+0 0
+
+total 
+
+
+TRUTH TABLE VIEW
+checklist of eveyr possible scenario
+can 'explore' when n increases
+
+
+EXPRESSION VIEW
+summarize the underlying rule - f(x,y,z) = (x OR y) AND ~z
+saves memory
+
+CPU is made of billions of NAND gates
+
+expr -> truth table = obvious
+truth table -> expr -> magic, can deduce
+you can always deduce
+
+
+=== 1.1 BOOLEAN ALGBERA ===
+
+Logic Gates
+
+gate -> thing that can do boolean function, sometimes chip
+
+primitive black box -> decouple math from physics
+
+black box: is a device where you know exactly what goes in and out
+but don't care whats happening inside
+
+
+=================
+a ->  
+      AND -> out
+b ->
+=================
+
+=================
+a ->  
+      OR -> out
+b ->
+=================
+
+=================
+in -> NOT -> out
+=================
+
+Composite Gates (combined primite Gates)
+
+example: we have 3 inputs (a,b,c)
+we wanna output 1 when every one of its inputs is 1 (a,b,c == 1)
+
+INTERFACE (for designer)
+a ->
+b -> and -> out
+c ->
+
+IMPLEMENTATION (for the builder/engineer)
+a ->
+    AND ->
+b ->        AND -> OUT
+c ->->->->->
+
+ a . b . c = (a . b) . c -> and(and(a,b), c)
+
+ ----- ANOTHER EXAMPLE -----
+
+ XOR
+ 
