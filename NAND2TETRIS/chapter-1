@@ -115,4 +115,37 @@ c ->->->->->
  ----- ANOTHER EXAMPLE -----
 
  XOR
- 
+definition: XOR(a,b) is exactly 1 when either a is 1 and b is 0
+or a is 0 and b is 1
+
+(a AND NOT(b)) OR (b AND NOT(a))
+
+ not a and b
+ OR
+ not b and a
+
+ what is logic design
+ turning specification/gate abstraction to find an efficient way to implement it using
+ other gates that were already implemnted
+
+
+======================================
+
+HDL
+is a text blueprint that describes how physical parts are wired
+
+CHIP Xor{
+      IN a,b;
+      OUT out; // THE INTERFACE
+
+      PARTS: // THE IMPLEMENTATION
+}
+
+
+all takes a wire as an input
+
+Multiplexer (selector)
+multiple input -> choose between 1 -> 1 output
+
+Demultiplexer
+1 input -> multiple output -> choose between 1
