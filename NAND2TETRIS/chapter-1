@@ -149,3 +149,86 @@ multiple input -> choose between 1 -> 1 output
 
 Demultiplexer
 1 input -> multiple output -> choose between 1
+
+
+MULTIWAY OR
+
+MULTIWAY MULTIPLEX
+16bit ->
+16bit -> [selector/switch] -> out: choose only 1
+16bit ->
+16bit ->
+
+a multiplex can only choose 1, if you bundle it into 2 states is now 4 choice
+
+MULTIWAY DEMUX
+4 into one
+
+
+====================
+
+NAND
+NOT
+AND
+OR/XOR
+MUX/DEMUX
+MULTIBIT NOT/AND/OR
+MULTIBIT MUX/DEMUX
+MULTIWAY GATES
+
+===========================
+
+NOT
+
+CHIP Not {
+    IN in;
+    OUT out;
+
+    PARTS:
+    Nand(a= in, b= in, out= out);
+}
+
+when i do Nand(a=in, b=in, out=out)
+i eliminate teh possibility of inputs being different from each other
+the only possibility is eithe
+0 0 or  1 1
+0 0 -> ouptuts 1
+1 1 -> outputs 0
+
+===========================
+
+AND
+
+CHIP And {
+    IN a, b;
+    OUT out;
+    
+    PARTS:
+    Nand(a=a , b=b, out= out1);
+    Not(in= out1, out= out);
+}
+
+===========================
+
+OR
+
+CHIP Or {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    Not(in= a, out= nota);
+    Not(in= b, out= notb);
+    Nand(a= nota, b= notb, out= out);
+}
+
+
+===========================
+
+XOR
+
+===========================
+
+MULTIPLEXER
+
+===========================
