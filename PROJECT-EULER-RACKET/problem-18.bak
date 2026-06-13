@@ -180,13 +180,28 @@ That answer will tell you how these helpers compose with each other — which is
 (translate 99)
 (translate 450)
 
-; given a word, counts its letters
-(define (count-letters xs)
-
+; returns true if a letter is not a hyphen or space 
+(define (is-valid-letter? char)
+  (not (or (equal? char #\-) (equal? char #\space)))
   )
-(count-lettrs 'fourty-two)
-(count-letters 'sixteen)
-(count-letters 'twenty)
+
+; given a word, counts its letters
+(define (count-letters sym)
+    (let* ((chars (string->list (symbol->string sym)))
+          (valid-chars (map (λ (c) (is-valid-letter? c) ) chars))
+          )
+      (foldr (λ (x acc) (if x (+ 1 acc) acc) ) 0 valid-chars)
+      )
+  )
+(display 'count-letters) (newline)
+(count-letters 'fourty-two) ; 9
+(count-letters 'sixteen) ; 7
+(count-letters 'twenty) ; 6
+
+(define (count-letters-in-sentence sent)
+  (foldr + 0 (map count-letters sent))
+  )
+(count-letters-in-sentence '(fourty-five))
 
 
 ; THE MAIN FUNCTION
@@ -195,15 +210,14 @@ That answer will tell you how these helpers compose with each other — which is
   
   (define (loop curr-n result)
     (cond [(<= curr-n 0) result]
-          [else (loop (- curr-n 1) (cons (translate curr-n) result)) ]))
+          [else (loop (- curr-n 1) (+ result (count-letters-in-sentence (translate curr-n))) ) ]))
 
-  (let ((num-words (loop n '()) ))
-    (map (λ (lst) lst ) num-words)
-    )  
+  (loop n 0)
   )
 (number-letter-counts 2) ;should return total letters in 'one two' -> 3+3 = 6
 (number-letter-counts 3) ; total letters in 'one two three' -> 3+3+5 = 11
 (number-letter-counts 4) ; totla letters in 'one two three four' -> 3+3+5+4 = 15
 (number-letter-counts 5) ; 3+3+5+4+4 = 19
-(number-letter-counts 15)
-(number-letter-counts 99)
+(number-letter-counts 15) ; returns 74
+(number-letter-counts 50) ;returns 389
+(number-letter-counts 1000) ;returns 21124
