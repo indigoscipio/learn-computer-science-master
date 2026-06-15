@@ -227,8 +227,96 @@ CHIP Or {
 
 XOR
 
+a b XOR(a,b)
+0 0 0
+0 1 1
+1 0 1
+1 1 0
+
 ===========================
 
 MULTIPLEXER
 
+a b sel   notsel     and
+0 0  0     1         0
+0 1  1     0         0
+1 0  0     1         1
+1 1  1     0         0
+
+
+key idea
+two seperate AND gates - 2 independent security guards
+one to guard A
+one to guard B
+
+'allows the signal to pass' -> perfect mirror of whatever A is
+
+what and does -> fed 0 -> stay 0
+fed 1 -> passes
+
+case: sel = 0
+guard A -> and(a, notsel)
+sel = 0 -> notsel = 1 -> mirrors a -> open A
+
+guar B -> and(b, sel)
+sel = 0 -> close door -> 0
+
+
+case: sel = 1
+guard A -> and(a, 0) -> a clse
+guard B -> sel = 1 -> open door
+
+final OR -> combines them again
+
+CHIP Mux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+    Not(in= sel, out= notsel);
+    And(a= a, b= notsel, out= outA);
+
+    And(a= b, b= sel, out= outB); 
+    Or(a= outA, b= outB, out= out);
+    
+    //// Replace this comment with your code.
+}
+
 ===========================
+
+DEMUX
+sel notsel
+0   1
+1   0
+
+AND is like a mirror
+
+in = 1
+sel = 0
+guard A -> and(a = in, b = notsel) -> and(1, 1) -> passes here ->
+guard B -> and(a = in, b = sel) -> and(1,0) -> close
+[1,0]
+
+sel = 1
+guard A -> and(a = in, b = notsel) -> and(1, 0) -> close
+guard B -> and(a = in, b = sel) -> and(1,1) -> open
+[0,1]
+
+
+CHIP DMux {
+    IN in, sel;
+    OUT a, b;
+
+    PARTS:
+    Not(in= sel, out= notsel);
+
+    And(a= in, b= notsel, out= a);
+
+    And(a= in, b= sel, out= b);
+
+    //// Replace this comment with your code.
+}
+
+===========================
+
+NOT16

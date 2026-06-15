@@ -23,4 +23,4 @@ what is the largest prime factor of the number 600851475143?
   ; initialize with curr-n = n, curr-factor = 2 and reuslt = '()
   (helper n 2)
   )
-(largest-pf 120)
+(largest-pf 600851475143)
