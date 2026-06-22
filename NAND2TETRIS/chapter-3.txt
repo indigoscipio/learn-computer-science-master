@@ -1,0 +1,16 @@
+memory
+
+DFF
+- feed a bit during clock cycle
+- DFF traps the bit during the tick
+- it releases that bit to the rest of the computer when the next 'tock' arrives
+
+delay 1 clock cycle = remember a piece of data
+
+in compsci, we view time as a block/cycle of data.
+which has a fixed length interval - cycles
+it is a discrete repsentation - it is atomic and indivisible
+
+why use this? electricity flow through loic gates dont 'snap' into perfect binay balues
+it takes time to travel, and during this time signals bounce chaotically.
+

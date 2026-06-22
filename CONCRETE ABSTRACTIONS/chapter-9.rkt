@@ -5,3 +5,256 @@ Date ADT
 representation 1 -> '(17 5 1905)
 representation 2 -> total days since Jan 1, 1900 -> 1962
 |#
+
+; BASE MESSAGE PASSING LOGIC
+(define (sequence-from-to low high)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (> low high)]
+                [(equal? op 'head) low]
+                [(equal? op 'tail) (sequence-from-to (+ 1 low) high)]
+                [(equal? op 'sequence-length) (if (> low high) 0 (+ (- high low) 1)) ]
+                [else (error "Invalid operator")]
+                )
+    )
+  )
+
+(define seq-1 (sequence-from-to 3 100))
+(seq-1 'head) ;3
+(seq-1 'sequence-length) ;98
+((seq-1 'tail) 'head) ;4
+
+; SELECTORS
+(define (head sequence)
+  (sequence 'head)
+  )
+(define (tail sequence)
+  (sequence 'tail)
+  )
+(define (empty-sequence? sequence)
+  (sequence 'empty-sequence?)
+  )
+(define (sequence-length sequence)
+  (sequence 'sequence-length)
+  )
+
+#|
+Exercise 9.1
+
+As is evident from the the output given above, we would be better able to check our
+procedures if we could easily display the sequences we construct. Instead of writing
+an ADT display procedure for sequences, an easier approach is to write a procedure
+sequence->list that converts a sequence to the corresponding Scheme list, which
+can then be directly displayed. Write this procedure, accessing the sequence only
+through the interface procedures head, tail,andempty-sequence?.
+
+answer:
+
+|#
+
+; sequence -> list
+(define (sequence->list sequence)
+  (cond [(empty-sequence? sequence) '()]
+        [else (cons (head sequence) (sequence->list (tail sequence)))]
+        )
+  )
+(sequence->list seq-1)
+
+#|
+Exercise 9.2
+
+The sequences we just described are restricted to consecutive increasing sequences
+of integers (more precisely, to increasing arithmetic sequences where consecutive
+elements differ by 1). We can easily imagine similar but more general sequences
+such as 6,5,4,3,2 or 5,5.1,5.2,5.3,5.4,5.5—in other words, general arithmetic
+sequences of a given length, starting value, and increment (with decreasing sequences
+having a negative increment value).
+
+a.  Write a procedure sequence-with-from-by that takes as arguments a length,
+a starting value, and an increment and returns the corresponding arithmetic se
+quence. Thus, (sequence-with-from-by 5 6-1) would return the first and
+(sequence-with-from-by 6 5 .1) would return the second of the two pre
+ceding sequences. Remember that sequences are represented as procedures, so
+your new sequence constructor will need to produce a procedural result.
+
+b. The procedure sequence-from-to can now be rewritten as a simple call to
+sequence-with-from-by. The original sequence-from-to procedure made
+an empty sequence if its first argument was greater than its second, but you
+should make the new version so that you can get both increasing and de
+creasing sequences of consecutive integers. Thus, (sequence-from-to 3 8)
+should return 3,4,5,6,7,8, whereas (sequence-from-to 5 1) should return
+5, 4, 3,2,1.
+
+c. Write a procedure sequence-from-to-with that takes a starting value,
+an ending value, and a length and returns the corresponding arithmetic
+sequence. For example, (sequence-from-to-with 5 11 4) should return
+5, 7, 9,11.
+
+answer:
+
+|#
+
+; a sequence is a procedure that takes an operator
+; PART A
+(define (sequence-with-from-by len start-val increment-val)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (zero? len)] ;just check if length is 0, assuming len is posint
+                [(equal? op 'head) start-val]
+                [(equal? op 'tail) (sequence-with-from-by (- len 1) (+ start-val increment-val) increment-val ) ]
+                [(equal? op 'sequence-length) len]
+                [else (error "Invalid operator")]
+                )
+    )
+  )
+(sequence-with-from-by 5 6 -1) ;(6 5 4 3 2)
+(sequence-with-from-by 6 5 .1) ;(5.0 5.1 5.2 5.3 5.4 5.5)
+
+; PART B
+(define (sequence-from-to-v2 low high)
+  (if (< low high)
+      ; increaseing
+      (sequence-with-from-by (+ (abs (- low high)) 1) low 1 )
+      ; decreasing
+      (sequence-with-from-by (+ (abs (- low high)) 1) low -1)
+      )
+  )
+(sequence-from-to-v2 3 8) ;'(3 4 5 6 7 8)
+(sequence-from-to-v2 5 1) ;'(5 4 3 2 1)
+
+(sequence->list (sequence-from-to-v2 3 8))
+(sequence->list (sequence-from-to-v2 5 1))
+
+; PART C
+(define (sequence-from-to-with start-val end-val len)
+  (sequence-with-from-by len start-val (/ (- end-val start-val) (- len 1)) )
+  )
+(sequence->list (sequence-from-to-with 5 11 4))
+
+; ============
+
+(define (list->sequence lst)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (null? lst)]
+                   [(equal? op 'head) (car lst)]
+                   [(equal? op 'tail) (list->sequence (cdr lst))]
+                   [(equal? op 'sequence-length) (length lst)]
+                   [else (error "illegal sequence operation" op)]
+                   )
+    )
+  )
+
+#|
+Exercise 9.3
+Use list->sequence to write a procedure empty-sequence that takes no argu
+ments and returns an empty sequence.
+
+answer:
+
+|#
+(define (empty-sequence)
+  (list->sequence '())
+  )
+
+; ================================
+
+#|
+Exercise 9.4
+Onedisadvantage with the preceding version of list->sequence is that the Scheme
+procedure length normally has linear complexity in the list’s length (unless the
+version of Scheme you use does something like the trick we will now describe that
+reduces sequence-length to constant complexity).
+
+a.  Modify list->sequence so that it has a let expression that computes the list’s
+length once at sequence construction time and then uses that value when asked
+for the sequence’s length.
+b. The problem with the solution in part a is that the tail’s length is computed each
+time you return the tail. Because the complexity of calculating a list’s length is
+proportional to the length, if you do the equivalent of cdring down the sequence,
+the resulting complexity is quadratic in the list-sequence’s length, certainly an
+undesirable consequence.
+
+
+One solution to this problem is to write an auxiliary procedure list
+of-length->sequence that is passed both a list and its length and re
+turns the corresponding sequence. This procedure can efficiently compute
+its tail, and list->sequence can be reimplemented as a call to list
+of-length->sequence. Carry out this strategy.
+
+answer:
+|#
+
+
+; part A
+(define (list->sequence-v2 lst)
+  (λ (op) (let ((list-len (length lst)))
+            (cond [(equal? op 'empty-sequence?) (null? lst)]
+                  [(equal? op 'head) (car lst)]
+                  [(equal? op 'tail) (list->sequence (cdr lst))]
+                  [(equal? op 'sequence-length) (list-of-length->sequence lst list-len) ]
+                  [else (error "illegal sequence operation" op)]
+                  )
+            )
+    )
+  )
+
+; PART B
+; list-of-x number -> sequence
+(define (list-of-length->sequence lst len)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (zero? len)]
+                [(equal? op 'head) (car lst)]
+                [(equal? op 'tail) (list-of-length->sequence (cdr lst) (- len 1)) ]
+                [(equal? op 'sequence-length) len]
+                [else (error "illegal sequence operation" op)]
+                )
+    )
+  )
+
+;PART C
+(define (list->sequence-v2-master lst)
+  (list-of-length->sequence lst (length lst) )
+  )
+
+; ==================================================
+
+; V3: WITH SEQUENCE REF
+(define (sequence-from-to-v3 low high)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (> low high)]
+                [(equal? op 'head) low]
+                [(equal? op 'tail) (sequence-from-to-v3 (+ 1 low) high)]
+                [(equal? op 'sequence-length) (if (> low high) 0 (+ (- high low) 1)) ]
+                [(equal? op 'sequence-ref) (λ (n) (if (and (>= n 0) (<= n (- high low)) )
+                                                      (+ low n)
+                                                      (error "Index out of range" n)
+                                                      ))]
+                [else (error "Invalid operator")]
+                )
+    )
+  )
+
+(define (sequence-ref sequence n)
+  ((sequence 'sequence-ref) n)
+  )
+
+#|
+exercise 9.5
+rewrite list->sequence so that it has a branch for sequence refernce
+
+answer:
+|#
+
+(define (list-of-length->sequence-v3 lst len)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (zero? len)]
+                [(equal? op 'head) (car lst)]
+                [(equal? op 'tail) (list-of-length->sequence-v3 (cdr lst) (- len 1)) ]
+                [(equal? op 'sequence-length) len]
+                [(equal? op 'sequence-ref) (λ (n) (if (and (>= n 0) (<= n (- len 1)) ) ; 0 <= n <= len-1
+                                                      (list-ref lst n) ; within range
+                                                      (error "Index out range" n)
+                                                      ) )]
+                [else (error "illegal sequence operation" op)]
+                )
+    )
+  )
+
+(define (list->sequence-v3-master lst)
+  (list-of-length->sequence lst (length lst) )
+  )
+
+; ================================================
+

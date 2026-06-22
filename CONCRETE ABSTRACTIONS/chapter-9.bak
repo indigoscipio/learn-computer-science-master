@@ -1,844 +1,175 @@
 #lang racket
 
-; BST - sorted
-; some tress aresn't sorted
-
-; a BST is one of the following:
-; '()
-; (list value left right) where left and right are a type of BST and value is 'sorted'
-
-
-(define (make-empty-tree)
-  '()
-  )
-
-(define (make-nonempty-tree root left right)
-  (list root left right)
-  )
-
-(define empty-tree? null?)
-(define root car)
-(define left-subtree cadr)
-(define right-subtree caddr)
-
-(define sample-bst '(4
-                    (2 (1 () ()) (3 () ()))
-                    (6 (5 () ()) (7 () ()))))
-
 #|
-Exercise 8.1
-Write a procedure called minimum that will find the smallest element in a nonempty
-binary search tree of numbers.
-
-answer:
+Date ADT
+representation 1 -> '(17 5 1905)
+representation 2 -> total days since Jan 1, 1900 -> 1962
 |#
 
-(define (minimum tree)
-  (cond [(empty-tree? (left-subtree tree)) (root tree)] ;tree is empty, return the value
-        [else (minimum (left-subtree tree))] ;keep recursing to the left
-        )
-  )
-(minimum sample-bst)
-
-; ==========================================================
-
-#|
-Exercise 8.2
-Write a procedure called number-of-nodes that will count the number of elements
-in a binary search tree
-
-answer:
-|#
-
-(define (number-of-nodes bst)
-  (cond [(empty-tree? bst) 0]
-        [else (+ 1 (number-of-nodes (left-subtree bst))
-                 (number-of-nodes (right-subtree bst))
-                 ) ])
-  )
-(number-of-nodes sample-bst)
-
-
-
-
-; ==========================================================
-
-#|
-exercixe 8.3
-|#
-
-(define (list-by-key-onto tree list)
-  (cond [(empty-tree? tree) list]
-        [else (cons (root tree) (list-by-key-onto (left-subtree tree) (list-by-key-onto (right-subtree tree) list)) )]
-        )
-  )
-
-
-(define (inorder tree)
-    (if (empty-tree? tree)
-        '()
-        (append (inorder (left-subtree tree))
-                (cons (root tree)
-                (inorder (right-subtree tree))))))
-
-; ==========================================================
-
-
-#|
-Exercise 8.4
-Again, eliminate append by using an “onto” parameter
-|#
-
-
-(define (inorder-onto tree lst)
-  ; lst is the accumulator
-  (cond [(empty-tree? tree) lst]
-        [else (inorder-onto (left-subtree tree) (cons (root tree) (inorder-onto (right-subtree tree) lst)) )]
-        )
-  )
-(inorder-onto sample-bst '())
-
-
-; ==========================================================
-
-
-#|
-Exercise 8.5
-The third standard way of traversing a tree is called a postorder traversal. Here, you
-enumerate the left subtree, then the right subtree, and finally the root. Write a
-procedure that takes a binary search tree and produces the list of nodes that describe
-a postorder traversal of the tree.
-|#
-
-(define (postorder tree)
-  ;rebuild the tree on each iteratio
-  (cond [(empty-tree? tree) '()]
-        [else (append (postorder (left-subtree tree))
-                      (postorder (right-subtree tree))
-                      (list (root tree))
-                      ) ] ; L -> R -> C
-        )
-  )
-(postorder sample-bst) ;(1 3 2 5 7 6 4)
-
-(define (postorder-onto tree lst)
-  (cond [(empty-tree? tree) lst]
-        [else (postorder-onto (left-subtree tree) (postorder-onto (right-subtree tree) (cons (root tree) lst) ) ) ])
-  )
-(postorder-onto sample-bst '())
-
-; ==========================================================
-
-#|
-Exercise 8.6
-Suppose we want to create a new binary search tree by adding another element to
-an already existing binary search tree. Where is the easiest place to add such an
-element? Write a procedure called insert that takes a number and a binary search
-tree of numbers and returns a new binary search tree whose elements consist of the
-given number together with all of the elements of the binary search tree. You may
-assume that the given number isn’t already in the tree.
-|#
-
-
-(define (insert n tree)
-  ;is root empty? insert it with make-nonempty-tree
-  ;is curr root < n? traverse left
-  ;is root > n? traverse right
-  (cond [(empty-tree? tree) (make-nonempty-tree n '() '()) ]
-        [(> n (root tree)) (make-nonempty-tree (root tree) (left-subtree tree) (insert n (right-subtree tree))) ]
-        [else (make-nonempty-tree (root tree) (insert n (left-subtree tree)) (right-subtree tree))]
-        )
-  )
-(insert 100 sample-bst)
-
-; ==========================================================
-
-#|
-Exercise 8.7
-Using the procedure insert, write a procedure called list->bstree that takes a
-list of numbers and returns a binary tree whose elements are those numbers. Try this
-on several different lists and draw the corresponding tree diagrams. What kind of list
-gives you a short bushy tree? What kind of list gives a tall skinny tree?
-
-;im guessing 'bushy' is where the numebrs are evenly distrubuted (maybe even randomt)
-; and the tall skinny is when it's weighted/ balanced on one side (like sorted) maybe
-|#
-
-; list-of-number -> BST
-(define (list->bstree lon)
-  (cond [(empty? lon) (make-empty-tree)] ;no more number in the list, done 
-        [else (insert (car lon) (list->bstree (cdr lon)) )]
-        )
-  )
-(list->bstree '(1 2 3))
-
-
-#|
-tree having single node -> depth = 0
-emptty tree -> depth undefined
-assume all trees are nonempty
-Exercise 8.8
-Write a predicate that will return true if the root node of a tree is a leaf (i.e., the tree
-has only one node).
-|#
-
-(define (is-leaf? tree)
-  ; a tree is a leaf it its childrens left subtree is empty and its right subtree is empty
-  (and (empty-tree? (left-subtree tree))
-       (empty-tree? (right-subtree tree))
-       )
-  )
-
-#|
-Exercise 8.9
-Write a procedure that will compute the height of a tree.
-|#
-
-(define (tree-height tree)
-  ; base case: tree is a leaf, return 0
-  (cond [(is-leaf? tree) 0]
-        [else (+ 1 (max (tree-height (left-subtree tree)) (tree-height (right-subtree tree))) )  ]
-        )
-  )
-(tree-height sample-bst)
-
-#|
-Exercise 8.10
-You can also use the recurrence relatin together with induction to prove that nodes(h) = 2^h+1 - 1. do so
-
-reference from the book:
-nodes(h) = {1 if h = 0, leaves(h) + nodes(h-1) if h > 0}
-
-number of leaves = 2^h (only thw bottom row)
-
-answer:
-ok lets keep this simple
-
-BASE CASE
-h = 0 (root only)
-has a node of 1 and leaf = 1
-
-nodes(0) = 2^0+1 - 1 = 2^1 - 1 = 2 - 1 = 1
-so the base case holds true.
-
-INDUCTIVE HYPOTHESIS
-assume that for any input height of k, nodes(k) = 2^k+1 - 1 holds true
-
-INDUCTIVE STEP
-we want to show that for any input k+1, nodes(k+1) = 2^((k+1)+1) - 1 holds true
-since the height is > 0
-
-go to the else case
-leaves(h) + nodes(h-1)
-
-leaves(k+1) + nodes(k+1-1)
-leaves(k+1) + nodes(k)
-
-since we know from the previous one subtitute nodes(k)
-leaves(k+1) + 2^k+1 - 1
-
-since we know the total leaves, substitute leave
-2^k+1 + 2^k+1 - 1
-2(2^k+1) - 1
-2^1 . 2^k+1 - 1
-2^(k+1+1) - 1
-2^k+2 - 1
-|#
-
-;=================================================================================
-
-#|
-Exercise 8.11
-
-In many applications, binary trees aren’t sufficient because we need more than two
-subtrees. An m-ary tree is a tree that is either empty or has a root and m subtrees,
-each of which is an m-ary tree. Generalize the previous results to m-ary trees.
-
-answer:
-
-in binary, each node splits into 2 children (m = 2)
-in trinary, each node splits into 3 children (m = 3)
-in m-ary tree, each node splits into m children
-
-ok since we know
-compute the leaves of binary = 2^h where h is the height and 2 is the 2 possible branch
-in m-ary therefore its m^h where m is the possible branch and h is the height
-
-next total nodes
-in binary we know its 2^h+1 - 1
-and nodes_binary(h) = {1 if h = 0, leaves(h) + nodes_binary(h-1) if h > 0}
-
-in m-ary ttree change the base to m
-1 if h = 0, and m^(h+1) - 1 / m - 1
-
-|#
-
-
-#|
-Exercise 8.12
-In Exercise 8.7, you wrote a procedure list->bstree that created a binary search
-tree from a list by successively inserting the elements into the tree. This procedure
-can lead to trees that are far from minimum height—surprisingly, the worst case oc
-curs if the list is in sorted order. However, if you know the list is already in sorted order,
-you can do much better: Write a procedure sorted-list->min-height-bstree
-that creates a minimum height binary search tree from a sorted list of numbers. Hint:
-If the list has more than one element, split it into three parts: the middle element, the
-elements before the middle element, and the elements after. Construct the whole
-tree by making the appropriate recursive calls on these sublists and combining the
-results.
-
-my answer from 8.7
-(define (list->bstree lon)
-  (cond [(empty? lon) (make-empty-tree)] ;no more number in the list, done 
-        [else (insert (car lon) (list->bstree (cdr lon)) )]
-        )
-  )
-(list->bstree '(1 2 3))
-answer:
-
-|#
-
-(define (sorted-list->min-height-bstree lon)
-  (cond [(null? lon) '()]
-        [else (let* ((mid-idx (quotient (length lon) 2))
-                     (mid-val (list-ref lon mid-idx))
-                     (left (take lon mid-idx))
-                     (right (drop lon (+ mid-idx 1))))
-                (make-nonempty-tree mid-val
-                                    (sorted-list->min-height-bstree left)
-                                    (sorted-list->min-height-bstree right))
-                )] ; more than 1 element
-        )
-  )
-(sorted-list->min-height-bstree '(1 2 3 4 5 6 7 8 9))
-
-
-#|
-Exercise 8.13
-Using sorted-list->min-height-bstree and inorder (which constructs a
-sorted list from a binary search tree), write a procedure optimize-bstree that
-optimizes a binary search tree. That is, when given an arbitrary binary search tree, it
-should produce a minimum-height binary search tree containing the same nodes.
-
-answer:
-|#
-
-(define (optimize-bstree tree)
-  (sorted-list->min-height-bstree (inorder tree))
-  )
-(optimize-bstree sample-bst)
-
-#|
-Exercise 14
-Usinglist->bstreeandinorder,writeaproceduresortthatsortsagivenlist.
-answer:
-|#
-
-(define (sort lst)
-  (inorder (list->bstree lst))
-  )
-(sort '(5 6 7 0 8 9 10))
-
-; =================================
-;; EXPRESSION TREE (not a bst anymor)
-; has 3 parts: op, left operand, right operand
-; where left operand and right operand itself is a tree
-; in this case well limit to 1 operator that takes only 2 operand (binary operation)
-
-
-(define (make-constant x)
-  x
-  )
-
-(define constant? number?)
-
-(define (make-expr left-operand operator right-operand)
-  (list left-operand operator right-operand)
-  )
-
-(define left-operand car)
-(define operator cadr)
-(define right-operand caddr)
-
-(define (look-up-value name)
-  (cond [(equal? '+ name) +]
-        [(equal? '* name) *]
-        [(equal? '- name) -]
-        [(equal? '/ name) /]
-        [else (error "ERROR: Lookup not found" name)]
-        )
-  )
-
-(define (evaluate expr)
-  (cond [(constant? expr) expr]
-        [else (let ((op (look-up-value (operator expr)))
-                    (lo (left-operand expr))
-                    (ro (right-operand expr)))
-                (op (evaluate lo) (evaluate ro))
-                ) ]
-        )
-  )
-(evaluate (evaluate '(1 + (2 * (3 - 5))) ))
-
-#|
-Exercise 8.15
-In the preceding example, we’ve “cheated” by using a quoted list as the expression to
-evaluate. This method relied on our knowledge of the representation of expression
-trees. How could the example be rewritten to use the constructors to form the
-expression?
-
-
-|#
-;answer:
-(make-expr 1 '+ (make-expr 2 '* (make-expr 3 '- 5) ))
-
-;=================================================
-; prefix -> (- 3 5) -> root left right
-; infix -> (3 - 5) -> left root right
-; postfix -> (3 5 -) -> left right root
-
-(define (post-order tree)
-  
-  (define (post-order-onto tree list)
-    (if (constant? tree)
-        (cons tree list)
-        (post-order-onto (left-operand tree)
-                         (post-order-onto (right-operand tree) (cons (operator tree) list)))))
-  
-  (post-order-onto tree '())
-  
-  )
-
-(post-order '(1 + (2 * (3 - 5))))
-
-#|
-Exercise 8.16
-Define a procedure for determining which operators are used in an expression.
-
-answer:
-|#
-
-; expr -> list-of-symbols
-(define (operators expr)
-  (cond [(constant? expr) '()]
-        [else (append (list (operator expr))
-                      (operators (left-operand expr))
-                      (operators (right-operand expr)) ) ]
-        )
-  )
-(operators '(1 + (2 * (3 - 5))))
-
-
-#|
-Exercise 8.17
-Define a procedure for counting how many operations an expression contains
-answer:
-(- 1 5) -> 1 expr
-(- 1 (* 2 5)) -> 2 expr
-so each time you go down, increment the counter
-|#
-
-(define (operations expr)
-  (cond [(constant? expr) 0]
-        [else (+ 1 (operations (left-operand expr)) (operations (right-operand expr)))]
-        )
-  )
-(operations '(1 + (2 * (3 - 5)))) ;should return 3
-
-
-; ========================
-
-#|
-trie
-
-the key are spelled out by the edges/paths
-
-consists of 2 parts:
-- listof-root-values listof-subtries
-- where subtrie is itself a trie
-
-|#
-
-
-(define (make-empty-trie) '())
-
-(define (make-nonempty-trie root-values ordered-subtries)
-  (list root-values ordered-subtries)
-  )
-
-(define empty-trie? null?)
-
-(define root-values car)
-(define subtries cdr)
-
-(define (subtrie-with-label trie label)
-  (list-ref (subtries trie) (- label 2) )
-  )
-
-; PERSON
-(define (make-person name phone-number)
-  (list name phone-number)
-  )
-
-(define name car)
-(define phone-number cadr)
-
-(define (look-up-with-menu phone-trie)
-  (menu)
-  (look-up-phone-number phone-trie))
-
-(define (menu)
-  (newline)
-  (display "Enter the name, one digit at a time.")
-  (newline)
-  (display "Indicate you are done by 0.")
-  (newline))
-
-(define (look-up-phone-number phone-trie)
-  (newline)
-
-  (cond [(empty-trie? phone-trie) (display "Sorry we can’t find that name.") ]
-        [(< (number-in-trie phone-trie) 2) (display-phone-numbers (values-in-trie phone-trie))]
-        [else (let ((user-input (read)))
-                (cond [(= user-input 0) (display-phone-numbers (root-values phone-trie))]
-                      [(= user-input 1)
-                       (display-phone-numbers (values-in-trie phone-trie)) (look-up-phone-number phone-trie)]
-                      [else (look-up-phone-number (subtrie-with-label
-                                                   phone-trie
-                                                   user-input))]
-                      )
-                )]
-        )
-  )
-
-
-(define (display-phone-numbers people)
-  (define display-loop
-    (lambda(people)
-      (cond((null? people) 'done)
-           (else(newline)
-                (display(name(car people)))
-                (display"’sphonenumberis")
-                (display(phone-number(car people)))
-                (display-loop(cdr people))))))
-  (if(null? people)
-     (display "Sorrywecan’tfindthatname.")
-     (display-loop people)))
-
-
-#|
-Exercise 8.18
-Write the procedure number-in-trie that calculates the total number of values
-in a trie. Hint: In the general case, you can compute the list of numbers in the
-various subtries by using number-in-trie in conjunction with the built-in Scheme
-procedure map. The total number of values in all the subtries can then be gotten
-by applying the sum procedure from Section 7.3. Of course, you have to take into
-account the values that are at the root node of the trie.
-|#
-
-(define MT '())
-
-(define test-trie
-  (make-nonempty-trie
-   (list (make-person 'boss 1111)) ; 👤 Value right at the root node
-   (list
-    (make-nonempty-trie 
-     (list (make-person 'ben 2222)) ; 📞 Value down branch 2 (ABC)
-     (list MT MT MT MT MT MT MT MT))
-    (make-nonempty-trie 
-     (list (make-person 'dan 3333) 
-           (make-person 'eli 3334)) ; 👥 Two values sharing branch 3 (DEF)
-     (list MT MT MT MT MT MT MT MT))
-    MT MT MT MT MT MT))) ; 🌿 Branches 4 through 9 are completely empty
-
-; trie -> number
-(define (number-in-trie trie)
-  (cond [(empty-trie? trie) 0]
-        [else (+ (length (root-values trie))
-                 (foldr + 0 (map number-in-trie (subtries trie)))) ])
-  )
-(number-in-trie test-trie)
-
-
-#|
-Exercise 8.19
-Write the procedure values-in-trie that returns the list of all values stored in a
-given trie. It should be very similar in form to number-in-trie. You may find your
-solution to Exercise 7.5 on page 173 useful. In fact, if you rewrote number-in-trie
-to use Exercise 7.5’s solution in place of sum, values-in-trie would be nearly
-identical in form to number-in-trie.
-
-answer:
-|#
-
-; trie -> list-of-people
-(define (values-in-trie trie)
-  (cond [(empty-trie? trie) (make-empty-trie)]
-        [else (append (root-values trie) (foldr append '() (map values-in-trie (subtries trie))) ) ]
-        )
-  )
-(values-in-trie test-trie)
-
-
-; ====================================
-
-#|
-Exercise 8.20
-Let’s use these procedures to improve what is done in the procedure look-up
-phone-number.
-
-a. Use number-in-trie to determine if there are fewer than two values in phone
-trie and immediately report the appropriate answer if so, using values-in-trie
-and display-phone-numbers.
-
-b. Further modify look-up-phone-number so that if the user enters 1, the names
-of all the people in the current trie will be reported, but the procedure
-look-up-phone-number will continue to read input from the user. You will
-also want to make appropriate changes to menu.
-
-answer:
-|#
-
-#|
-Exercise 8.21
-Write a procedure letter->number that takes a letter (i.e., a one-letter symbol) and
-returns the number corresponding to it on the telephone keypad. For q and z use 7
-and 9, respectively. Hint: The easiest way to do this exercise is to use a cond together
-with the list membership predicate member we introduced in the previous chapter.
-
-answer:
-|#
-
-; q = 7
-; z = 9
-; ABC = 2
-; DEF = 3
-; GHI = 4
-; JKL = 5
-; MNO = 6
-; PQRS = 7
-; TUV = 8
-; WXYZ = 9
-
-; assume letter is lowercase
-(define (letter->number letter)
-  (cond [(member letter '(a b c)) 2]
-        [(member letter '(d e f)) 3]
-        [(member letter '(g h i)) 4]
-        [(member letter '(j k l)) 5]
-        [(member letter '(m n o)) 6]
-        [(member letter '(p q r s)) 7]
-        [(member letter '(t u v)) 8]
-        [(member letter '(w x y z)) 9]
-        [else (error "letter not supported")]
-        )
-  )
-
-#|
-Exercise 8.22
-To break a symbol up into a list of one-character symbols, we need to use
-some features of Scheme that we’d rather not talk about just now. The follow
-ing explode-symbol procedure uses these magic features of Scheme so that
-(explode-symbol ’ritter) would evaluate to the list of one-letter symbols
-(ritter), for example:
-
-(define (explode-symbol sym)
-  (map string->symbol
-       (map string
-            (string->list (symbol->string sym)))
-       )
-  )
-
-Use this together with letter->number to write a procedure name->labels that
-takes a name (symbol) and returns the list of numbers corresponding to the name.
-You should see the following interaction:
-(name->labels ’ritter)
-(7 4 8 8 3 7)
-
-|#
-
-(define (explode-symbol sym)
-  (map string->symbol
-       (map string
-            (string->list (symbol->string sym)))
-       )
-  )
-
-(define (name->labels name)
-  (map letter->number (explode-symbol name))
-  )
-(name->labels 'ritter)
-
-
-; ======================================
-
-(define (make-labeled-value labels value)
-  (list labels value))
-
-(define labels car)
-
-(define value cdr)
-
-#| Exercise 8.23
-Write a procedure empty-labels? that takes a labeled value and returns true if and
-only if its list of labels is empty.|#
-
-(define (empty-labels? labeled-value)
-  (empty? (labels labeled-value))
-  )
-
-; ======================================
-
-#| Exercise 8.23
-Write a procedure first-label that takes a labeled value and returns the first label
-in its list of labels.|#
-
-(define (first-label labeled-value)
-  (car (labels labeled-value))
-  )
-
-; ======================================
-
-#| Exercise 8.25
-Write a procedure strip-one-label that takes a labeled value and returns the
-labeled value with one label removed. For example, you would have the following
-interaction
-
-(define labeled-ritter
-(make-labeled-value ’(7 4 8 8 3 7)
-(make-person ’ritter 7479)))
-
-(labels (strip-one-label labeled-ritter))
-(4 8 8 3 7)
-(name (value (strip-one-label labeled-ritter)))
-ritter
-(phone-number (value (strip-one-label labeled-ritter)))
-7479
-
-|#
-
-(define labeled-ritter
-  (make-labeled-value '(7 4 8 8 3 7)
-                      (make-person 'ritter 7479)))
-labeled-ritter
-
-
-(define (strip-one-label labeled-value)
-  (make-labeled-value (cdr (labels labeled-value)) (value labeled-value) )
-  )
-(value (strip-one-label labeled-ritter))
-
-; ======================================
-
-#|Exercise 6.26
-Write a procedure value->labeled-value that takes a value (person) and re
-turns the labeled value corresponding to it. You must of course use the procedure
-name->labels|#
-
-(define person-a (make-person 'adam '1234))
-
-(define (value->labeled-value person)
-  (make-labeled-value (name->labels (name person)) person )
-  )
-(value->labeled-value person-a)
-
-
-; ======================================
-
-; Review Problems
-
-#|
-8.30
-Fill in the following definition of the procedure successor-of-in-or. This pro
-cedure should take three arguments: a value (value), a binary search tree (bst), and
-a value to return if no element of the tree is larger than value (if-none). If there is
-any element, x, of bst such that x 
-value, the smallest such element should be
-returned. Otherwise, if-none should be returned.
-
-|#
-
-(define (successor-of-in-or value bst if-none)
-  (cond [(empty-tree? bst) if-none]
-        [(<= (root bst) value) (successor-of-in-or value (right-subtree bst) if-none)]
-        [else (successor-of-in-or value (left-subtree bst) (root bst))]
-        )
-  )
-
-; ============================================
-#|
-Exercise 8.31
-Write a procedure that takes as arguments a binary search tree of numbers, a lower
-bound, and an upper bound and counts how many elements of the tree are greater
-than or equal to the lower bound and less than or equal to the upper bound. Assume
-that the tree may contain duplicate elements. Make sure your procedure doesn’t
-examine more of the tree than is necessary
-|#
-
-;answer:
-;bst number number -> number
- 
-; counts how many element x >= lb & <= ub
-(define (fun bst lb ub)
-  (cond [(empty-tree? bst) 0]
-        [(< (root bst) lb) (fun (right-subtree bst) lb ub) ] ; go right
-        [(> (root bst) ub) (fun (left-subtree bst) lb ub)] ; go left
-        [else (+ 1 (fun (left-subtree bst) lb ub) (fun (right-subtree bst) lb ub) )]
-        )
-  )
-(fun sample-bst 1 5)
-
-
-
-; ============================================
-
-#|
-Exercise 8.32
-Write a procedure that takes as arguments a binary search tree of numbers, a lower
-bound, and an upper bound and returns an ordered list of those elements of the tree
-that are greater than or equal to the lower bound and less than or equal to the upper
-bound. Assume that the tree may contain duplicate elements. Use the technique of
-an “onto” parameter to avoid unnecessary appending of lists, and make sure your
-procedure doesn’t examine more of the tree than is necessary
-
-  v1
-  (cond [(empty-tree? bst) '()]
-        [(< (root bst) lb) (fun2 (right-subtree bst) lb ub) ] ; go right
-        [(> (root bst) ub) (fun2 (left-subtree bst) lb ub)] ; go left
-        [else (append (fun2 (left-subtree bst) lb ub)
-                      (list (root bst))
-                      (fun2 (right-subtree bst) lb ub)  )]
-        )
-|#
-
-(define (fun2 bst lb ub)
-
-
-  (define (helper tree acc)
-    (cond [(empty-tree? tree) acc]
-          [(< (root tree) lb) (helper (right-subtree tree) acc)]
-          [(> (root tree) ub) (helper (left-subtree tree) acc)]
-          [else (helper (left-subtree tree) (cons (root tree)
-                                                   (helper (right-subtree tree) acc)))]
-          )
+; BASE MESSAGE PASSING LOGIC
+(define (sequence-from-to low high)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (> low high)]
+                [(equal? op 'head) low]
+                [(equal? op 'tail) (sequence-from-to (+ 1 low) high)]
+                [(equal? op 'sequence-length) (if (> low high) 0 (+ (- high low) 1)) ]
+                [else (error "Invalid operator")]
+                )
     )
-  (helper bst '())
-  
   )
-(fun2 sample-bst 1 5)
 
+(define seq-1 (sequence-from-to 3 100))
+(seq-1 'head) ;3
+(seq-1 'sequence-length) ;98
+((seq-1 'tail) 'head) ;4
+
+; SELECTORS
+(define (head sequence)
+  (sequence 'head)
+  )
+(define (tail sequence)
+  (sequence 'tail)
+  )
+(define (empty-sequence? sequence)
+  (sequence 'empty-sequence?)
+  )
+(define (sequence-length sequence)
+  (sequence 'sequence-length)
+  )
 
 #|
-(define (post-order tree)
-  
-  (define (post-order-onto tree list)
-    (if (constant? tree)
-        (cons tree list)
-        (post-order-onto (left-operand tree)
-                         (post-order-onto (right-operand tree) (cons (operator tree) list)))))
-  
-  (post-order-onto tree '())
-  
-  )
+Exercise 9.1
+
+As is evident from the the output given above, we would be better able to check our
+procedures if we could easily display the sequences we construct. Instead of writing
+an ADT display procedure for sequences, an easier approach is to write a procedure
+sequence->list that converts a sequence to the corresponding Scheme list, which
+can then be directly displayed. Write this procedure, accessing the sequence only
+through the interface procedures head, tail,andempty-sequence?.
+
+answer:
+
 |#
 
+; sequence -> list
+(define (sequence->list sequence)
+  (cond [(empty-sequence? sequence) '()]
+        [else (cons (head sequence) (sequence->list (tail sequence)))]
+        )
+  )
+(sequence->list seq-1)
+
+#|
+Exercise 9.2
+
+The sequences we just described are restricted to consecutive increasing sequences
+of integers (more precisely, to increasing arithmetic sequences where consecutive
+elements differ by 1). We can easily imagine similar but more general sequences
+such as 6,5,4,3,2 or 5,5.1,5.2,5.3,5.4,5.5—in other words, general arithmetic
+sequences of a given length, starting value, and increment (with decreasing sequences
+having a negative increment value).
+
+a.  Write a procedure sequence-with-from-by that takes as arguments a length,
+a starting value, and an increment and returns the corresponding arithmetic se
+quence. Thus, (sequence-with-from-by 5 6-1) would return the first and
+(sequence-with-from-by 6 5 .1) would return the second of the two pre
+ceding sequences. Remember that sequences are represented as procedures, so
+your new sequence constructor will need to produce a procedural result.
+
+b. The procedure sequence-from-to can now be rewritten as a simple call to
+sequence-with-from-by. The original sequence-from-to procedure made
+an empty sequence if its first argument was greater than its second, but you
+should make the new version so that you can get both increasing and de
+creasing sequences of consecutive integers. Thus, (sequence-from-to 3 8)
+should return 3,4,5,6,7,8, whereas (sequence-from-to 5 1) should return
+5, 4, 3,2,1.
+
+c. Write a procedure sequence-from-to-with that takes a starting value,
+an ending value, and a length and returns the corresponding arithmetic
+sequence. For example, (sequence-from-to-with 5 11 4) should return
+5, 7, 9,11.
+
+answer:
+
+|#
+
+; a sequence is a procedure that takes an operator
+; PART A
+(define (sequence-with-from-by len start-val increment-val)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (zero? len)] ;just check if length is 0, assuming len is posint
+                [(equal? op 'head) start-val]
+                [(equal? op 'tail) (sequence-with-from-by (- len 1) (+ start-val increment-val) increment-val ) ]
+                [(equal? op 'sequence-length) len]
+                [else (error "Invalid operator")]
+                )
+    )
+  )
+(sequence-with-from-by 5 6 -1) ;(6 5 4 3 2)
+(sequence-with-from-by 6 5 .1) ;(5.0 5.1 5.2 5.3 5.4 5.5)
+
+; PART B
+(define (sequence-from-to-v2 low high)
+  (if (< low high)
+      ; increaseing
+      (sequence-with-from-by (+ (abs (- low high)) 1) low 1 )
+      ; decreasing
+      (sequence-with-from-by (+ (abs (- low high)) 1) low -1)
+      )
+  )
+(sequence-from-to-v2 3 8) ;'(3 4 5 6 7 8)
+(sequence-from-to-v2 5 1) ;'(5 4 3 2 1)
+
+(sequence->list (sequence-from-to-v2 3 8))
+(sequence->list (sequence-from-to-v2 5 1))
+
+; PART C
+(define (sequence-from-to-with start-val end-val len)
+  (sequence-with-from-by len start-val (/ (- end-val start-val) (- len 1)) )
+  )
+(sequence->list (sequence-from-to-with 5 11 4))
+
+; ============
+
+(define (list->sequence lst)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (null? lst)]
+                   [(equal? op 'head) (car lst)]
+                   [(equal? op 'tail) (list->sequence (cdr lst))]
+                   [(equal? op 'sequence-length) (length lst)]
+                   [else (error "illegal sequence operation" op)]
+                   )
+    )
+  )
+
+#|
+Exercise 9.3
+Use list->sequence to write a procedure empty-sequence that takes no argu
+ments and returns an empty sequence.
+
+answer:
+
+|#
+(define (empty-sequence)
+  (list->sequence '())
+  )
+
+; ================================
+
+#|
+Exercise 9.4
+Onedisadvantage with the preceding version of list->sequence is that the Scheme
+procedure length normally has linear complexity in the list’s length (unless the
+version of Scheme you use does something like the trick we will now describe that
+reduces sequence-length to constant complexity).
+
+a.  Modify list->sequence so that it has a let expression that computes the list’s
+length once at sequence construction time and then uses that value when asked
+for the sequence’s length.
+b. The problem with the solution in part a is that the tail’s length is computed each
+time you return the tail. Because the complexity of calculating a list’s length is
+proportional to the length, if you do the equivalent of cdring down the sequence,
+the resulting complexity is quadratic in the list-sequence’s length, certainly an
+undesirable consequence.
+
+
+
+
+|#

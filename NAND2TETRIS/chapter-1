@@ -416,3 +416,62 @@ CHIP DMux8Way {
 }
 
 BUILT IN CHIPS
+
+======================
+
+ALU
+zero the value
+invert the zero
+the coice -> depend on nx
+
+CHIP ALU {
+    IN  
+        x[16], y[16],  // 16-bit inputs        
+        zx, // zero the x input?
+        nx, // negate the x input?
+        zy, // zero the y input?
+        ny, // negate the y input?
+        f,  // compute (out = x + y) or (out = x & y)?
+        no; // negate the out output?
+    OUT 
+        out[16], // 16-bit output
+        zr,      // if (out == 0) equals 1, else 0
+        ng;      // if (out < 0)  equals 1, else 0
+
+    PARTS:
+    // handle x
+    Mux16(a= x, b= false, sel= zx, out= zxout); //zero
+    Not16(in= zxout, out= notzxout); //invert
+    Mux16(a= zxout, b= notzxout, sel= nx, out= nxout); //negate
+
+    // process y
+    Mux16(a= y, b= false, sel= zy, out= zyout); //zero
+    Not16(in= zyout, out= notzyout); //invert
+    Mux16(a= zyout, b= notzyout, sel= ny, out= nyout); //negate
+
+    // op/functions - sum or bitwise operation
+    // f = 1 -> add
+    // f = 0 -> bitwise
+    Add16(a= nxout, b= nyout, out= addxy);
+    And16(a= nxout, b= nyout, out= andxy);
+    Mux16(a= andxy, b= addxy, sel= f, out= fout);
+
+    // negate output
+    Not16(in= fout, out= nfout);
+    Mux16(a= fout, b= nfout, sel=no , out= out,
+    out[0..7] = low8, out[8..15] = high8, out[15] = ng);
+
+    Or8Way(in = low8, out= low8out);
+    Or8Way(in = high8, out= high8out);
+    Or(a= low8out, b= high8out, out= orzr);
+    Not(in= orzr, out= zr);
+    
+}
+
+
+=========================
+Multiplexer is just like if/else statement
+in software
+- if/ese evals condition first, then executes only the chosen path
+- both options are powered by circuits
+we cant use code coz low architecutre level, must be translated into physical hardware
