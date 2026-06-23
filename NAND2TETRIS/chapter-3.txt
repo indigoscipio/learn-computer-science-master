@@ -14,3 +14,91 @@ it is a discrete repsentation - it is atomic and indivisible
 why use this? electricity flow through loic gates dont 'snap' into perfect binay balues
 it takes time to travel, and during this time signals bounce chaotically.
 
+shorter cycle = more snapshot we take per second
+
+UNIVERSAL MASTER CLOCK
+hides the messy delay of physical electricity
+
+computer knows how to take a snapshot because of edge triggering
+instead oflooking wheter its 0 or 1 -> take when electricity changes from  a 0 to 1
+in microsecond - this creates a discrete continous timeline
+the clock signal is stable
+
+QUARTS CRYSTAL - THE HEARTBEAT ♥
+it vibrates when appliled elecrticity
+
+=============================
+
+flip flops
+DFF
+is a single bit time capsule
+
+what does it do?
+input : 0 or 1 -> lock -> the moment clock cycle transition
+it unlocks, pushes the input to output
+DFF right now = DFF one cycle ago
+
+why it matters? why use this?why do we need this?
+to remember stuff, computer needs to remember current state
+this is the basic ingredient of RAM
+
+exmape
+CC1 in=1 out=undef (no history)
+CC2 in=0 out=1 -> from prev
+CC2 in=1 out=0 -> from prev
+repeat...
+
+=============================
+
+Combinational & SEQ Logic
+
+time-dependent (combinational) chips -> only captures current cycle, doesn't remember stuff
+
+seq/clocked chips -> remember time/stuff
+its made from a mix of DFF + combinational chips
+
+challenge -> x + y
+x = register
+y = ram register
+signals arrive at different time
+but combinational doesn't care about time it just adds up whatever arives
+
+but we dont care - computer clock speed cant be guessed
+this way guaranteed by end of CC, ALU output is valid
+electricity travel slow but ALU fast = bottle neck
+to solve this we invented cpu cache - just store it instead of traveling back an dforth
+
+
+=============================
+
+SPECIFICATIONS
+
+DFF
+the output is the previous input
+out(t) = input(t-1)
+
+
+Registers
+bit -> 1bit
+Register -> 16bit
+
+store single bit of information - 0 or 1 overtime
+major flaw of 1bit register -> it just blindly stores whatever the current state
+need to be 'smarter' -> add input called 'load'
+
+load = 0 -> guard blocks, ignore whatever new data is sitting on theinput, safelty
+displays current out cycle after cycle
+load = 1 -> ope, look at input, after clock cycle transitions, replaces new bit and upate
+
+
+RAM
+just aggregate of n register chips
+instant access time
+
+PC (Program Counter)
+
+DFF is made from loops of nand gates
+holding/latching the value even if its already outputted
+latch keeps changing every microsecond -> tehter to master clock so its no random
+and changes every clock transitions
+
