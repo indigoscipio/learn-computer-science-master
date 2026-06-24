@@ -101,4 +101,29 @@ DFF is made from loops of nand gates
 holding/latching the value even if its already outputted
 latch keeps changing every microsecond -> tehter to master clock so its no random
 and changes every clock transitions
+latch react instangly -> needs control
 
+
+=================
+
+IMPLEMENTATION
+DFF -> primitive
+Register
+
+out(t+1) = in (t)
+
+1bit
+MUX + DFF
+mux before dff to act as valve switch
+load = 0 -> loop -> send back as input
+laod = 1 -> switch input wire, overwrite old memory
+
+16bit
+in[0] -> first Bit
+in[1] -> second, etc
+
+load = 1 -> all gates open
+
+-----
+
+RAM
