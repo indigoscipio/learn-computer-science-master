@@ -127,3 +127,38 @@ load = 1 -> all gates open
 -----
 
 RAM
+use DMUX dependingo n the load
+
+PC
+16bit register that holds current instruction address
+incrementer
+mux (funnel)
+
+
+write (input)
+load 1 -> deliver to only 1 specific, other 7 should stay locked
+
+
+read (ouptut)
+need to find away to grab output of just one and pipe it to final ouput
+
+RAM64
+large storage containing 8 seperate apartment building
+each building is a RAM8 chip
+each bulding contains 8 individual rooms (registers)
+8*8 = 64
+
+16bit data -> broadcasted to every single building
+room selector[0..2] -> broadcasted to every building
+building selector[3..5]
+DMUX8way -> master gatekeeper, sends active 'load' signal only
+to that one specific building, all other building receive a 0
+
+ok so what dmux is doing is it only ports load to a selected building
+and the remaining building receives 0 signal
+
+at the end (Mux phase)
+and at the end when we do a Mux we port it back from all building to outoupt
+
+Room (register) -> can only hold 1 16bit number
+building (RAM8) -> apartment block -> brings 8 locks under one roof
