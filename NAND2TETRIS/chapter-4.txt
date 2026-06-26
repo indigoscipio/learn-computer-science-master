@@ -1,0 +1,33 @@
+Machine Language
+
+
+
+high level code
++ optimized for readability
++ made for humans
+
+low level code
++ made for machines
++ hardware meets software directly, no abstraction
++ performed in silicon
++ modifies electrical pathways
+
+
+RAM -> slow
+CPU -> fast
+Register (inside CPU) -> fastest
+
+=======================================
+
+Languages
+symbolic machine language -> assembly
+10011011 -> translate -> R1, Add, etc
+
+
+
+=======================================
+A and M
+a -> address register
+holds 16bit value that holds a location
+m -> selected memory slot
+content of ram at the address currently loaded into A
