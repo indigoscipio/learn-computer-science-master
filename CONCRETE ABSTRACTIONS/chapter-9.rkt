@@ -258,3 +258,83 @@ answer:
 
 ; ================================================
 
+#|
+Exercise 9.6
+
+Write the sequence constructor sequence-map, that outwardly acts like the list
+procedure map. However unlike map, which applies the procedural argument to all
+the list elements, sequence-map should not apply the procedural argument at all
+yet. Instead, when an element of the resulting sequence (such as its head) is accessed,
+that is when the procedural argument should be applied.
+
+answer:
+|#
+
+; x->y x sequence -> sequence
+(define (sequence-map f seq)
+  (λ (op) (cond [(equal? op 'empty-sequence?) (empty-sequence? seq)]
+                [(equal? op 'head) (f (head seq))]
+                [(equal? op 'tail) (sequence-map f (tail seq))]
+                [(equal? op 'sequence-length) (sequence-length seq)]
+                [else (error "illegal sequence operation" op)]
+                )
+    )
+  )
+(sequence-map sqr (list->sequence-v3-master '(1 2 3 4 5)))
+
+
+; ================================================
+
+;9.3 - commonality
+
+#|
+Exercise 9.7
+
+Write a procedure list->tagged-list that takes a list of untagged elements and
+a type and returns the corresponding list where each element has been tagged by
+the given type tag. Thus, if movies is a list of movie records, you can define a
+(symbolically) tagged list of movie records by evaluating:
+
+
+(define tagged-movies
+  (list->tagged-list movies 'movie))
+|#
+(define items '(item1 item2 item3))
+(define movies '(movie1 movie2 movie3))
+
+(define (list->tagged-list list type)
+  (map (λ (item) (cons type item)) list)
+  )
+
+(define tagged-movies
+  (list->tagged-list movies 'movie))
+tagged-movies
+
+; ================================================
+
+
+#|
+Exercise 9.8
+In the course of integrating databases, some of the operations that seem analogous
+between types might have some annoying differences. For example, suppose that the
+movie directors and actors have their names stored as lists with the family names last,
+whereas for books and CDs the authors’ and artists’ names are stored with family
+names first. Suppose that you decide for consistency’s sake and ease of display to
+have all of the generic procedures return the names with the family name last.
+
+a. Write a procedure family-name-last that takes a name (as a list of symbols)
+with family name first and returns the corresponding list with family name last.
+b. Use family-name-last to write a generic operation creator that returns the
+name with the family name last in all cases.
+
+answer:
+
+|#
+
+; PART A
+(define (family-name-last xs)
+  0
+  )
+
+; PART B
+(define (family-name-last ..))
