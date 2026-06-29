@@ -31,3 +31,63 @@ a -> address register
 holds 16bit value that holds a location
 m -> selected memory slot
 content of ram at the address currently loaded into A
+
+symbolic language = intersection of machine language and human language
+the one that translates
+lowest level, lowest above machine laguage
+
+=======================================
+
+data memory (RAM)
+instruction memory (ROM) -> step by step code, read only.
+
+register: manipualte 3 things
+- data register (D) 
+- address register (A)
+- selected data memor register (M)
+
+D -> store 16bit val
+A -> address and data register
+M -> data value inside the RAM slot (not the address itself)
+contents of the ramslot currently pointed to by a
+
+A is the ptr address
+M is the *ptr
+
+@5 -> A = 5
+D = M -> D = *A
+
+@xxx -> takes xx and drop this into th A register
+does 2 things - split into 2
+computer has no idea, prepares you for this
+1. ram register whose address is xxx is the selected memreg
+2. makes value of the ROM register hose adress is xxx the selected instruction
+
+(ram pathway)
+M = D
+D = M
+
+ROM PATHWAY
+
+
+@5
+D = A -> treated as a value
+
+@5
+D = M -> treated as memory address
+
+
+=======================================
+
+JUMPING
+@29
+0;JMP
+
+@ does 3 things
+- load contant (puts value to iregister A)
+- RAM pointer (tells cpu mem which memory box M should point to, @100 -> M = RAM[100])
+
+C instruction
+- comp - wht math should ALU do
+- dest - where should we save result
+- jump - where to go next
