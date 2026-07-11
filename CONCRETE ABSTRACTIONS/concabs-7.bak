@@ -453,4 +453,324 @@ increasing order. Write this procedure.
 b.  Using in-order?, write a procedure shuffle-number that, when passed a pos
 itive integer n, returns the shuffle-number for n. You should start off with an
 ordered deck of size n and repeatedly shuffle until the deck is in order.
+
+answer:
+|#
+
+
+(define (in-order? xs)
+  ; check if curr item is greater than the previous
+  ; ifso, move and keep checking
+  ; else return false
+  (cond [(null? xs) #t] ; no more item to check; allin correct order
+        [(null? (cdr xs)) #t] ; lastone on the list
+        [else (let ((curr (car xs))
+                    (next (cadr xs))
+                    (rest (cdr xs))
+                    )
+                (and (< curr next)
+                    (in-order? rest))
+                    
+                )]
+
+        )
+  )
+(in-order? '(1 2 3 4 5))
+
+
+; PART B
+; xs number -> xs
+(define (shuffle deck size)
+  (let ((half (quotient (+ size 1) 2)))
+    (zip (take deck half) (drop deck half))))
+(shuffle '(1 2 3 4 5 6 7 8) 8)
+
+
+; number -> number
+(define (shuffle-number n)
+  (let* ((original-deck (range 1 (+ 1 n)))
+        (original-shuffled-deck (shuffle original-deck n))
+        ) ;create var for orignal deck
+    (define (loop deck count)
+      (cond [(in-order? deck) count] ;base case: deck is in order
+            [else (loop (shuffle deck n) (+ 1 count)) ] ; else keep shuffling and increase the count
+            )
+      )
+    (loop original-shuffled-deck 1)
+    )
+  
+  )
+(shuffle-number 52)
+
+; ======================================================
+
+#|
+Exercise 7.12
+Throughout this section on perfect shuffles, we’ve been passing in the size of the
+deck as well as the list representing the deck itself in order to avoid computing the
+length of the list when we already knew it. Another approach would be to create a
+new compound data type for decks, with two selectors: one to get the list of elements
+and the other to get the length. That way we could pass in just a single thing,
+the deck, but could still find the length without counting. Flesh out the remaining
+details of this idea, implement it, and try it out.
+
+answer:
+
+a deck is a pair
+(cons deck length)
+;interpretation list of deck and length of deck
+;example (cons '(1 2 3 4) 4)
+
+
+|#
+
+; CONSTRUCTOR
+; number -> pair-of deck number
+(define (make-deck deck)
+  (cons deck (length deck))
+  )
+
+; SELECTORS
+(define (deck-length deck)
+  (cdr deck)
+  )
+
+
+(define (deck-content deck)
+  (car deck)
+  )
+
+
+; ======================================================
+
+#|
+Exercise 7.13
+The procedure map is extraordinarily handy for creating lists of all sorts. Each of the
+following problems can be solved by using map.
+
+a.  Write a procedure that, when given a positive integer n, returns a list of the first
+n perfect squares
+b. Write a procedure that, when given a positive integer n, returns a list of the first
+n even integers.
+c.  Write a procedure called sevens that, when given a positive integer n, returns a
+list of n sevens. For example
+ (sevens 5)
+(7 7 7 7 7)
+
+d.  Write a procedure that, when given a list of positive integers, returns a list of lists
+of integers. Each of these lists should be the positive integers from 1 to whatever
+was in the original list. For example,
+
+(list-of-lists '(1 5 3))
+((1) (1 2 3 4 5) (1 2 3))
+
+answer:
+|#
+
+; PART A
+; returns the list of the first n perfect squares given a positive integer n
+(define (fun1 n)
+  (map sqr (range 1 (+ n 1)))
+  )
+(fun1 10) (fun1 1)
+
+
+; PART B
+; idontthink we even need mapforthis
+(define (fun2 n)
+  (range 2 (*(+ n 1) 2) 2) 
+  )
+(fun2 10)
+
+(define (fun2b n)
+  (map (λ (x) (* x 2)) (range 1 (+ n 1)))
+  )
+(fun2b 3)
+
+
+; PART C
+(define (sevens n)
+  (map (λ (x) 7) (range 1 (+ n 1)))
+  )
+(sevens 1)
+
+
+; PART D
+(define (list-of-lists xs)
+  (map (λ (n) (range 1 (+ n 1)) ) xs)
+  )
+(list-of-lists '(0))
+
+
+
+
+; =================================================================
+
+; Exercise 7.14
+; Even though map is built into Scheme, it is a good exercise to write it yourself. Do so.
+
+;; my-map: [x -> y] list-of-x -> list-of-y
+(define (my-map f xs)
+  (cond [(null? xs) '()]
+        [else (cons (f (car xs)) (my-map f (cdr xs)))]
+        )
+  )
+(my-map sqr '(1 2 3 4 5))
+
+
+; =================================================================
+
+
+
+; 7.4
+; adds x to the every end of the list xs
+(define (add-to-end x xs)
+  (cond [(null? xs) (cons x xs)] ; list is empty, just cons it with the empty list
+        [else (cons (car xs) (add-to-end x (cdr xs)))])
+  )
+(add-to-end 3 '(1 2))
+(add-to-end 1 '())
+
+
+(define (my-reverse xs)
+  (cond [(null? xs) '()]
+        [else (add-to-end (car xs) (my-reverse (cdr xs)) )]
+        )
+  )
+(my-reverse '())
+(my-reverse '(1))
+(my-reverse '(1 2))
+(my-reverse '(1 2 3 4 5))
+
+(define (my-reverse2 xs)
+  (define (loop lst result)
+    (cond [(null? lst) result]
+          [else (loop (cdr lst) (cons (car lst) result))])
+    )
+  (loop xs '())
+  )
+(my-reverse2 '(1 2 3 4 5))
+
+#|
+first take 1 and put it to the end of the list.
+new list = 2 3 4 5 1
+next take 2 and put it to the end of the list
+new list = 3 4 5 1 2
+
+|#
+
+; TREE LIST RECURSION
+
+; example 1 : Merge Sort
+; merge-sort : the main function that sorts the unsorted list
+; merge: takes two sorted list and glue it to produce larger sorted list.
+; divide list into half -> can use either even/odd technique or just split in half with take and drop
+
+
+; Example 2: partition/change combinatoric problem
+; 2 branching possibilies -> take it vs leave it.
+
+
+#|
+Exercise 7.15
+What values should be returned in each of these cases? Using your answer, finish
+writing the procedure count-combos
+
+(definecount-combos
+(lambda(prize-listamount)
+.
+.
+.
+(+(count-combosprize-list(-amount(carprize-list)))
+(count-combos(cdrprize-list)amount))))
+|#
+
+(define (count-combos prize-list amount)
+  (cond [(equal? amount 0) 1] ; used our amount perfectly
+        [(null? prize-list) 0] ; prize list is empty, nothing else to pick - return the count.
+        [(< amount 0) 0] ; amount <= 0, overspent;
+        [else (+ (count-combos prize-list (- amount (car prize-list)))
+                 (count-combos (cdr prize-list) amount))]; else, keep exploring the branch
+
+        )
+  )
+(count-combos '(5 3 1 1) 10)
+
+
+#|
+
+Exercise 7.16
+Which representation is best? Why? Can you think of any other, better way of
+representing the data? Think about what the corresponding procedures would look
+like as well as entering the data.
+
+
+using pairs -> can represent the (item . quantity) -> less recursive call. take can be more complex
+flat list -> simpler, more recursive call. take is only yes or no
+
+
+
+|#
+
+
+#|
+
+Exercise 7.17
+
+Write the procedure that would generate the list needed for count-combos given
+the data in Table 7.1. Check to see that there really are 1778 possible combinations
+of prizes that are worth 10 tickets.
+|#
+
+(count-combos '(1 1 2 2 2 2 3 3 3 4 4 4 5 5 5 5 6 6 6 7 7 7 7 8 8 9 9 9 10 10 10 10 10 10 10 10 10 ) 10)
+
+
+#|
+
+Exercise 7.18
+One of our children has learned that he doesn’t need to spend all of his tickets
+because he can save them up for his next trip. Thus, instead of finding the number
+of combinations that he can get with one particular amount he would like to know
+the number of combinations that he can get for any amount that is less than or equal
+to the number of tickets he has. Write a procedure that is given a prize list and a
+maximum amount and returns the number of combinations of prizes that you can
+buy using no more than than the maximum amount of tickets.
+
+answer:
+|#
+
+; given a number of tickets, how mayn ways can i spend at most n tickets?
+; number -> number
+(define (ways-to-spend prize-list max-amt)
+  (cond [(zero? max-amt) 1]
+        [else  (+ (count-combos prize-list max-amt) (ways-to-spend prize-list (- max-amt 1)) ) ])
+  )
+(ways-to-spend '(1 2 3 3 3) 0)
+
+
+
+#|
+Eercise 7.21
+Asimilar problem to this is to imagine that you have an unlimited amount of quarters,
+dimes, nickels, and pennies and that you need to come up with a combination of
+these coins to make a certain amount. How many different ways can you do this?
+Write a procedure that will count the number of ways to make change for a given
+amount using only quarters, dimes, nickels, and pennies.
+
+answer:
+|#
+
+(count-combos '(1 5 10 25) 15)
+
+; =====================================================
+
+(define (make-movie title director year-made actors)
+  (list title director year-made actors))
+(define movie-title car)
+(define movie-director cadr)
+(define movie-year-made caddr)
+(define movie-actors cadddr)
+
+#|
+Exercise 7.22
 |#

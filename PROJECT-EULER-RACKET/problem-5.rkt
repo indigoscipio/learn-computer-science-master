@@ -39,10 +39,8 @@ V2, with LCM recursio
   )
 |#
 
-#|
-V3: using foldl + LCM
+
 (define (smallest-mult-n n)
   (foldl (λ (curr-fact acc) (lcm acc curr-fact) ) 1 (range 1 (+ n 1)))
   )
 (smallest-mult-n 20)
-|#

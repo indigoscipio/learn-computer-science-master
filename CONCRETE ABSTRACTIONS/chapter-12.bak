@@ -1,0 +1,966 @@
+#lang racket
+
+; Chapter 12
+
+; MEMO VER
+(define (memoized-walk-count n)
+  (let ((table (make-vector n)))
+    
+    (define  (walk-count n)
+      (cond ((= n 0) 1)
+            ((= n 1) 1)
+            (else (+  (walk-count-subproblem (- n 1))
+                      (walk-count-subproblem (- n 2))))))
+
+    (define (walk-count-subproblem n)
+      (ensure-in-table! n)
+      (vector-ref table n)
+      )
+
+    ; store all #fs into table initially
+    ; if there is a value change it to nonflase
+    (define (ensure-in-table! n)
+      (if (vector-ref table n)
+          'done
+          (store-in-table! n)
+          )
+      )
+
+    (define (store-in-table! n)
+      (vector-set! table n (walk-count n))
+      )
+
+    (vector-fill! table #f)
+    (walk-count n)
+    )
+  )
+(memoized-walk-count 9)
+
+; DP VER
+(define (dp-walk-count n)
+  (let ((table (make-vector n)))
+    
+    (define  (walk-count n)
+      (cond ((= n 0) 1)
+            ((= n 1) 1)
+            (else (+  (walk-count-subproblem (- n 1))
+                      (walk-count-subproblem (- n 2))))))
+
+    (define (walk-count-subproblem n)
+      (vector-ref table n)
+      )
+
+    (define (store-into-table! n)
+      (vector-set! table n (walk-count n)))
+
+    (define (store-into-table-from! start)
+      ; does store-into-table! for values from start through n-1
+      (if (= start n)
+          'done
+          (begin (store-into-table! start) ;store curr
+                 (store-into-table! (+ 1 start)) ;store next one
+                 )
+          )
+      )
+
+    (store-into-table-from! 0) ;cache
+    (walk-count n) ;start
+    
+    )
+  )
+
+#|
+Exercise 12.2
+Make a list of the parts of memoized-walk-count and dp-walk-count that are
+identical and a list of those that are different.
+
+answer:
+
+identical:
+- walk count
+- table both same
+- store into table, both stores walk-count curr result
+
+diffrent:
+- walk-count-subproblem: in DP it doesn't check ensure in table like in MEMO
+- MEMO doesn't have store-into-table-from!
+- DP doesn't need ensure in table
+
+DP vs MEMO
+DP
+- more 'smarter', eg for 4th step,
+the result from prev is already there (no check for ensure-table thing), alreayd guaranteed
+
+MEMO
+- more manual?
+- to comput curr reult needs result from prev, when it needs it gets the value
+
+|#
+
+
+#|
+exercise 12.1
+Write the procedure vector-fill!
+|#
+
+;sample vector
+(define my-vect (make-vector 10))
+
+; note vector is 0 indexed
+(define (my-vector-fill! vect value)
+  (let ((vect-len (vector-length vect)))
+
+    (define (helper i)
+      (cond [(>= i vect-len) vect]
+            [else (begin (vector-set! vect i value)
+                         (helper (+ i 1)))
+                  ]
+            )
+      )
+    (helper 0)
+    
+    )  
+  )
+(my-vector-fill! my-vect #t)
+my-vect
+
+#|
+Exercise 12.3
+Compute by hand the value of (walk-count 10) (i.e., F11).
+
+(define  (walk-count n)
+      (cond ((= n 0) 1)
+            ((= n 1) 1)
+            (else (+  (walk-count-subproblem (- n 1))
+                      (walk-count-subproblem (- n 2))))))
+
+
+(walk-count 10)
+
+yeah iwont compute these every little deatil bt ill answer in big picture
+
+first
+n=10
+n=0? false
+n=1? false
+compute the two walk-count-subproblems
+(+  (walk-count-subproblem 9) (walk-count-subproblem 8))
+
+second
+(walk-count-subproblem 9) and (walk-count-subproblem 8)
+
+inside 9
+(walk-count-subproblem 9) -> (+ (walk-count-subproblem 8) (walk-count-subproblem 7))
+
+inside 8
+(walk-count-subproblem 8) -> (+ (walk-count-subproblem 7) (walk-count-subproblem 6) )
+
+until eventually these reach the base case (n=0 or n=1)
+then from there the + computes the sum to unwrap the recursion
+
+alternatively
+f1 = 1
+f2 = 2
+f3 = 2
+f4 = 3
+f5 = 5
+
+|#
+
+#|
+
+(define (choose n k)
+  (cond ((= n k) 1)
+        ((= k 0)1)
+        (else (+ (choose (- n 1) (- k 1))
+                 (choose (- n 1) k)))))
+
+C(4,2)
+n = total pool (no. of objects/players available to choose from)
+k = target size (no. of obejcts/players you need to select for subteam)
+
+C(4,2)
+pick curr person -> (n-1, k-1) -> (3, 1)
+skip curr -> (n-1, k) ->  (3, 2)
+
+C(3, 1)
+- C(2,0) -> 1
+- C(2,1) -> C(1,1) -> C(0,0) and C(1,0) ->
+
+...
+
+|#
+
+
+
+#|
+Assume that these procedures are
+specified by the following definitions:
+(define make-table
+(lambda (number-of-rows number-of-columns)
+...))
+(define table-ref
+(lambda (table row column)
+...))
+(define table-set!
+(lambda (table row column value)
+...))
+(define table-height
+(lambda (table)
+...))
+(define table-width
+(lambda (table)
+...))
+
+Exercise 12.6
+Using these procedures, write
+a.  A procedure called table-fill! that takes a table and an element and sets every
+entry in the table to the given element. For example, (table-fill! table 0)
+would have a similar effect to that of zero-out-vector! in Section 11.6.
+
+b. A procedure called display-table that nicely displays its table parameter.
+
+answer:
+|#
+
+#|
+12.7 Write the procedure table-set!
+|#
+
+
+(define (from-to-do start stop body)
+  (if (> start stop)
+      'done
+      (begin (body start)
+             (from-to-do (+ 1 start) stop body))))
+
+(define (make-table r c)
+  (let ((table (make-vector r)))
+    (from-to-do 0 (- r 1)
+                (lambda (i)
+                  (vector-set! table i (make-vector c))))
+    table))
+(define sample-table (make-table 3 3))
+
+
+(define (table-set! table row col value)
+  (let* ((r (vector-ref table row))
+        (c (vector-ref r col))
+        )
+    (vector-set! r col value)
+    )
+  )
+(table-set! sample-table 0 2 2)
+sample-table
+
+#|
+12.8
+Write the procedures table-height and table-width. Each of these should take
+a table as a parameter and return the number of rows or columns in that table.
+|#
+
+(define ( table-ref table row col)
+    (vector-ref (vector-ref table row) col))
+
+
+(define (table-height table)
+  (vector-length table)
+  )
+;(table-height sample-table)
+
+(define (table-width table)
+  (vector-length (vector-ref table 0))
+  )
+;(table-width sample-table)
+
+; PART A
+(define (table-fill! table x)
+  ; for each row just map every col and change the value
+  (let ((row (table-height table))
+        (col (table-width table))
+        )
+    (from-to-do 0 (- row 1) (λ (r) (from-to-do 0 (- col 1) (λ (c) (table-set! table r c x) )) ))
+    )
+  )
+(table-fill! sample-table 'hey)
+sample-table
+
+; PART B
+(define (display-table table)
+  ; dipslay row, for each row dispaly each col (seperated by a few space)
+  (let ((row (table-height table))
+        (col (table-width table)))
+    (from-to-do 0 (- row 1)
+                (λ (r) (from-to-do 0 (- col 1)
+                                  (λ (c) (begin (display (table-ref table r c))
+                                                (display " ")
+                                                )))(newline) ))
+    )
+  )
+(display-table sample-table)
+
+; ==========================================================
+
+
+; CHOCOLATE
+(define (make-chocolate filling covering weight desirability)
+  (list filling covering weight desirability))
+(define chocolate-filling car)
+(define chocolate-covering cadr)
+(define chocolate-weight caddr)
+(define chocolate-desirability cadddr)
+
+
+; BOX
+(define (make-empty-box)
+  (list '() 0 0))
+(define box-chocolates car)
+(define box-weight cadr)
+(define box-desirability caddr)
+
+(define (add-chocolate-to-box choc box)
+  (list (cons choc (box-chocolates box))
+        (+ (chocolate-weight choc) (box-weight box))
+        (+ (chocolate-desirability choc) (box-desirability box))))
+
+
+#|
+Exercise 12.9
+Using these procedures, write a procedure called better-box that takes two boxes
+of chocolates and returns the one that is more desirable. If they are equally desirable,
+you should return whichever one you choose.
+|#
+(define (better-box box1 box2)
+  (let ((box1-des (box-desirability box1))
+        (box2-des (box-desirability box2))
+        )
+    (if (> box1-des box2-des)
+        box1
+        box2
+        )
+    )
+  )
+
+
+; filling covering weight desiribility
+(define shirks-chocolates-rated-by-max
+  (list (make-chocolate 'caramel 'dark 13 10)
+        (make-chocolate 'caramel 'milk 13 3)
+        (make-chocolate 'cherry 'dark 21 3)
+        (make-chocolate 'cherry 'milk 21 1)
+        (make-chocolate 'mint 'dark 7 3)
+        (make-chocolate 'mint 'milk 7 2)
+        (make-chocolate 'cashew-cluster 'dark 8 6)
+        (make-chocolate 'cashew-cluster 'milk 8 4)
+        (make-chocolate 'maple-cream 'dark 14 1)
+        (make-chocolate 'maple-cream 'milk 14 1)))
+
+
+
+#|
+Exercise 12.10
+Although our program won’t be designed to take advantage of the peculiarities of
+the above list, we should notice them so that we can check the program’s output
+more easily
+
+a. Only three of the above ten kinds of chocolate can ever show up in an optimal
+box of chocolates, no matter what the box’s weight limit is. Which three are they?
+b. Figure out by hand the optimal box weighing no more than 20 grams and the
+optimal box weighing no more than 25 grams.
+
+answer:
+
+a. im guessing chocolate with low weight but high discoverability?
+maybe caramel dark 13 10
+cashew cluster dark 8 6
+mint dark 7 3
+the rest have low desiribility, im not sure
+
+b.
+ok so can i choose multiple chocolates here? are they unlimited? or just only 1 stock?
+up to 20g optimal box
+1x caramel dark 13 10 -> remaning weight = 20-13 = 7
+maybe 1x min dark 7 3 -> weight = 0 so only 2
+
+
+up to 25g optimal box
+1x caramel dark 13 10 -> remaining weight = 25-13=12
+1x cashew-cluster dark -> remaining weight = 12-8=4
+yeah nomore room, let me try if i can squeece another way
+3x cashew cluster dark -> 25-24 = 1
+
+yeah ithink thats it not sure
+
+
+|#
+
+(define (pick-chocolates chocolates weight-limit)
+  ; chocolate empty -> empty
+  ; too heavy
+  ; can add
+  (cond [(null? chocolates) (make-empty-box)] ; no more to pick
+        [(= weight-limit 0) (make-empty-box)] ;fits perfectly
+        [else (better-box (pick-chocolates (cdr chocolates) weight-limit) ;exclude
+                          (add-chocolate-to-box (car chocolates) (- weight-limit (chocolate-weight (car chocolates))))
+                          )] ;include
+        )
+  )
+
+#|
+Exercise 12.11
+We assume that the weight limit and the weight of each kind of chocolate is an
+integer number of grams. Why is this assumption necessary?
+
+answer:
+to ensure everthing works since we already defined data structure for
+weight limit constructor box etc is also in gram if
+also base case for pick chocolate is integer 0
+it was a different number system like decimal then we'd have to change the foundaion
+
+|#
+
+; ======================================================
+
+#|
+Exercise 12.12
+We used a tree-recursive procedure, count-combos, in Section 7.5 to determine
+how many ways there were to redeem for prizes the 10 tickets one of our sons won
+playing Whacky Gator at the local arcade.
+
+a. Since we wrote Chapter 7, our children have grown older and are better Gator
+Whackers. Empirically see how well (or poorly) the tree-recursive count-combos
+procedure you wrote in Chapter 7 can accommodate this by seeing how the time
+grows as the number of tickets to redeem grows.
+b. Write a memoized version, and empirically compare it with your prior version.
+
+answer:
+from chapter 7
+(define (count-combos prize-list amount)
+  (cond [(equal? amount 0) 1] ; used our amount perfectly
+        [(null? prize-list) 0] ; prize list is empty, nothing else to pick - return the count.
+        [(< amount 0) 0] ; amount <= 0, overspent;
+        [else (+ (count-combos prize-list (- amount (car prize-list)))
+                 (count-combos (cdr prize-list) amount))]; else, keep exploring the branch
+
+        )
+  )
+(count-combos '(5 3 1 1) 10)
+
+
+|#
+
+
+; part a
+; count-combos is not memoiszed and its slow. in recursiv call it calls itself in 2 branch
+; giving binary explosion depending on prize list and amount as they go high
+
+; part b: memoized version
+(define (memoized-count-combos prize-list amount)
+  ; make table that stores a b
+  ; make main func and subproblem helper
+  ; fill it
+  (let ((table (make-table (+ (length prize-list) 1) (+ amount 1))))
+    (define (count-combos p a)
+      (cond [(equal? a 0) 1] ; used our amount perfectly
+            [(null? p) 0] ; prize list is empty, nothing else to pick - return the count.
+            [(< a 0) 0] ; amount <= 0, overspent;
+            [else (+ (count-combos-subproblem p (- a (car p)) )
+                     (count-combos-subproblem (cdr p) a))]; else, keep exploring the branch
+
+            )
+      )
+    
+    ;subproblem helper
+    (define (count-combos-subproblem p a)
+      (if (< a 0)
+          0
+          (begin (ensure-in-table! p a)
+                 (table-ref table (length p) a))
+          )
+      
+      )
+
+    ; store in table
+    (define (store-into-table! p a)
+      (table-set! table (length p) a (count-combos p a))
+      )
+
+    ; ensure in table
+    (define (ensure-in-table! p a)
+      (if (table-ref table (length p) a)
+          'done
+          (store-into-table! p a)
+          )
+      )
+
+    (table-fill! table #f)
+    (count-combos prize-list amount)
+    
+    )
+  )
+(memoized-count-combos '(1 2 3 4 5 6 7) 3)
+
+; MEMO VS DP
+; memo -> top down
+; start at the peak, look down
+; on demand. needs 2x below me -> search or those and pick when its needed
+; fill table with #f
+
+; DP
+; start at foundation
+; bottom row -> lay next row up, next
+; when its at the peak, everything's there, no jumpming back and forth
+; fill table with number
+
+#|
+Exercise 12.13
+Now that we have added a case for n k, we could eliminate the case for n k.
+Explain why.
+
+answe:
+
+the first 2 base cases already guarnttee itw ill hit we dont need it
+choose 0 0 -> hits k = 0
+choose 0 1 -> hits < n k, return 0
+
+the (< n k) handle scenario where your trying ot pikc more items then what you have
+eg, 2 apples (n=2) and you wanna choose 5 apples, there are 0 ways
+|#
+
+
+#|
+EXERCISE 12.14
+Write a dynamic programming version of the chocolate box problem in the previous
+section. You’ll find it helpful to first write a procedure that when given a number, n,
+returns the last n elements of the list of chocolates.
+
+answer:
+
+|#
+
+; given a number n, reutrns last n element of the list xs
+(define (last-n-chocolates n xs)
+  (reverse (take (reverse xs) n))
+  )
+(last-n-chocolates 1 '(1 2 3 4 5 6))
+
+
+(define (dp-pick-chocolates chocolates weight-limit)
+  (let ((table (make-table (+ (length chocolates) 1) (+ (weight-limit) 1) )))
+
+    ; main func
+    (define (pick-chocolates chocolates weight-limit)
+      (cond [(null? chocolates) (make-empty-box)] ; no more to pick
+            [(= weight-limit 0) (make-empty-box)] ;fits perfectly
+            [(> (chocolate-weight (car chocolates)) weight-limit) 0] ; too heavy, save to table
+            [else (better-box (pick-chocolates-subproblem (cdr chocolates) weight-limit) ;exclude
+                              (add-chocolate-to-box (car chocolates) (- weight-limit (chocolate-weight (car chocolates))))
+                              )] ;include
+            )
+      )
+
+
+    ; subproblem
+    (define (pick-chocolates-subproblem chocolates weight-limit)
+      (table-ref table (length chocolates) weight-limit)
+      )
+    
+
+    ; store into table
+    (define (store-into-table! chocolates weight-limit)
+      (table-set! table (length chocolates) weight-limit (pick-chocolates chocolates weight-limit) )
+      )
+
+    ;initialize
+    ; outer loop: chocolates list, inner loop: weight limit
+    (from-to-do 0 (length chocolates)
+                (λ (r) (from-to-do 0 weight-limit
+                                   (λ (c) (store-into-table! (last-n-chocolates r chocolates) c) )) ))
+    
+    )
+  )
+
+(define (changes vector1 vector2)
+  (let ((n (vector-length vector1))
+        (m (vector-length vector2)))
+    (define (changes-in-first-and-elements i j)
+      (cond ((= i 0) j)
+            ((= j 0) i)
+            (else (if (equal? (vector-ref vector1 (- i 1)) (vector-ref vector2 (- j 1)))
+                      (changes-in-first-and-elements (- i 1) (- j 1))
+                      (min (+ 1 (changes-in-first-and-elements
+                                 (- i 1) j))
+                           (+ 1 (changes-in-first-and-elements
+                                 i (- j 1)))
+                           (+ 1 (changes-in-first-and-elements
+                                 (- i 1) (- j 1))))))))
+    (changes-in-first-and-elements n m))
+  )
+
+#|
+Exercise 12.15
+
+Write a memoized version of changes.
+answer:
+|#
+
+(define (memoized-changes vector1 vector2)
+  (let* ((n (vector-length vector1))
+         (m (vector-length vector2))
+         (table (make-table (+ n 1) (+ m 1))))
+    (define (changes-in-first-and-elements i j)
+      (cond ((= i 0) j)
+            ((= j 0) i)
+            (else (if (equal? (vector-ref vector1 (- i 1)) (vector-ref vector2 (- j 1)))
+                      (changes-in-first-and-elements-subproblem (- i 1) (- j 1))
+                      (min (+ 1 (changes-in-first-and-elements-subproblem
+                                 (- i 1) j))
+                           (+ 1 (changes-in-first-and-elements-subproblem
+                                 i (- j 1)))
+                           (+ 1 (changes-in-first-and-elements-subproblem
+                                 (- i 1) (- j 1))))))))
+
+    ;subproblem helper
+    (define (changes-in-first-and-elements-subproblem i j)
+      (ensure-in-table! i j)
+      (table-ref table i j)
+      )
+
+    ; store in table
+    (define (store-into-table! i j)
+      (table-set! table i j (changes-in-first-and-elements i j))
+      )
+
+    ; ensure in table
+    (define (ensure-in-table! i j)
+      (if (table-ref table i j)
+          'done
+          (store-into-table! i j)
+          )
+      )
+
+    (table-fill! table #f)    
+    (changes-in-first-and-elements n m)
+    )
+  )
+
+
+#|
+Exercise 12.16
+We mentioned that this procedure uses just one possible valid ordering
+
+a. fromtodo needs to start from row 0 and col 0
+change the from-to-do row to col order
+
+b. if our loop counted downward from n to 0 and m to 0,
+first thing we'd compute is (n,m) -> looksup (n-1,m), unitialized
+
+c. diagonally/wavefront method
+
+|#
+
+#|
+Exercise 12.20
+Write a procedure that will take a list of strings and convert it into a list of numbers
+that correspond to the string widths.
+
+|#
+
+; (words->widths list-of-strings) $\rightarrow$ list-of-numbers
+(define (words->widths los)
+  (map (λ (s) (string-length s)) los)
+  )
+(words->widths '("hey" "you"))
+
+
+#|
+Exercise 12.20
+Write a procedure called make-lines that takes a list of elements and a list of
+integers and breaks the list of elements into sublists. For example, (make-lines
+’(a b c d e f g h i j) ’(2 3 5)) has a value of ((a b) (c d e) (f g
+h i j)). You should assume that the integers in the second list add up to the
+number of elements in the first list.
+
+answer:
+|#
+
+; assume ints add up/ fits with 1sto ne
+; list-of-x list-of-x -> list-of-list-of-x
+(define (make-lines elements integers)
+  (cond [(null? integers) '()]
+        [else (cons (take elements (car integers) )
+                     (make-lines (drop elements (car integers) ) (cdr integers) ) ) ]
+        )
+  )
+(make-lines '(a b c d e f g h i j) '(2 3 5))
+
+#|
+Exercise 12.22
+Construct an abstract data type for solutions that will glue together a list of integers,
+called breaks, and a number, called cost. You should have one constructor and
+two selectors:
+(make-solution breaks cost)
+(breaks solution)
+(cost solution)
+
+answer:
+|#
+
+; =================================
+
+; REVIEW PROBLEMS
+; Exercise 12.28
+
+
+; a table is a three element vector
+; #(width height flat-vector)
+
+(define sample-flat-table (vector 3 2 (vector 0 1 2 3 4 5))) ; 0 1 2 -> row 1, 3 4 5 -> row2
+
+
+; SELECTORS
+(define (flat-table-width table)
+  (vector-ref table 0)
+  )
+(flat-table-width sample-flat-table) ;3
+
+(define (flat-table-height table)
+  (vector-ref table 1)
+  )
+(flat-table-height sample-flat-table) ;2
+
+(define (flat-table-data table)
+  (vector-ref table 2)
+  )
+
+(define (flat-table-ref r c table)
+  ; extract
+  (vector-ref (flat-table-data table) (+ (* (flat-table-width table) r) c) )
+  )
+(flat-table-ref 1 0 sample-flat-table)
+
+; CONSTRUCTORS
+(define (flat-table-set! table r c value)
+  (vector-set! (flat-table-data table) (+ (* (flat-table-width table) r) c)  value)
+  )
+(flat-table-set! sample-flat-table 1 1 'GG)
+sample-flat-table
+
+(define (make-flat-table r c)
+  (vector c r (make-vector (* r c)))
+  )
+(make-flat-table 3 5)
+
+#|
+Exercise 12.29
+
+|#
+
+; partition n distinct items into k nonempty teams
+
+; number number -> number
+; s(n,k) = s(n-1,k-1) + k.s(n-1,k)
+(define (stirling n k)
+  ; case: person is alone -> (n-1, k-1)
+  ; else person joins -> k(n-1, k)
+  (cond [(= n k) 1] ; only 1 way to form a team
+        [(> k n) 0] ; more teams than students
+        [(= k 1) 1] ; 1 team, only 1 way to form a team, the whole remaining student is that team?
+        [else (+ (stirling (- n 1) (- k 1) ) ; person is alone
+                 (* k (stirling (- n 1) k)) ; person joins team
+                 )]
+        )
+  )
+(stirling 3 2)
+
+; MEMO VERSION
+(define (memoized-stirling students teams)
+  (let ((table (make-table (+ students 1) (+ teams 1))))
+
+    ; main func
+    (define (stirling n k)
+      (cond [(= n k) 1] ; only 1 way to form a team
+            [(> k n) 0] ; more teams than students
+            [(= k 1) 1] ; 1 team, only 1 way to form a team, the whole remaining student is that team?
+            [else (+ (stirling-subproblem (- n 1) (- k 1) ) ; person is alone
+                     (* k (stirling-subproblem (- n 1) k)) ; person joins team
+                     )]
+            )
+      )
+    
+
+    ; subproblem helper
+    (define (stirling-subproblem n k)
+      (ensure-in-table! n k)
+      (table-ref table n k)
+      )
+
+    ; ensure in table
+    (define (ensure-in-table! n k)
+      (if (table-ref table n k)
+          'done
+          (store-in-table! n k)
+          )
+      )
+    
+    ; store in table
+    (define (store-in-table! n k)
+      (table-set! table n k (stirling n k))
+      )
+    
+    ; initialization
+    (table-fill! table #f)
+    (stirling students teams)
+    )
+  )
+(memoized-stirling 16 2)
+
+; DP VERSION
+(define (dp-stirling students teams)
+  (let ((table (make-table (+ students 1) (+ teams 1))))
+
+    ; main func
+    (define (stirling n k)
+      (cond [(= n k) 1] ; only 1 way to form a team
+            [(> k n) 0] ; more teams than students
+            [(= k 1) 1] ; 1 team, only 1 way to form a team, the whole remaining student is that team?
+            [else (+ (stirling-subproblem (- n 1) (- k 1) ) ; person is alone
+                     (* k (stirling-subproblem (- n 1) k)) ; person joins team
+                     )]
+            ))
+
+    ; subproblem helper
+    (define (stirling-subproblem n k)
+      (table-ref table n k)
+      )
+    
+    ; store in table
+    (define (store-in-table! n k)
+      (table-set! table n k (stirling n k))
+      )
+    
+    ; initialization
+    ; outer: students loop, inner: teams loop
+    (from-to-do 1 students (λ (n)
+                             (from-to-do 1 teams (λ (k)
+                                                   (store-in-table! n k) ))))
+
+    (table-ref table students teams)  
+
+    )
+  )
+(dp-stirling 16 2)
+
+#|
+Exercise 12.31
+Imagine the following game: You are given a path that consists of white and black
+squares. The exact configuration of white and black squares varies with the game
+but might for example look as follows:
+You start on the leftmost square (which we’ll call square 0), and your goal is to
+move off the right end of the path in the least number of moves. However, the rules
+stipulate that
+Review Problems 415
+If you are on a white square, you can move either 1 or 2 squares to the right.
+If you are on a black square, you can move either 1 or 4 squares to the right.
+How can we determine, for a given path, the least number of moves we need?
+One way to compute this number is to write a procedure fewest-moves that takes a
+path and a position on the path and computes the minimum number of moves from
+that position. Thus, to determine the minimum number of moves for the preceding
+path, we would evaluate:
+(fewest-moves (vector ’white ’black ’white ’white ’white
+’black ’white ’white ’black ’white
+’black ’white ’white ’black ’black
+’white ’white ’white)
+0)
+Note that we pass the path as a vector as well as the current square (in this case 0).
+Here is one way to implement fewest-moves:
+(define fewest-moves
+(lambda (path i) ; path is a vector
+; i is the position within path
+(cond ((>= i (vector-length path)) ; right of path
+0)
+((equal? (vector-ref path i) ’white)
+(+ 1 (min (fewest-moves path (+ i 1))
+(fewest-moves path (+ i 2)))))
+(else
+(+ 1 (min (fewest-moves path (+ i 1))
+(fewest-moves path (+ i 4))))))))
+a. Write a memoized version of fewest-moves.
+b. Write a dynamic programming version of fewest-moves. Be sure to remember
+that the simplest subproblems, in the sense of being closest to the base case, do
+not correspond to smaller values of the argument i in this problem.
+c. Modify fewest-moves, and your memoized and/or dynamic programming ver
+sion of it, to produce a list of moves rather than just the number of moves that
+are necessary.
+
+answer:
+|#
+
+(define sample-path (vector 'white 'black 'white 'white 'white
+                            'black 'white 'white 'black 'white
+                            'black 'white 'white 'black 'black
+                            'white 'white 'white))
+
+(define (fewest-moves path i )
+  (cond [(>= i (vector-length path)) 0] ; past length
+        [(equal? (vector-ref path i) 'white)
+         (+ 1 (min (fewest-moves path (+ i 1))
+                   (fewest-moves path (+ i 2))))] ; white
+        [else (+ 1 (min (fewest-moves path (+ i 1))
+                        (fewest-moves path (+ i 4)) ))] ; black
+        )
+  )
+
+; PART A
+; store in table the paths and index
+(define (fewest-moves-memo path i)
+  ; row: length of path, col: curr pos on the path
+  (let ((table (make-table (+ (vector-length path) 1) (+ (vector-length path) 4) )))
+
+    ;main func
+    (define (fewest-moves path i )
+      (cond [(>= i (vector-length path)) 0] ; past length
+            [(equal? (vector-ref path i) 'white)
+             (+ 1 (min (fewest-moves-subproblem path (+ i 1))
+                       (fewest-moves-subproblem path (+ i 2))))] ; white
+            [else (+ 1 (min (fewest-moves-subproblem path (+ i 1))
+                            (fewest-moves-subproblem path (+ i 4)) ))] ; black
+            )
+      )
+    
+    ;subproblem helper
+    (define (fewest-moves-subproblem path i)
+      (ensure-in-table! path i)
+      (table-ref table (vector-length path) i)
+      )
+
+    ;ensure in table
+    (define (ensure-in-table! path i)
+      (if (table-ref table (vector-length path) i)
+          'done
+          (store-in-table! path i)
+          )
+      )
+
+    ;store in table
+    (define (store-in-table! path i)
+      (table-set! table (vector-length path) i (fewest-moves path i))
+      )
+
+    ;initialization
+    (table-fill! table #f)
+    (fewest-moves path i)
+    
+    )
+  )
+(fewest-moves-memo sample-path 0)
+
+
+; PART B
+(define (fewest-moves-dp path i)
+  0
+  )
+
+
+; PART C
+

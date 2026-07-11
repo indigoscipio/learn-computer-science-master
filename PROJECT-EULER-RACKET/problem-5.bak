@@ -1,42 +1,48 @@
 #lang racket
 
 #|
-PROBLEM 4: LARGEST PALINDROME PRODUCT
+PROBLEM 5: Smallest Multiple
 
-A palindromic number reads the same both ways. The largest palindrome made from the product of 2 two-digit numbers
-is 9009 = 91 * 99
+2520 is the smallest number that can be divided by each of the numbers from  to  without any remainder.
 
-find the largest palindrome made from the product of two 3 digit numbers.
+What is the smallest positive number that is evenly divisible by all of the numbers from  to ?
 |#
 
-;; is-palindrome?:: number -> boolean
-; given a number, checks if its a palindrome
-(define (is-palindrome? n)
-  (let* ((lst1 (map (λ (char) (- (char->integer char) (char->integer #\0)) ) (string->list (number->string n))))
-         (lst2 (reverse lst1))
-         )
-    (define (helper xs ys)
-      (cond [(empty? xs) #t]
-            [(not (equal? (car xs) (car ys))) #f]
-            [else (helper (cdr xs) (cdr ys))])
-      )
-    (helper lst1 lst2)
-    )
-  )
-(is-palindrome? 1111)
-
-; given a product of 3 digit number, finds its largest palindrome product
-(define (largest-palindrome-product)
-  (define (helper i j max-so-far)
-    (cond [(zero? i) max-so-far]
-          [(< j 100) (helper (- i 1) 999 max-so-far)]
-          [(is-palindrome? (* i j)) (if (> (* i j) max-so-far)
-                                        (helper i (- j 1) (* i j))
-                                        (helper i (- j 1) max-so-far)
-                                        )]
-          [else (helper i (- j 1) max-so-far)]
+#|
+; number -> boolean
+; V1, just return boolean;
+(define (smallest-mult-10 n)
+  (define (helper curr-n curr-fact)
+    (cond [(zero? curr-n) #t] ;curr-n n is zero, return true
+          [(zero? (remainder n curr-fact)) (helper (quotient curr-n curr-fact) (+ curr-fact 1))] ;keep dividing it, increase curr-fact by 1
+          [else #f] ;false, number is not divisible
           )
     )
-  (helper 999 999 0)
+  (helper n 1)
   )
-(largest-palindrome-product)
+(smallest-mult-10 2520) ;returns true
+|#
+
+
+#|
+V2, with LCM recursio
+; number -> boolean
+; smallest-mult-n:: given a number up to n, returns smallest pos int that is evenly divisible by all from 1 to n
+(define (smallest-mult-n n)
+  ;; acc holds the lcm carried over
+  (define (helper curr-fact acc)
+    (cond [(> curr-fact n) acc] ;done, just return the lcm
+          [else (helper (+ curr-fact 1) (lcm acc curr-fact) )]
+          )
+    )
+  (helper 1 1)
+  )
+|#
+
+#|
+V3: using foldl + LCM
+(define (smallest-mult-n n)
+  (foldl (λ (curr-fact acc) (lcm acc curr-fact) ) 1 (range 1 (+ n 1)))
+  )
+(smallest-mult-n 20)
+|#

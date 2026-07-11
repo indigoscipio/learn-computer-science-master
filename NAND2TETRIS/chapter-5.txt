@@ -1,0 +1,7 @@
+CHAPTER 5
+
+VON Neuman
+- rom
+- ram (data, instruction, variables)
+- cpu (register + ALU)
+- control unit

@@ -91,3 +91,9 @@ C instruction
 - comp - wht math should ALU do
 - dest - where should we save result
 - jump - where to go next
+
+remaining 6 bits
+a=0 -> A register to ALU
+a=1 -> M to ALU
+
+C instruction -> 111accccccdddjjj

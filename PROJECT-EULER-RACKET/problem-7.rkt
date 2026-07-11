@@ -22,7 +22,7 @@ and other way is checking if the curr n > sqr(n) or (sqrt n) > n or smth i dont 
           [else (helper (+ 1 curr-fact))] ; otherwise keep dividing
           )
     )
-  (if (= n 1) #f (helper 2))
+  (if (<= n 1) #f (helper 2))
   )
 (is-prime? 17) ; #t
 (is-prime? 1) ; #f
@@ -46,5 +46,5 @@ and other way is checking if the curr n > sqr(n) or (sqrt n) > n or smth i dont 
 (first-n-prime 6) ;12
 (first-n-prime 100) ; 524 - isn't 524 not a prime??
 (first-n-prime 1000) ; 7920
-(first-n-prime 10001) ; 104729
+(first-n-prime 10002) ; 104729
 

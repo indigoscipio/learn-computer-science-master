@@ -18,20 +18,18 @@ ok so i think this is a simple one
 ; i dont rememebr how to find prime but maybe using the n > sqrt n thing
 ; if i remmeber a number is prime if it has only 2 divisor: 1 and itself
 (define (is-prime? n)
-
   (define (helper curr-factor curr-n)
     (cond [(> curr-factor (sqrt curr-n)) #t]
           [(zero? (remainder curr-n curr-factor)) #f]
           [else (helper (+ 1 curr-factor) curr-n)]
           )
     )
-  (helper 2 n)
+  (if (< n 1) #f (helper 2 n) )
   )
 (is-prime? 7)
 
 
 (define (sum-of-primes n)
-
   (define (helper curr-prime curr-sum)
     (cond [(> curr-prime n) curr-sum] ;curr-sum exceeds n, return it
           [(is-prime? curr-prime) (helper (+ 1 curr-prime) (+ curr-prime curr-sum) )] ;check if number is a prime, if so add it to curr sum
@@ -41,4 +39,4 @@ ok so i think this is a simple one
   ; initialize with curr-prime = 2 and curr-sum = 0
   (helper 2 0)
   )
-(sum-of-primes 2000000)
+(sum-of-primes 1000)
