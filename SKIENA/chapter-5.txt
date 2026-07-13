@@ -1,0 +1,18 @@
+CHAPTER 5
+
+GRAPH TRAVERSAL
+
+- undiscovered
+- discovered
+- processed
+
+
+BFS
+- drop pebble in a pond
+- explores graph  by 'fanning' out evenly in all directions, layer by layer
+- theo oldest is the first
+- secret weapon: queue
+- undiscoverd -> discovered
+- level = how many steps you are from the starting point
+
+DFS

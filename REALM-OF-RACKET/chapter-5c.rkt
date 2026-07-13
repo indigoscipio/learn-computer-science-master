@@ -1,0 +1,150 @@
+#lang racket
+(require 2htdp/universe 2htdp/image)
+
+#|
+; create helper ui text -> arrow up for large number, arrow downlower
+; struct interval small big
+(struct interval (small big) #:transparent)
+
+(define HELP-TEXT (text "UP = larger, DOWN = smaller"
+                        TEXT-SIZE
+                        "blue"))
+(define HELP-TEXT2 (text "Press = when your number is guessed,
+q to quit"
+                         TEXT-SIZE
+                         "blue"))
+
+; SCENE
+(define MT-SCENE
+  (place-image/align
+   HELP-TEXT TEXT-X TEXT-UPPER-Y
+   "left" "top"
+   (place-image/align HELP-TEXT2 TEXT-X TEXT-LOWER-Y "left" "bottom" EMPTY-SCENE))
+  )
+
+; KEY EVENTS
+(define (deal-with-guess w key)
+  (cond [(key=? key "up") (bigger w)]
+        [(key=? key "down") (smaller w)]
+        [(key=? key "q") (stop-with w)]
+        [(key=? key "=") (stop-with w)]
+        [else w]
+        )
+  )
+
+(define (smaller w)
+  (interval (interval-small w)
+            (max (interval-small w) (sub1 (guess w)))
+            )
+  )
+
+(define (bigger w)
+  (interval (min (interval-big w) (add1 (guess w))) (interval-big w))
+  )
+
+(define (guess w)
+  (quotient (+ (interval-small w) (interval-big w) ) 2)
+  )
+
+(define (render w)
+  (overlay (text (number->string (guess w)) TEXT-SIZE COLOR) MT-SCENE))
+
+(define (render-last-scene w)
+ (overlay (text "End" TEXT-SIZE COLOR) MT-SCENE))
+
+(define (single? w)
+ (= (interval-small w) (interval-big w)))
+=
+(define (start lower upper)
+  (big-bang (interval lower upper)
+    (on-key deal-with-guess)
+    (to-draw render)
+    (stop-when single? render-last-scene)
+    )
+  )
+|#
+
+; ==============
+#|
+Difficult:
+Add a feature to the UFO animation so that you can control the UFO using
+direction keys. Once you’ve done this, make the UFO leave a trail of gray
+circles when it moves so that it looks like smoke is coming out of it.
+
+lets add simple movements to the ufo first
+|#
+
+(define UFO-SIZE 16)
+(define UFO-SPEED 3)
+(define GRAY-CIRCLE (circle 4 "solid" "gray"))
+(define UFO (triangle UFO-SIZE "solid" "black"))
+(define SCENE-WIDTH 256)
+(define SCENE-HEIGHT 256)
+(define EMPTY-SCENE (empty-scene SCENE-WIDTH SCENE-HEIGHT))
+
+UFO
+GRAY-CIRCLE
+
+; a worldstate is a (x,y, dir, position history)
+; interpretation x,y stores ufo's current position and direction
+; direction is 4 types: up, left, down, right
+; ph stores a list of position history (list (x,y) (x,y) ...)
+; keep speed constant for now
+(struct ph (x y) #:transparent)
+(struct ws (x y dir ph) #:transparent)
+
+; example state
+(ws 100 200 'up (list (ph 99 199) (ph 98 198)))
+
+
+(define (render w)
+  (place-image UFO (ws-x w) (ws-y w) EMPTY-SCENE)
+  (foldr ...)
+  )
+
+(define (handle-key w key)
+  (cond [(key=? "left" key) (ws (ws-x w) (ws-y w) 'left) ] ; go left
+        [(key=? "right" key) (ws (ws-x w) (ws-y w) 'right)]
+        [(key=? "down" key) (ws (ws-x w) (ws-y w) 'down)]
+        [(key=? "up" key) (ws (ws-x w) (ws-y w) 'up)]
+        [else w]
+        )
+  )
+
+(define (move w)
+  (cond [(equal? (ws-dir w) 'left)
+         (ws (- (ws-x w) UFO-SPEED)
+             (ws-y w)
+             (ws-dir w)
+             (cons (ph (ws-x w) (ws-y w)) (ws-ph w)))]
+        [(equal? (ws-dir w) 'right)
+         (ws (+ (ws-x w) UFO-SPEED)
+             (ws-y w)
+             (ws-dir w)
+             (cons (ph (ws-x w) (ws-y w)) (ws-ph w)))]
+        [(equal? (ws-dir w) 'down)
+         (ws (ws-x w)
+             (+ (ws-y w) UFO-SPEED)
+             (ws-dir w)
+             (cons (ph (ws-x w) (ws-y w)) (ws-ph w)))]
+        [(equal? (ws-dir w) 'up)
+         (ws (ws-x w)
+             (- (ws-y w) UFO-SPEED)
+             (ws-dir w)
+             (cons (ph (ws-x w) (ws-y w)) (ws-ph w)))]
+        [else w]
+        )
+  )
+
+#|
+; worldstate -> worldstate
+(define (start initial-state)
+  (big-bang initial-state
+    (to-draw render)
+    (on-key handle-key)
+    (on-tick move)
+    )
+  )
+(start (ws 100 100 'up '()))
+|#
+
