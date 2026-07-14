@@ -15,4 +15,61 @@ BFS
 - undiscoverd -> discovered
 - level = how many steps you are from the starting point
 
+BIPARTITE GRAPH
+- every child node must be assigned oppsosite coor of its parent
+- odd number steps is impossible
+- patient radar
+
 DFS
+- stops when it sees a 'dead end'
+- explores 1 path, keep giong deep
+- impatient explorer
+
+
+biggest diffrence
+- the order they explore each vertice
+- 'discovered' is diffrent, processed is the same ->
+- vertice FIFO (queue) -> BFS
+- vertice LIFO (stack) -> DFS
+
+
+=============================
+
+ExERCISES
+
+5.1
+5-1. [3] For the following graphs G1 (left) and G2 (right)
+a. 
+ Report the order of the vertices encountered on a breadth-first search starting
+from vertex A. Break all ties by picking the vertices in alphabetical order (i.e.,
+A before Z).
+b.  Report the order of the vertices encountered on a depth-first search starting
+from vertex A. Break all ties by picking the vertices in alphabetical order (i.e.,
+A before Z).
+
+answer:
+a. BFS
+vertex neighbor
+'(A  (B D I)) -> queue: [BDI], encountered: [B D I]
+'(B (A C D E)) -> queue: [DICE], encountered: [C E]
+'(D (A B E G)) -> queue: [ICEG], encountered: [G]
+'(I (A G J)) -> queue: [CEGJ], encountered: [J]
+'(C (B E F)) -> queue: [EGJF], encountered: [F]
+'(E (B C D G H F)) -> queue: [GJFH], encountered: [H]
+'(G (D E H I J)) -> queue: [JFH], encountered: []
+...
+
+b.
+'(A (B E)) -> stack: [B E], encountered: [B E]
+'(B (A F C)) -> stack: [CEF], encountered: [C F]
+
+A -> B -> C -> D -> H -> G -> F -> E
+-> I -> J -> K -> L -> P -> O -> N -> M
+
+_
+
+5.2
+node that has no arrow pointing ot them -> A
+sorted list : A
+
+next : B

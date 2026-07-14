@@ -60,4 +60,30 @@ BFS IMPLEMENTATION
 ; CONNECTED COMPONENT
 ; how many isolated islands exist in an archipelago?
 
-; 
+; DFS
+; graph vertex -> list-of-vertex
+(define (dfs graph start)
+  (define (dfs-helper stack visited)
+    (cond [(null? stack) '()]
+          [else (let* ((curr (car stack))
+                       (rest-stack (cdr stack))
+                       (all-neighbors (neighbors curr graph))
+                       (new-neighbors (filter (λ (n) (not (member n visited)) ) all-neighbors) )
+                       ;neighbors that hasn't been visited
+                       )
+                  (cons curr
+                        (dfs-helper (append new-neighbors rest-stack ) ; put new neighbor to basck back of queue
+                                    (append new-neighbors visited ) ;put new neighbor to visited
+                                    )
+                        )
+                  )]
+          )
+    )
+  (dfs-helper (list start) (list start))
+  )
+(dfs my-graph 'A)
+
+#|
+
+|#
+
