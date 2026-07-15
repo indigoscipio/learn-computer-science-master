@@ -70,6 +70,70 @@ _
 
 5.2
 node that has no arrow pointing ot them -> A
-sorted list : A
+sorted list : [A]
 
-next : B
+next node that has no arrow: B
+sorted list : [A, B]
+
+next node that has no arrow: D
+sorted list : [A, B, D]
+
+next node that has no arrow: E
+sorted list : [A, B, D, E]
+
+next node that has no arrow: C
+sorted list : [A, B, D, E, C]
+
+next node that has no arrow:
+hmm here it all has arrow pointing at each other
+
+5.3
+Prove by induction that there is a unique path between
+any pair of vertices in a tree
+
+answer:
+
+let n be the number of vertices in our tree
+
+base case:
+n = 1 -> single node
+n = 2 -> a pair, 2 vertices and 1 edge
+
+inductive hypothesis
+assume the property holds true for a tree of size k
+and we wanan use this to prove this holds for k + 1
+
+for any tree with k vertices, there is a unique path between any pair of vercies
+
+inductive step
+every tree with 2 or more vertices guaranteed to have 1 leaf
+
+if we have tree iwth k + 1 vertice
+remove leaf -> k + 1 - 1 = k vertices
+
+_
+
+5.4
+an ancestor must be at least 2 level above the curr node
+since BFS behaviour scans atm ost 1 level apart (parent -> child)
+direct edge between node + higher ancestor is impossible
+
+_
+
+5.6
+a. A star graph
+b. a chain/ path graph
+c. two branch fork
+
+5.7
+'(A B C)
+preorder: root, left, right
+A, B, C
+in-order: left, root, right
+B, A, C
+post-order: left, right , root
+B,C,A
+
+5.8
+Adjancency Matrix -> check n . n = n^2
+Adjacency Lists -> O(n+m), matrix init = O(n.m) -> O(nm)
