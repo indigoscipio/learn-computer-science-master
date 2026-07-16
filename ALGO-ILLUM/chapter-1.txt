@@ -1,0 +1,8 @@
+CHAPTER 1
+
+Karatsuba multiplication
+a more efficient method of multiplication
+
+- a . c
+- b . d
+- a . d  + b . c
