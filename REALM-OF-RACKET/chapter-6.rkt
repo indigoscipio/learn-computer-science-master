@@ -50,21 +50,24 @@
 
 ; Example States
 (define state0 (ws (snake 'down (list (posn 80 80) (posn 80 74) (posn 80 73) (posn 80 72)))
-                   (list (food (posn 25 25) 3) (food (posn 33 33) 6))))
+                   (list (food (posn 32 32) 3) (food (posn 32 34) 6))))
 (define food0 (food (posn 10 10) 5))
 (define food1 (food (posn 25 25) 3))
+(define foods0 (list food0 food1))
 (define snake0 (snake 'down (list (posn 3 3) (posn 3 4))))
 
 ; -----------------------------------------------
 
 ; CONSTANTS
-(define SEGMENT-SIZE 6)
-(define FOOD-SIZE 8)
+(define GRID-SIZE 8)
+(define FOOD-EXPIRED-TIME 8)
+(define SEGMENT-SIZE (quotient GRID-SIZE 2))
+(define FOOD-SIZE GRID-SIZE)
 (define FOOD-DISTANCE-THRESHOLD SEGMENT-SIZE)
-(define SCENE-WIDTH 256)
-(define SCENE-HEIGHT 256)
+(define SCENE-WIDTH (* GRID-SIZE 32))
+(define SCENE-HEIGHT (* GRID-SIZE 32))
 (define SNAKE-SEGMENT (circle SEGMENT-SIZE "solid" "black"))
-(define SNAKE-SPEED 1)
+(define SNAKE-SPEED GRID-SIZE)
 (define EMPTY-SCENE (empty-scene SCENE-WIDTH SCENE-HEIGHT))
 (define FOOD (square FOOD-SIZE "solid" "red"))
 (define TEXT-SIZE-HEADING 32)
@@ -101,6 +104,7 @@
                                                 )) EMPTY-SCENE foods-pos))
          (whole-scene (foldr  (λ (seg acc) (place-image
                                             SNAKE-SEGMENT
+                                            ;(+ (posn-x seg) (/ GRID-SIZE 2))
                                             (posn-x seg)
                                             (posn-y seg)
                                             acc
@@ -108,7 +112,7 @@
     whole-scene
     )
   )
-;(render state0)
+(render state0)
 
 ; -----------------------------------------------
 
@@ -131,14 +135,26 @@
     )
   )
 
-; MOVING
-; create new head - calc n using curr head coord
-; remove last sgement - combine in segs, remove last tail
 
 ; EATING
 ; check if theres close food
 ; if so, eat it and grow the snake body, else just keep snake state
 ; lets keep food disappearing away fromnow
+
+; list of foods -> list of foods
+; inside boundary range: (GRID-SIZE / 2) to SCENE-WIDTH - (GRID-SIZE / 2)
+(define (spawn-food fds)
+  ; places food randomly on the inside canvas boundary
+  (let* ((min-boundary (/ GRID-SIZE 2))
+         (max-boundary (- SCENE-WIDTH (/ GRID-SIZE 2)))        
+         (new-food (food (posn (random min-boundary max-boundary) (random min-boundary max-boundary)) FOOD-EXPIRED-TIME)))
+    (cons new-food fds)
+    )
+  )
+
+; MOVING
+; create new head - calc n using curr head coord
+; remove last sgement - combine in segs, remove last tail
 
 ; c = sqrt(a^2 + b^2)
 (define (calc-distance p1 p2)
@@ -159,11 +175,12 @@
          (fresh-foods (filter (λ (f) (not (close-to-head? new-head f))) foods))
          )
     (if (= (length fresh-foods) (length foods))
+        ; when food is eaten, spawn one in new location
         (ws (snake (snake-dir sn) (cons new-head (all-but-last (snake-segs sn))))
             foods
             )
         (ws (snake (snake-dir sn) (cons new-head (snake-segs sn) ))
-            fresh-foods
+            (spawn-food fresh-foods)
             )
         )
     )
@@ -176,24 +193,31 @@
 ; KEY EVENTS
 ; up, down, left, right -> change direction
 ; opposite direction -> either die/dont do anything
+; WorldState KeyEvent -> WorldState
 (define (handle-key w ke)
-  (cond [(key=? ke "up")
-         (ws (snake 'up (snake-segs (ws-snake w)))
-             (ws-foods w))]
-        [(key=? ke "down")
-         (ws (snake 'down (snake-segs (ws-snake w)))
-             (ws-foods w))]
-        [(key=? ke "left")
-         (ws (snake 'left (snake-segs (ws-snake w)))
-             (ws-foods w))]
-        [(key=? ke "right")
-         (ws (snake 'right (snake-segs (ws-snake w)))
-             (ws-foods w))]
-        [else w]
+  ; moving in free direction? move
+  ; moving in opposite direction? just return state as is
+  ; else keep current state
+  (let ((ke-sym (string->symbol ke))
+        (curr-dir (snake-dir (ws-snake w))))
+    (cond [(is-opposite-dir? curr-dir ke) w]
+          [(member ke '("up" "down" "left" "right")) (ws (snake ke-sym (snake-segs (ws-snake w)))
+                                                         (ws-foods w))]
+          [else w]
+          )
+    )
+  )
+
+
+; symbol string -> boolean
+(define (is-opposite-dir? d ke)
+  (cond [(and (equal? d 'up) (equal? ke "down")) #t]
+        [(and (equal? d 'down) (equal? ke "up")) #t]
+        [(and (equal? d 'left) (equal? ke "right")) #t]
+        [(and (equal? d 'right) (equal? ke "left")) #t]
+        [else #f]
         )
   )
-;(handle-key state0 "up")
-
 
 
 ; -----------------------------------------------
@@ -204,7 +228,7 @@
   (big-bang state0
     (on-key handle-key)
     (to-draw render)
-    (on-tick next-ws)
+    (on-tick next-ws 0.1)
     )
   )
 (init-snake)
