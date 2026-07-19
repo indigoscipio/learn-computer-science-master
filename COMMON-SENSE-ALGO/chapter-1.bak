@@ -1,0 +1,11 @@
+#lang racket
+
+(let loop ((x 10))
+  (cond [(zero? x) 0]
+        [else (cons x (loop (- x 1)))]
+        )
+  )
+
+(for [(i (list 1 2 3))]
+  (println i)
+  )
