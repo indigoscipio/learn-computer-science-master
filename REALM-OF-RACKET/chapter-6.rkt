@@ -48,9 +48,30 @@
 ; stores a x,y point of something
 (struct posn (x y) #:transparent)
 
+
+; CONSTANTS
+(define GRID-SIZE 8)
+(define FOOD-EXPIRED-TIME 8)
+(define SEGMENT-SIZE (quotient GRID-SIZE 2))
+(define FOOD-DISTANCE-THRESHOLD SEGMENT-SIZE)
+(define SCENE-WIDTH (* GRID-SIZE 32))
+(define SCENE-HEIGHT (* GRID-SIZE 32))
+(define SNAKE-SEGMENT (circle SEGMENT-SIZE "solid" "black"))
+(define SNAKE-SPEED GRID-SIZE)
+(define EMPTY-SCENE (empty-scene SCENE-WIDTH SCENE-HEIGHT))
+(define FOOD (square GRID-SIZE "solid" "red"))
+(define TEXT-SIZE-HEADING 32)
+(define TEXT-COLOR "red")
+(define TEXT-SIZE-BODY 14)
+(define GRID-COUNT (quotient SCENE-WIDTH GRID-SIZE))
+
+; -----------------------------------------------
+
 ; Example States
 (define state0 (ws (snake 'down (list (posn 80 80) (posn 80 74) (posn 80 73) (posn 80 72)))
                    (list (food (posn 32 32) 3) (food (posn 32 34) 6))))
+(define state1 (ws (snake 'down (list (posn 80 80) (posn 80 74) (posn 80 73) (posn 80 72)))
+                   (list (food (posn (/ GRID-SIZE 2) (/ GRID-SIZE 2)) 3) (food (posn (- SCENE-WIDTH (/ GRID-SIZE 2)) (- SCENE-WIDTH (/ GRID-SIZE 2))) 6))))
 (define food0 (food (posn 10 10) 5))
 (define food1 (food (posn 25 25) 3))
 (define foods0 (list food0 food1))
@@ -58,22 +79,6 @@
 
 ; -----------------------------------------------
 
-; CONSTANTS
-(define GRID-SIZE 8)
-(define FOOD-EXPIRED-TIME 8)
-(define SEGMENT-SIZE (quotient GRID-SIZE 2))
-(define FOOD-SIZE GRID-SIZE)
-(define FOOD-DISTANCE-THRESHOLD SEGMENT-SIZE)
-(define SCENE-WIDTH (* GRID-SIZE 32))
-(define SCENE-HEIGHT (* GRID-SIZE 32))
-(define SNAKE-SEGMENT (circle SEGMENT-SIZE "solid" "black"))
-(define SNAKE-SPEED GRID-SIZE)
-(define EMPTY-SCENE (empty-scene SCENE-WIDTH SCENE-HEIGHT))
-(define FOOD (square FOOD-SIZE "solid" "red"))
-(define TEXT-SIZE-HEADING 32)
-(define TEXT-SIZE-BODY 14)
-
-; -----------------------------------------------
 
 ; HELPERS
 (define (snake-head sn)
@@ -98,21 +103,31 @@
          (snake-segs (snake-segs (ws-snake w)))
          (foods+empty (foldr (λ (food-pos acc) (place-image
                                                 FOOD
-                                                (posn-x food-pos)
-                                                (posn-y food-pos)
+                                                (+ (posn-x food-pos) (/ GRID-SIZE 2))
+                                                (+ (posn-y food-pos) (/ GRID-SIZE 2))
                                                 acc
                                                 )) EMPTY-SCENE foods-pos))
          (whole-scene (foldr  (λ (seg acc) (place-image
                                             SNAKE-SEGMENT
-                                            ;(+ (posn-x seg) (/ GRID-SIZE 2))
-                                            (posn-x seg)
-                                            (posn-y seg)
+                                            (+ (posn-x seg) (/ GRID-SIZE 2))
+                                            ;(posn-x seg)
+                                            (+ (posn-y seg) (/ GRID-SIZE 2))
                                             acc
                                             )) foods+empty snake-segs)))
     whole-scene
     )
   )
 (render state0)
+(render state1)
+
+(define (render-game-over w)
+  (place-image (text "GAME OVER" TEXT-SIZE-HEADING TEXT-COLOR)
+               (/ SCENE-WIDTH 2)
+               (/ SCENE-HEIGHT 2)
+               EMPTY-SCENE
+               )
+  )
+(render-game-over state0)
 
 ; -----------------------------------------------
 
@@ -142,15 +157,16 @@
 ; lets keep food disappearing away fromnow
 
 ; list of foods -> list of foods
-; inside boundary range: (GRID-SIZE / 2) to SCENE-WIDTH - (GRID-SIZE / 2)
+; inside boundary range: (GRID-SIZE / 2) to (SCENE-WIDTH - (GRID-SIZE / 2))
 (define (spawn-food fds)
   ; places food randomly on the inside canvas boundary
-  (let* ((min-boundary (/ GRID-SIZE 2))
-         (max-boundary (- SCENE-WIDTH (/ GRID-SIZE 2)))        
-         (new-food (food (posn (random min-boundary max-boundary) (random min-boundary max-boundary)) FOOD-EXPIRED-TIME)))
+  (let* ((new-food (food (posn (* (random GRID-COUNT) GRID-SIZE)
+                               (* (random GRID-COUNT) GRID-SIZE) )
+                         FOOD-EXPIRED-TIME)))
     (cons new-food fds)
     )
   )
+
 
 ; MOVING
 ; create new head - calc n using curr head coord
@@ -167,6 +183,44 @@
   (<= (calc-distance new-head (food-posn f)) FOOD-DISTANCE-THRESHOLD)
   )
 
+; check if the game is over
+; WorldState -> Boolean
+(define (is-game-over? w)
+  (let ((sn (ws-snake w)))
+    (or (outside-boundary? (snake-head sn))
+        (is-self-collision? sn)
+        )
+    )
+  )
+
+; posn -> boolean
+; checks if snake head goes past 'boundary'
+(define (outside-boundary? head-pos)
+  ; a head is outside of boundary if
+  ; it went below min boundary or goes beyond boundary
+  ; min boundary = (/ GRID-SIZE 2)
+  ; max boundary = (- SCENE-WIDTH (/ GRID-SIZE 2))
+  (let ((min-boundary 0)
+        (max-boundary (- SCENE-WIDTH GRID-SIZE))
+        (x (posn-x head-pos))
+        (y (posn-y head-pos)))
+    (or (< x min-boundary)
+        (< y min-boundary)
+        (> x max-boundary)
+        (> y max-boundary))
+    )
+  )
+
+; snake eats its own segment
+(define (is-self-collision? sn)
+  ; a snake collides with itself if:
+  ; the head is in the exact position with oneo f the segment
+  (if (member (snake-head sn) (snake-body sn))
+      #t
+      #f
+      )
+  )
+
 ; worldstate -> worldstate
 (define (next-ws w)
   (let* ((sn (ws-snake w))
@@ -174,6 +228,7 @@
          (new-head  (calc-next-snake-head-pos sn))
          (fresh-foods (filter (λ (f) (not (close-to-head? new-head f))) foods))
          )
+    
     (if (= (length fresh-foods) (length foods))
         ; when food is eaten, spawn one in new location
         (ws (snake (snake-dir sn) (cons new-head (all-but-last (snake-segs sn))))
@@ -182,7 +237,7 @@
         (ws (snake (snake-dir sn) (cons new-head (snake-segs sn) ))
             (spawn-food fresh-foods)
             )
-        )
+        )    
     )
   )
 (next-ws state0)
@@ -229,6 +284,7 @@
     (on-key handle-key)
     (to-draw render)
     (on-tick next-ws 0.1)
+    (stop-when is-game-over? render-game-over)
     )
   )
 (init-snake)
