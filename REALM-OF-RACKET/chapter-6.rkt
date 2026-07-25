@@ -41,8 +41,10 @@
 (struct snake (dir segs) #:transparent)
 
 ; a Food is a struct
-; where posn is the food's position, and expire is an integer
-(struct food (posn expire) #:transparent)
+; where posn is the food's position
+; expire is an integer
+; growth is an integer (1 = basic food, 2 = super food), correspond to segment growth
+(struct food (posn expire growth) #:transparent)
 
 ; a Posn is a struct
 ; stores a x,y point of something
@@ -60,6 +62,7 @@
 (define SNAKE-SPEED GRID-SIZE)
 (define EMPTY-SCENE (empty-scene SCENE-WIDTH SCENE-HEIGHT))
 (define FOOD (square GRID-SIZE "solid" "red"))
+(define FOOD-SUPER (square GRID-SIZE "solid" "green"))
 (define TEXT-SIZE-HEADING 32)
 (define TEXT-COLOR "red")
 (define TEXT-SIZE-BODY 14)
@@ -68,12 +71,13 @@
 ; -----------------------------------------------
 
 ; Example States
-(define state0 (ws (snake 'down (list (posn 80 80) (posn 80 74) (posn 80 73) (posn 80 72)))
-                   (list (food (posn 32 32) 3) (food (posn 32 34) 6))))
+(define state0 (ws (snake 'down (list (posn 80 80) (posn 80 76) (posn 80 72)))
+                   (list (food (posn 32 32) 3 1) (food (posn 32 80) 6 1))))
 (define state1 (ws (snake 'down (list (posn 80 80) (posn 80 74) (posn 80 73) (posn 80 72)))
-                   (list (food (posn (/ GRID-SIZE 2) (/ GRID-SIZE 2)) 3) (food (posn (- SCENE-WIDTH (/ GRID-SIZE 2)) (- SCENE-WIDTH (/ GRID-SIZE 2))) 6))))
-(define food0 (food (posn 10 10) 5))
-(define food1 (food (posn 25 25) 3))
+                   (list (food (posn (/ GRID-SIZE 2) (/ GRID-SIZE 2)) 3 1)
+                         (food (posn (- SCENE-WIDTH (/ GRID-SIZE 2))(- SCENE-WIDTH (/ GRID-SIZE 2))) 6 1))))
+(define food0 (food (posn 10 10) 5 1))
+(define food1 (food (posn 25 25) 3 1))
 (define foods0 (list food0 food1))
 (define snake0 (snake 'down (list (posn 3 3) (posn 3 4))))
 
@@ -99,18 +103,19 @@
 ; RENDER
 (define (render w)
   (let* ((foods (ws-foods w))
-         (foods-pos (map food-posn foods))
          (snake-segs (snake-segs (ws-snake w)))
-         (foods+empty (foldr (λ (food-pos acc) (place-image
-                                                FOOD
-                                                (+ (posn-x food-pos) (/ GRID-SIZE 2))
-                                                (+ (posn-y food-pos) (/ GRID-SIZE 2))
-                                                acc
-                                                )) EMPTY-SCENE foods-pos))
+         (foods+empty (foldr (λ (fd acc) (place-image
+                                          (if (= (food-growth fd) 2)
+                                              FOOD-SUPER
+                                              FOOD
+                                              )
+                                          (+ (posn-x (food-posn fd) ) (/ GRID-SIZE 2))
+                                          (+ (posn-y (food-posn fd)) (/ GRID-SIZE 2))
+                                          acc))
+                             EMPTY-SCENE foods))
          (whole-scene (foldr  (λ (seg acc) (place-image
                                             SNAKE-SEGMENT
                                             (+ (posn-x seg) (/ GRID-SIZE 2))
-                                            ;(posn-x seg)
                                             (+ (posn-y seg) (/ GRID-SIZE 2))
                                             acc
                                             )) foods+empty snake-segs)))
@@ -120,19 +125,30 @@
 (render state0)
 (render state1)
 
+; WorldState -> WorldState
+; renders the final/game over state
 (define (render-game-over w)
-  (place-image (text "GAME OVER" TEXT-SIZE-HEADING TEXT-COLOR)
-               (/ SCENE-WIDTH 2)
-               (/ SCENE-HEIGHT 2)
-               EMPTY-SCENE
-               )
+  (let* ((segs-count (- (length (snake-segs (ws-snake w))) 3) )
+         (text-game-over (text "GAME OVER" TEXT-SIZE-HEADING TEXT-COLOR))
+         (text-game-over-scene (place-image text-game-over
+                                            (/ SCENE-WIDTH 2)
+                                            (/ SCENE-HEIGHT 2)
+                                            EMPTY-SCENE
+                                            ))
+         (text-food-stats (text (string-append "FOOD EATEN: " (number->string segs-count))
+                                TEXT-SIZE-BODY
+                                TEXT-COLOR)))
+    (place-image text-food-stats
+                 (/ SCENE-WIDTH 2)
+                 (+ (/ SCENE-HEIGHT 2) (* TEXT-SIZE-BODY 2))
+                 text-game-over-scene)
+    )
   )
 (render-game-over state0)
 
 ; -----------------------------------------------
 
 ; MOVEMENT
-
 ; Snake -> Posn
 (define (calc-next-snake-head-pos sn)
   (let ((curr-head (snake-head sn)))
@@ -160,18 +176,21 @@
 ; inside boundary range: (GRID-SIZE / 2) to (SCENE-WIDTH - (GRID-SIZE / 2))
 (define (spawn-food fds)
   ; places food randomly on the inside canvas boundary
-  (let* ((new-food (food (posn (* (random GRID-COUNT) GRID-SIZE)
-                               (* (random GRID-COUNT) GRID-SIZE) )
-                         FOOD-EXPIRED-TIME)))
+  ; lets say ratio occurence of fresh: super is 8 : 1
+  (let* ((new-food-growth (if (random 8) 2 1))
+         (new-food (food (posn (* (random GRID-COUNT) GRID-SIZE)
+                               (* (random GRID-COUNT) GRID-SIZE))
+                         FOOD-EXPIRED-TIME
+                         new-food-growth
+                         )))
     (cons new-food fds)
     )
-  )
+  ) 
 
 
 ; MOVING
 ; create new head - calc n using curr head coord
 ; remove last sgement - combine in segs, remove last tail
-
 ; c = sqrt(a^2 + b^2)
 (define (calc-distance p1 p2)
   (sqrt (+ (sqr (- (posn-x p2) (posn-x p1)))
@@ -221,22 +240,39 @@
       )
   )
 
+; snake -> snake
+(define (grow-snake sn new-head growth)
+  (cond [(= food-growth 1) ...]
+        [(= food-growth 2) ...]
+        [else ]
+        )
+  ; construct (ws snake...), call (spawn food)
+  ; lets save this for later
+  )
+
 ; worldstate -> worldstate
 (define (next-ws w)
   (let* ((sn (ws-snake w))
          (foods (ws-foods w))
          (new-head  (calc-next-snake-head-pos sn))
          (fresh-foods (filter (λ (f) (not (close-to-head? new-head f))) foods))
-         )
+         (eaten-foods (filter (λ (f) (close-to-head? new-head f)) foods)))
     
     (if (= (length fresh-foods) (length foods))
-        ; when food is eaten, spawn one in new location
+        ; no food eaten
         (ws (snake (snake-dir sn) (cons new-head (all-but-last (snake-segs sn))))
             foods
             )
-        (ws (snake (snake-dir sn) (cons new-head (snake-segs sn) ))
-            (spawn-food fresh-foods)
-            )
+        (let* ((eaten-food (car eaten-foods))
+               (eaten-food-growth (food-growth eaten-food)))
+          (cond [(= eaten-food-growth 1) (ws (snake (snake-dir sn)
+                                                    (cons new-head (snake-segs sn) ))
+                                             (spawn-food fresh-foods))]
+                [else (ws (snake (snake-dir sn)
+                                 (cons new-head (append (snake-segs sn) (list (last (snake-segs sn))))))
+                          (spawn-food fresh-foods))]
+                )
+          )
         )    
     )
   )
