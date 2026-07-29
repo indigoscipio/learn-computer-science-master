@@ -2,7 +2,7 @@
 
 ; CHAPTER 5
 
-; SELSORT 'FIND MIN THEN SWAP'
+; SELSORT
 ; each pass -> check lowest
 ; swap value with beginning value
 ; 2613 -> 1623
