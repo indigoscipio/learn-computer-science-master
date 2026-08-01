@@ -1,0 +1,6 @@
+#lang racket
+
+; CHAPTER 8
+; HASHTABLES
+
+(make-hash)
