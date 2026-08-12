@@ -17,16 +17,6 @@
                   (C ())
                   )
   )
-adj-lst-graph
-
-(define adj-lst-graph2 '((S (U V))
-                  (U (S V W))
-                  (V (S U W))
-                  (W (U V))
-                  (X (Y))
-                  (Z ())
-                  )
-  )
 
 ; HELPER FUNCTIONS
 ; get-neighbors:: Vertex Graph -> Neighbours
@@ -214,5 +204,195 @@ componentsthatthegraphcouldhave, respectively?
 a. 1 and n-1
 b. 1 and n
 c. 1 and max{m,n}
+d. 2 and max{m,n}
+
+answer:
+ok so if we have 1 vertice and 0 edge
+n=1
+min = 1 connected
+max = 1
+
+n=2
+min = 1 -> connect each node
+max = 2 -> we can just split this in two right, like
+two island but with no edge so m=0
+
+n=3
+min = 1 -> connect all nodes with each other
+max = 3, with all 3 nodes having no connection at all?
+
+n=4
+min = 1 -> connect all nodes with each other
+max = 4, asme as n=3?? so just four island/indiviudal dot with no edge
+
+so the answer is b - 1 and n
 
 |#
+
+; ===================================
+
+#|
+; WHY USE CONNECTED COMPONENT
+; 1. detect network failure
+; everyone gets same power from center -> run search on graph
+; if it find 1 connected component, entire grid is still running
+; if it finds >= 1 connected component, grid is broken
+
+; 2. data viz -> draw island with networks
+; 3. clustering
+|#
+
+; ===================================
+
+; 3 connected component
+(define cc-sample-graph2 '((1 (3 5))
+                           (3 (1 5))
+                           (5 (1 3 7 9))
+                           (7 (5))
+                           (9 (5))
+                           (2 (4))
+                           (4 (2))
+                           (6 (8 10))
+                           (8 (6))
+                           (10 (6))
+                           )
+  )
+
+; UCC ALGORITHM (undirected connected components)
+; give every single vertex an island number (cc) value
+; vertices on the same 'island' gets same number
+; vertices on different island gets different number
+
+;; ucc:: Graph -> (listof (listof vertex))
+; version 1: returns the list of list
+(define (ucc graph)
+  (define (ucc-helper unexplored explored components)
+    (cond [(null? unexplored) components ] ; unexplored is empty
+          [(member (car unexplored) explored)
+           (ucc-helper (cdr unexplored) explored components) ] ; already explored
+          [else (let* ((fst (car unexplored))
+                       (bfs-result (bfs fst graph)))
+
+                  (ucc-helper (cdr unexplored)
+                              (append explored bfs-result)
+                              (cons bfs-result components))
+                  
+                  )
+                ]
+          )
+    )
+  (ucc-helper (map car graph) '() '())  
+  )
+(ucc cc-sample-graph2) ;((1 3 5 7 9)(2 4)(6 8 10))
+
+; ucc:: Graph -> listof Components
+; a Component is a (cons Number NCC), where NCC is the 'island' number
+; example: '((1 . 1)(3 . 1)(5 . 1)(2 . 2))
+; version2 : association list
+(define (ucc-v2 graph)
+  (define (ucc-helper unexplored explored components ncc)
+    (cond [(null? unexplored) components]
+          [(member (car unexplored) explored)
+           (ucc-helper (cdr unexplored) explored components ncc)]
+          [else (let* ((fst (car unexplored))
+                       (bfs-result (bfs fst graph))
+                       (new-components (map (λ (c) (cons c ncc)) bfs-result) )
+                       )
+                  (ucc-helper (cdr unexplored)
+                              (append explored bfs-result)
+                              (append new-components components)
+                              (+ 1 ncc) )
+                  )]
+          
+          )
+    )
+  (ucc-helper (map car graph) '() '() 0)
+  )
+(ucc-v2 cc-sample-graph2)
+
+; =======================================
+
+#|
+CORRECTNESS AND RUNNING TIME OF UCC
+outer loop -> checks all vertices -> O(n)
+inner loop -> basically bfs -> only called when vertex is unexplored
+atmost inner loop is called a constant number of time
+|#
+
+; =======================================
+
+
+; DEPTH FIRST SEARCH
+(define dfs-sample-graph '((S (A B))
+                           (A (C S))
+                           (B (C D S))
+                           (C (A B D E))
+                           (D (B C E))
+                           (E (C D))
+                           )
+  )
+
+
+; dfs:: Vertex Graph -> listof Vertex
+; iterative version
+(define (dfs v graph)
+  ; remaining is a stack
+  ; list-of-vertex list-of-vertex -> listof vertex
+  (define (dfs-helper remaining visited)
+    (cond [(null? remaining) visited]
+          [else (let* ((fst (car remaining))
+                       (rst (cdr remaining))
+                       (curr-neighbor (get-neighbors fst graph)))
+                  (if (member fst visited)
+                      ; skip
+                      (dfs-helper rst visited)
+                      ; add to stack
+                      (dfs-helper
+                       (append curr-neighbor rst)
+                       (cons fst visited))
+                      )
+                  )]
+          )
+    )
+  (dfs-helper (list v) '())
+  )
+(dfs 'A dfs-sample-graph)
+
+
+; recursive implmeentation/version
+; Vertex Graph -> listof Vertex
+(define (dfs-recursive vertex graph)
+  
+  ; listof Vertex listof Vertex -> listof Vertex
+  ; explores each neighbor one by one,
+  ; udpates visited from each 'deep dive'
+  (define (visit-neighbors neighbors visited)
+    (cond [(null? neighbors) visited]
+          [else (let* ((fst (car neighbors))
+                      (updated-visited (visit-vertex fst visited))
+                      ; updated-visited -> deep dive and keep exploring
+                      )
+                  (visit-neighbors (cdr neighbors) updated-visited)
+                  )]
+          )
+    )
+  
+  ; Vertex Listof Vertex -> listof Vertex
+  ; marks one vertex and gets its neighbor list
+  (define (visit-vertex v visited)
+    (cond [(member v visited) visited] ; seen -> backtrack
+          ; vertex has no neighbor -> return as is/backtrack
+          ; vertex has multiple neighbor -> visit each one
+          [else (let ((curr-neighbor (get-neighbors v graph)))
+                  ; mark v as visited, hand list of neighor and visited
+                  ; to visit neighbors
+                  (visit-neighbors curr-neighbor (cons v visited))
+                  )]
+          )
+    )
+  (visit-vertex vertex '())
+  
+  )
+(dfs-recursive 'A dfs-sample-graph)
+
+; =======================================================
