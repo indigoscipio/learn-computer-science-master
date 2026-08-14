@@ -396,3 +396,195 @@ atmost inner loop is called a constant number of time
 (dfs-recursive 'A dfs-sample-graph)
 
 ; =======================================================
+
+#|
+DFS RUNNING TIME
+- never stops till it reaches 'dead end'
+- O(m+n)
+- n -> vertices. Initialze all rooms to unvisited and marks once
+- m -> edges. looks atmost twice in undirected
+
+|#
+
+; =======================================================
+
+; TOPOLOGICAL SORT
+; cannot start some of the tasks until you have completed the others
+; course in university degree program
+
+#|
+Quiz 8.3
+Howmanydifferenttopologicalorderingsdoesthefollowing
+graphhave?Useonlythelabels{1,2,3,4}.
+
+a.0
+b.1
+c.2
+d.3
+
+answer:
+so we have 2 path here
+s -> v -> t
+so the top path itmust first take s, v, then go to t
+and the bottom path
+s -> w -> t
+must take s,w,t
+
+so theres 2 orderingsr right??
+
+; THE RULE
+; goes from left to right ->
+; A -> B -> C -> A
+; is mathematically impossible
+; points back to A again, breaks the '<' rule
+
+; DAG
+; is a graph that doesn't 'point back' at the beginning
+- must have a source vertex (task with 0 prereq, at the beginning),
+aka the origin
+- find source -> rmove and delete outgoing arrow. next vertex
+is the new source vertex.
+- every step removes its 'source vertex'
+
+example:
+A -> B
+C -> B
+
+step 1: remove a
+step 2: remove c
+step 3: b
+
+|#
+
+; outer loop -> single dfs pass
+; a label that keeps track where we are
+; example: A -> B. a visits b. b has no neighbor. b finishes dfs first
+; whoever finish first, cons into result
+
+; Sample DAG representation
+(define sample-dag
+  '((s (v w))
+    (v (t ))
+    (w (t))
+    (t ())))
+
+; A graph with two completely disconnected parts:
+; Component 1: A -> B
+; Component 2: C -> D
+(define sample-dag-2
+  '((a (b))
+    (b ())
+    (c (d))
+    (d ())))
+
+
+; dfs-topo:: Vertex Graph Listof Vertex Listof Vertex -> ???
+(define (dfs-topo vertex graph visited finished)
+  
+  ; listof Vertex listof Vertex -> listof Vertex
+  ; explores each neighbor one by one,
+  ; udpates visited from each 'deep dive'
+  (define (visit-neighbors neighbors visited finished)
+    (cond [(null? neighbors) (list visited finished)]
+          [else (let* ((fst (car neighbors))
+                       (res (visit-vertex fst visited finished))
+                       (updated-visited (car res))
+                       (updated-finished (cadr res)))
+                  (visit-neighbors (cdr neighbors)
+                                   updated-visited
+                                   updated-finished)
+                  )]
+          )
+    )
+  
+  ; Vertex Listof Vertex -> listof Vertex
+  ; marks one vertex and gets its neighbor list
+  (define (visit-vertex v visited finished)
+    (cond [(member v visited) (list visited finished)]
+          [else (let* ((curr-neighbor (get-neighbors v graph))
+                       (res (visit-neighbors curr-neighbor
+                                             (cons v visited)
+                                             finished))
+                       (new-finished (cadr res))
+                       (new-visited (car res))
+                       )
+    
+                  (list new-visited (cons v new-finished))
+                  
+                  )]
+          )
+    )
+  (visit-vertex vertex visited finished)
+  )
+(dfs-topo 's sample-dag '() '())
+(dfs-topo 'a sample-dag-2 '() '())
+
+; X -> Z
+; Y -> Z
+(define sample-dag-3
+  '((x (z))
+    (y (z))
+    (z ())))
+
+(dfs-topo 'x sample-dag-3 '() '())
+
+; toposort:: Graph -> Listof Vertex
+; Given a DAG, returns a list of vertices in valid topological order.
+(define (toposort graph)
+  (define (toposort-helper remaining visited ordering)
+    (cond [(null? remaining) ordering]
+          [else (let ((fst (car remaining))
+                      (rst (cdr remaining)))
+                  (if (member fst visited)
+                      (toposort-helper rst
+                                       visited
+                                       ordering)
+                      ; call
+                      (let* ((res (dfs-topo fst graph visited ordering))
+                             (new-visited (car res))
+                             (new-ordering (cadr res)))
+                        (toposort-helper rst new-visited new-ordering)
+                        )
+                      )
+                  
+                  )]
+          )
+    )
+  (toposort-helper (map car graph) '() '())
+  )
+(toposort sample-dag-2)
+
+; ===============================================
+
+#|
+quiz 8.4
+
+WhathappenswhentheTopoSortalgorithmisrunona
+graphwithadirectedcycle?
+a)Thealgorithmmightormightnotloopforever.
+b)Thealgorithmalwaysloopsforever.
+c)The algorithmalways halts, andmayormaynot
+successfullycomputeatopologicalordering.
+d)Thealgorithmalwayshalts, andnever successfully
+computesatopologicalordering.
+(SeeSection8.5.7forthesolutionanddiscussion.)
+
+answer:
+since we store visited if we see the same vertex again
+it wont be visited right? so maybe it stops? not sure
+
+DFS -> post-order processing
+; on compleition (after all neighbors finish) (cons v new-finished)
+
+d. algorithm always halts and never sucesfully computte
+topological ordering
+
+|#
+
+; ===============================================
+
+
+; STRONGLY CONNECTED COMPONENTS (SCC)
+; scc is not acyclic - has a cyclic structure
+; inside scc -> cyclic
+; outside scc (zoom out) -> acyclic. shrink down scc = create DAG
