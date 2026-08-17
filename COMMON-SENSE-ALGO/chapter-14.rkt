@@ -134,7 +134,6 @@ scrambled-nodes
       (cond [(= mem-idx -1) #f] ;not found? doineed this guard
             [else (let* ((curr-node (vector-ref nodes mem-idx))
                          (next-idx (node-next curr-node)))
-
                     (if (= lst-idx (- target-index 1))
                         ; delete it.
                         ; curr-node is predecessor
@@ -142,14 +141,18 @@ scrambled-nodes
                         ; find next-next-idx
                         (let* ((next-node (vector-ref nodes next-idx))
                                (next-next-idx (node-next next-node))
-                               (new-curr-node (vector ... ...))
-                               (new-next-next-node (vector ... ...))
+                               (new-curr-node
+                                (vector (node-data curr-node )
+                                        next-next-idx))
                                )
-                          ...
+
+                          (vector-set! nodes mem-idx new-curr-node)
+                          (cons head-idx nodes)
+                          
                           )
+                        
                         (delete-helper next-idx (+ lst-idx 1)); keep searching
                         )
-
                     )]
             )
       )
@@ -167,3 +170,59 @@ scrambled-nodes
     )
   )
 (delete 1 scrambled-nodes 1) ; delete 'a
+
+; =======================================
+
+#|
+LINKED LIST RUNNING TIME
+search -> n
+insert -> 1 - n
+delete -> n
+|#
+
+; =======================================
+
+; DOUBLY LINKED LIST
+
+; a DLLNode is list
+; listof (Prev Value Next) or empty list '()
+; whre Prev and Next is either a DLLNode or '()
+; and Value is any
+
+; CONSTRUCTOR
+; DLLNode Any DLLNode -> DLLNode
+(define (make-dlln prev value next)
+  (list prev value next)
+  )
+
+; SELECTORS
+; get-prev
+(define (dlln-prev dlln)
+  (car dlln)
+  )
+
+; get-value
+(define (dlln-value dlln)
+  (cadr dlln)
+  )
+
+; get-next
+(define (dlln-next dlln)
+  (caddr dlln)
+  )
+
+; LIST CONTAINER
+(define (make-dll head tail)
+  (cons head tail)
+  )
+
+(define (dll-head dll)
+  (car dll))
+
+(define (dll-tail dll)
+  (cdr dll))
+
+
+; ======================================
+; EXERCISES
+
