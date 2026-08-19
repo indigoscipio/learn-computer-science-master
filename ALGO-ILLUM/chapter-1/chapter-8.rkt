@@ -588,3 +588,182 @@ topological ordering
 ; scc is not acyclic - has a cyclic structure
 ; inside scc -> cyclic
 ; outside scc (zoom out) -> acyclic. shrink down scc = create DAG
+
+; ===============================================
+
+
+; QUIZ 8.5
+#|
+Consideradirectedacyclicgraphwithnverticesandm
+edges.Whataretheminimumandmaximumnumberof
+stronglyconnectedcomponentsthatthegraphcouldhave,
+respectively?
+
+a) 1and 1
+b) 1and n
+c) 1and m
+d) n and n
+
+answer:
+ok so we have a DAG with n vert and m edges
+we wanna find min and max number of SCC the graph could have
+
+scc is not acyclic right doesnt this like contradict?
+DAG contains zero directed cycles
+
+lets say n=2, m=1
+minimum: if each node point to back to each other that counts right? so 1?
+maximum: also 1
+
+
+because  DAG contains 0 cycles, no two vertices can ever blong
+to the same SCC. therefore every single vertex in DAG forms
+its own individual SCC of size 1
+so the answer is d. n and n
+
+|#
+
+; =================================================
+#|Quiz8.6
+LetGbeadirectedgraphandGrevacopyofGwiththe
+directionofeveryedgereversed. HowaretheSCCsofG
+andGrev related? (Chooseall thatapply.)
+
+a) Ingeneral, theyareunrelated.
+b)EverySCCofGisalsoanSCCofGrev,andconversely.
+c)EverysourceSCCofGisalsoasourceSCCofGrev.
+d)EverysinkSCCofGbecomesasourceSCCofGrev.
+
+answer:
+lets say we have G = A -> B -> C
+so it has like 3 SCCs right
+so GRev = C -> B -> A
+
+yeah im not sure im seeing the relation here
+they are both stil have the same SCC which is 3
+in G , C is the 'sink' but hwne it reversed it becomes the 'source'
+and vice versa with A
+
+a is incorrect and c is not true since source in scc
+when it reversed it becomes a sink
+so B and D here i think is the answer??
+
+
+
+
+
+
+|#
+; =================================================
+
+
+#|
+KOSARAJU
+upper -> component with only outgoing edges to other scc
+middle -> component with both incoming and outgoing to other scc
+sink -> component with only incoming edges
+
+start with the sink lake C -> B -> A
+f(v) = finishing time
+
+how it works
+1. g-rev: reversed graph
+2. call DFS from every vertex of g-rev
+3. call DFS from every vertex of g
+
+
+|#
+
+(define k-sample-graph '((1 (5))
+                         (3 (1))
+                         (5 (3))
+                         (7 (4 5))
+                         (11 (3))
+                         (8 (9 10 11))
+                         (6 (8 11))
+                         (4 (2 9))
+                         (2 (9))
+                         (9 (5 7))
+                         (10 (2 6))))
+
+
+(define k-small-graph '((1 (2))
+                        (2 (1 3))
+                        (3 ())))
+
+
+(define (flatten-node node)
+  (map (λ (n) (cons (car node) n)) (cadr node))
+  )
+(flatten-node '(2 (1 3))) ;should return '((2 1) (2 3))
+
+; Graph -> Graph
+; given a graph, reverses it order/edges
+; extract all directed pairs & convert
+; into flat list '((2 (1 3))) -> '((2 1)(2 3))
+; swap it (u v) -> (v u)
+; group by source node that start with same node into (node (neighbors))
+(define (reverse-graph graph)
+  (let* ((flat-nodes (apply append (map flatten-node graph)))
+         (reversed-flat-nodes (map (λ (pair) (cons (cdr pair) (car pair))) flat-nodes)))
+
+    (map (λ (entry)
+           (let ((v (car entry)))
+             (list v (map cdr (filter (λ (pair)
+                                        (equal? (car pair) v))
+                                      reversed-flat-nodes))
+                   )
+             )) graph)
+    
+    )
+  )
+(reverse-graph k-small-graph) ; should return '((2 (1)) (1 (2)) (3 (2)) )
+
+; Graph -> listof Vertex
+(define (first-pass graph)
+  (let ((g-rev (reverse-graph graph)))
+    (toposort g-rev)
+    )
+  )
+
+; Graph -> (listof (listof vertex))
+(define (second-pass graph)
+  ; pick next vertex v from first pass
+  ; if visited -> skip
+  ; else: run dfs -> collect -> mark as visited
+  ; combine
+  (let ((first-pass-result (first-pass graph)))
+    ; (listof Vertex) (listof Vertex) -> (listof (listof Vertex))
+    (define (second-pass-helper remaining visited result)
+      (cond [(null? remaining) result]
+            [else (let* ((fst (car remaining))
+                         (rst (cdr remaining))
+                         (curr-neighbor (get-neighbors fst graph)))
+                    (if (member fst visited)
+                        ; already visited, skip
+                        (second-pass-helper rst visited result)
+                        ; run dfs, collect, mark as visited
+                        (let* ((dfs-result (dfs-topo fst graph visited '()))
+                              (new-visited (car dfs-result))
+                              (component (cadr dfs-result))
+                              )
+                          (second-pass-helper rst
+                                              new-visited
+                                              (cons component result))
+                          )
+                        )
+                    )]
+            )
+      )
+    (second-pass-helper first-pass-result '() '())
+    )
+  )
+(second-pass k-small-graph) ; '((3 2 1) (3))
+
+; kosaraju : Graph -> (listof (listof Vertex))
+; Example Output: '((1 2) (3))
+(define (kosaraju graph)
+  (second-pass graph)
+  )
+(second-pass k-small-graph)
+(kosaraju k-sample-graph)

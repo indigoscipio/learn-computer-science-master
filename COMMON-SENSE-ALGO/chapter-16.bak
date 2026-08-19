@@ -148,17 +148,17 @@ next 2, repeat
 
 until reaches the end
 so eventually it will become something like
-  1
-   \
-    5
-  /   \
- 2     9
-  \   / \
-   4  6 10
-  /    \
- 3      8 
-
-
+ 1
+  \
+   5
+  / \
+ 2   9
+  \   \
+   4  10
+  / \
+ 3   6
+      \
+       8
 
 which is a bit like right leaning? since it starts the root at 1
 

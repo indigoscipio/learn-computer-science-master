@@ -1,128 +1,30 @@
 #lang racket
 
-; CHAPTER 7: GRAPHS
+; CHAPTER 8
+; GRAPH SEARCH AND ITS APPLICATIONS
 
-; G = (V,E)
-; n = |V| -> vertices/nodes
-; m = |E| -> edges
-; parallel edge = 2/more edge that connect to same pair of vertices
+; why search graph is important?
+; find everything 'reachable' from the starting point
+; avoid getting stuck in 'infinite' loop
+; types : BFS vs DFS
 
-; ==================================
+; vertices dont have to be a number of physical location
+; they can represent a state
 
-; QUIZ 7.1
-#|
-Consider an undirected graph with n vertices and no parallel
-edges. Assume that the graph is connected, meaning “in
-one piece.” What are the minimum and maximum numbers
-of edges, respectively, that the graph could have?
-
-a) n-1 and n(n1)/2
-b) n-1 and n^2
-c) n and 2^n
-d) n and n^n
-
-answer:
-my mathisshit but let me try to solve this intutively
-so we have a undirected graph with n vertices
-so at most each vertex can connect to the oter vertices
-except for itself so thats n-1
-
-so if we have 3 vertices
-minimm edges should be 2
-maximm edge should be like 3?
-theyall need to be conected right?but they do like 'handskhake'
-only 1 time
-
-if we have 4 vercies
-minimum forthem to connect each other is 3
-and maximum islike 6
-
-so it seems a is the answer here, n-1 and n(n-1)/2
-
-------------
-
-MINIMUM EDGE
-n = island
-0 bridge -> n seperate island
-add 1 bridge -> n-1 seperate island
-
-for all 'island' to be connected it needs at least n-1 edge
-a tree is an example
-
-MAXIMUM EDGE
-- handshake
-; p1 -> shakes hand with n-1 pepole
-; p2 -> shakes hand with n-2 people
-
-sum everything up
-(n-1)+ (n-2) ... -> n (n-1) / 2
-
-|#
-
-
-; ==============================
-
-; SPARSE VS DENSE GRAPHS
-; sparse -> n
-; dense -> n^2
-
-; ==============================
-
-#|
-; ADJACENCY LISTS
-; 2 arrays (vertex and edge array)
-; vertex array -> master list of all nodes
-; edge array -> master list of all connections
-; EtoV pointers (edge 1 connects person A and person B)
-; VtoE pointers (person A participates in edge A and edge B)
-
-|#
-
-; a Vertex is a symbol
-; a Neighbours is a (listof Vertex)
-; an Entry is a (list Vertex Neighbours)
-; an Adjacency List is a (listof Entry)
-; lets say a simple graph with vertices A, B, and C
+; SAMPLE GRAPH
 (define adj-lst-graph '((A (B C))
                   (B (C))
                   (C ())
                   )
   )
-adj-lst-graph
 
+; HELPER FUNCTIONS
 ; get-neighbors:: Vertex Graph -> Neighbours
 (define (get-neighbors v graph)
   (let ((result (assoc v graph)))
     (cadr result)
     )
   )
-(get-neighbors 'A adj-lst-graph)
-
-; add-edge:: Vertex Vertex Graph -> Vertex
-(define (add-edge vertex value graph)
-  (let ((result (assoc vertex graph)))
-    (if result
-        (map (λ (entry) (let ((v (car entry))
-                              (neighbours (cadr entry)))
-                          (if (equal? v vertex)
-                              (list v (cons value neighbours)) ;update
-                              entry ;keep
-                              )
-                          ) ) graph) ; add it!
-        (error "Not found") ; not found
-        )
-    )
-  )
-(add-edge 'A 'D adj-lst-graph)
-(add-edge 'B 'F adj-lst-graph)
-
-; add-vertex:: Vertex Graph -> Vertex
-; its backward but shuold be fine
-; dont wanna spend time with append doesntmatter i think
-(define (add-vertex v graph)
-  (cons (list v '()) graph)
-  )
-(add-vertex 'D adj-lst-graph)
 
 ; has-edge:: Vertex Vertex
 ; checks if v2 is a neighbor of v1 within graph
@@ -131,255 +33,558 @@ adj-lst-graph
     (if (member v2 v1-neighbors) #t #f)
     )
   )
-(has-edge? 'A 'C adj-lst-graph) ;#t
-(has-edge? 'B 'C adj-lst-graph) ;#t
-(has-edge? 'C 'X adj-lst-graph) ;#f
 
-
-; ==============================
+; GENERIC SEARCH
+; Vertex Graph -> listof Vertex
 #|
-Quiz 7.2
-Howmuchspacedoestheadjacencylistrepresentationofa
-graphrequire,asafunctionofthenumbernofverticesand
-thenumbermofedges?
+When you start the algorithm at a single vertex s
+(before looking at any edges or neighbors):
+What should be inside your Explored list at the very beginning?
+What should be inside your To-Explore list at the very beginning?
+|#
+(define (generic-search v graph)
 
-a. Big theta(n)
-b. Big theta(m)
-c. Big theta(m+n)
-d. Big theta(n^2)
+  ; visited (explored) = vertices already procesed (acc)
+  ; remaining = vertices discovered, but haven't explored
+  (define (gs-helper remaining visited)
+    (cond [(null? remaining) visited] ;no more vertices
+          [else (let* ((fst (car remaining))
+                       (rst (cdr remaining))
+                       (curr-neighbor (get-neighbors fst graph)))
+                  (if (member fst visited)
+                      (gs-helper rst visited)
+                      (gs-helper (append rst curr-neighbor)
+                                 (cons fst visited))                      
+                      )
+                  )]
+          ; if fst is in visited -> leave it
+          ; if its not in visited -> add it, but remove fst (since we already see it)
+          )
+    )
+  (gs-helper (list v) '())
+  
+  )
+(generic-search 'A adj-lst-graph)
+
+
+; =========================================
+
+; BFS
+; the 'ripple' strategy
+; layer 0 -> start
+; layer 1 -> every room 1 door away
+; layer 2 -> every room 2 doors away, etc
+; expand layer
+
+; DFS
+; keep going till hit a dead end
+; then backtrack to most recent intersection with unexplored door
+; and explore that path
+
+; =========================================
+
+
+
+#|
+QUIZ 8.1
+Consideranundirectedgraphwithn≥2vertices.What
+aretheminimumandmaximumnumberofdifferentlayers
+thatthegraphcouldhave, respectively?
+
+a. 1 and n-1
+b. 2 and n-2
+c. 1 and n
+d. 2 and n
 
 answer:
-yeah idont think i understand the question here
-it asks for how much space the adj list requires
+ok so we have undirected graph with n>=2 vertices
+we wanna find minimum and maximum number of different layers
+the graph could have
 
-since each vertex has like a neighbor
-it depends on the amount of neighbour right?
-each entry has vertex which can pair with lots of neighbour or even no
-neighbour at all
+so lets say n = 2
+minimum: we need atleast 1 layer right to explore?
+unless if the graph isn't connected? so 0 layer but still 1 layer
+maximum: also 1 here??
 
-so at most if we have 3 vertices
-and each vertice can have at most 2 edges
+n = 3
+minimum: 1 layer i think
+maximum: if the 3 vertices i think if we have
+a b c with a connects b and b connects c
+then we'd need atleast 2 layers here right
 
-so n = 3, m = 2
-'((A (B C)) (B (A C)) (C (B A)))
-so the total is like .. not sure here, 9 items?
-or maybe it doesnt want me to find the total items
-yeah not sure
+n = 4
+minimum: 2 - a directly connects b,c,d
+maximum: 4 - a straight path
 
-PART 1 -> vertices (n)
-if i have n vertices, store as entry
-total vertices = n
-
-PART 2 -> neighbours (m)
-every single edge has atmost 2 connection
-so shows up as neighbour twice (2m) -> m
-each vertices have heighbor = 2 -> m
-
-
-total = O(n + m)
+so minimum = 2, maximum = n
 
 |#
 
-; =============================================
+(define (bfs v graph)
+  (define (bfs-helper queue visited)
+    (cond [(null? queue) visited]
+          [else (let* ((fst (car queue))
+                      (rst (cdr queue))
+                      (curr-neighbor (get-neighbors fst graph))
+                      )
+                  (if (member fst visited)
+                      (bfs-helper rst visited) ; already visited
+                      (bfs-helper (append (cdr queue) curr-neighbor) (cons fst visited))
+                      ; add to visited
+                      )
+                  )]
+          )
+    )
+  (bfs-helper (list v) '())
+  )
+(bfs 'A adj-lst-graph)
+
+; ================================================
+
+; process layer by layer
+; BFS RUNNING TIME
+; O(m+n)
+; NODE COST: N
+; each node gets 'stamped' -> move to 'visited'
+; each enter and leaves once
+
+; EDGE COST: M
+; for each node (car visited), checks for its neighbor
+; at most  each edge gets looked twice (goes both ways)
+; in undirected graph so 2M = M
+
+; ================================================
+
+; SHORTEST PATH
+; AUGMENTED BFS
+
+; Vertex Graph -> listof (cons Vertex Distance)
+; i need to know how many hops it took to reach each vertex
+; How can you use assoc to check if fst-v is already
+; recorded in visited, and how can you transform curr-neighbor
+; into pairs of (cons neighbor (+ fst-d 1)) to append to rst-pair?
+(define (shortest-path-bfs v graph)
+  ; a Queue is a list of pairs (cons Vertex Distance)
+  ; a Visited is a list of pairs (cons Vertex Distance)
+  (define (bfs-helper queue visited)
+    (cond [(null? queue) visited]
+          [else (let* ((fst-queue (car queue))
+                       (rst-queue (cdr queue))
+                       (fst-v (car fst-queue))
+                       (fst-d (cdr fst-queue))
+                       (curr-neighbor (get-neighbors fst-v graph))
+                       (new-visited (cons (cons fst-v fst-d) visited))
+                       (new-queue (map (λ (n) (cons n (+ 1 fst-d))) curr-neighbor))
+                       )
+
+                  (if (assoc fst-v visited)
+                      ; skip it
+                      (bfs-helper rst-queue visited)
+                      ; add it
+                      (bfs-helper (append rst-queue new-queue) new-visited)
+                      )
+                  )]
+          )
+    )
+  (bfs-helper (list (cons v 0)) '())
+  )
+(shortest-path-bfs 'A adj-lst-graph)
+
+; ===================================
+
+; CONNECTED COMPONENTS
 
 #|
-ADJACENCY MATRIX
+QUIZ 8.2
 
+Consideranundirectedgraphwithnverticesandmedges.
+Whataretheminimumandmaximumnumberofconnected
+componentsthatthegraphcouldhave, respectively?
+
+a. 1 and n-1
+b. 1 and n
+c. 1 and max{m,n}
+d. 2 and max{m,n}
+
+answer:
+ok so if we have 1 vertice and 0 edge
+n=1
+min = 1 connected
+max = 1
+
+n=2
+min = 1 -> connect each node
+max = 2 -> we can just split this in two right, like
+two island but with no edge so m=0
+
+n=3
+min = 1 -> connect all nodes with each other
+max = 3, with all 3 nodes having no connection at all?
+
+n=4
+min = 1 -> connect all nodes with each other
+max = 4, asme as n=3?? so just four island/indiviudal dot with no edge
+
+so the answer is b - 1 and n
 
 |#
 
-;; Example 3x3 matrix graph:
-;; Vertex 0 points to Vertex 1
-;; Vertex 1 points to Vertex 2
-;; Vertex 2 has no outgoing edges
-(define sample-matrix
-  '((0 1 0)   ; Row 0: connects to 1
-    (0 0 1)   ; Row 1: connects to 2
-    (0 0 0))) ; Row 2: connects to nothing
+; ===================================
 
-; m-has-edge? Integer Integer Graph -> Boolean 
-(define (m-has-edge? u v graph)
-  (let ((r (list-ref graph u)))
-    (not (zero? (list-ref r v)))
-    )
+#|
+; WHY USE CONNECTED COMPONENT
+; 1. detect network failure
+; everyone gets same power from center -> run search on graph
+; if it find 1 connected component, entire grid is still running
+; if it finds >= 1 connected component, grid is broken
+
+; 2. data viz -> draw island with networks
+; 3. clustering
+|#
+
+; ===================================
+
+; 3 connected component
+(define cc-sample-graph2 '((1 (3 5))
+                           (3 (1 5))
+                           (5 (1 3 7 9))
+                           (7 (5))
+                           (9 (5))
+                           (2 (4))
+                           (4 (2))
+                           (6 (8 10))
+                           (8 (6))
+                           (10 (6))
+                           )
   )
-(m-has-edge? 0 1 sample-matrix) ;#t
-(m-has-edge? 1 2 sample-matrix) ;#t
-(m-has-edge? 2 0 sample-matrix) ;#f
 
-; m-get-neighbors:: Integer Graph -> listof Integer
-(define (m-get-neighbors u graph)
-  (let ((r (list-ref graph u) ))
+; UCC ALGORITHM (undirected connected components)
+; give every single vertex an island number (cc) value
+; vertices on the same 'island' gets same number
+; vertices on different island gets different number
 
- 
-    (define (loop xs i result)
-      (cond [(null? xs) result] ;lets not reverse for simplicity
-            [(equal? (car xs) 1) (loop (cdr xs) (+ i 1) (cons i result)) ]
-            [else (loop (cdr xs) (+ i 1) result)]
-            )
-      )
-    (loop r 0 '())
- 
+;; ucc:: Graph -> (listof (listof vertex))
+; version 1: returns the list of list
+(define (ucc graph)
+  (define (ucc-helper unexplored explored components)
+    (cond [(null? unexplored) components ] ; unexplored is empty
+          [(member (car unexplored) explored)
+           (ucc-helper (cdr unexplored) explored components) ] ; already explored
+          [else (let* ((fst (car unexplored))
+                       (bfs-result (bfs fst graph)))
 
-    #|
-    ; FOR/LIST version
-    (for/list ([i (in-range (length r))]
-               #:when (= (list-ref r i) 1)
-               )
-      i
-      )
-    |#
+                  (ucc-helper (cdr unexplored)
+                              (append explored bfs-result)
+                              (cons bfs-result components))
+                  
+                  )
+                ]
+          )
+    )
+  (ucc-helper (map car graph) '() '())  
+  )
+(ucc cc-sample-graph2) ;((1 3 5 7 9)(2 4)(6 8 10))
+
+; ucc:: Graph -> listof Components
+; a Component is a (cons Number NCC), where NCC is the 'island' number
+; example: '((1 . 1)(3 . 1)(5 . 1)(2 . 2))
+; version2 : association list
+(define (ucc-v2 graph)
+  (define (ucc-helper unexplored explored components ncc)
+    (cond [(null? unexplored) components]
+          [(member (car unexplored) explored)
+           (ucc-helper (cdr unexplored) explored components ncc)]
+          [else (let* ((fst (car unexplored))
+                       (bfs-result (bfs fst graph))
+                       (new-components (map (λ (c) (cons c ncc)) bfs-result) )
+                       )
+                  (ucc-helper (cdr unexplored)
+                              (append explored bfs-result)
+                              (append new-components components)
+                              (+ 1 ncc) )
+                  )]
+          
+          )
+    )
+  (ucc-helper (map car graph) '() '() 0)
+  )
+(ucc-v2 cc-sample-graph2)
+
+; =======================================
+
+#|
+CORRECTNESS AND RUNNING TIME OF UCC
+outer loop -> checks all vertices -> O(n)
+inner loop -> basically bfs -> only called when vertex is unexplored
+atmost inner loop is called a constant number of time
+|#
+
+; =======================================
+
+
+; DEPTH FIRST SEARCH
+(define dfs-sample-graph '((S (A B))
+                           (A (C S))
+                           (B (C D S))
+                           (C (A B D E))
+                           (D (B C E))
+                           (E (C D))
+                           )
+  )
+
+
+; dfs:: Vertex Graph -> listof Vertex
+; iterative version
+(define (dfs v graph)
+  ; remaining is a stack
+  ; list-of-vertex list-of-vertex -> listof vertex
+  (define (dfs-helper remaining visited)
+    (cond [(null? remaining) visited]
+          [else (let* ((fst (car remaining))
+                       (rst (cdr remaining))
+                       (curr-neighbor (get-neighbors fst graph)))
+                  (if (member fst visited)
+                      ; skip
+                      (dfs-helper rst visited)
+                      ; add to stack
+                      (dfs-helper
+                       (append curr-neighbor rst)
+                       (cons fst visited))
+                      )
+                  )]
+          )
+    )
+  (dfs-helper (list v) '())
+  )
+(dfs 'A dfs-sample-graph)
+
+
+; recursive implmeentation/version
+; Vertex Graph -> listof Vertex
+(define (dfs-recursive vertex graph)
+  
+  ; listof Vertex listof Vertex -> listof Vertex
+  ; explores each neighbor one by one,
+  ; udpates visited from each 'deep dive'
+  (define (visit-neighbors neighbors visited)
+    (cond [(null? neighbors) visited]
+          [else (let* ((fst (car neighbors))
+                      (updated-visited (visit-vertex fst visited))
+                      ; updated-visited -> deep dive and keep exploring
+                      )
+                  (visit-neighbors (cdr neighbors) updated-visited)
+                  )]
+          )
+    )
+  
+  ; Vertex Listof Vertex -> listof Vertex
+  ; marks one vertex and gets its neighbor list
+  (define (visit-vertex v visited)
+    (cond [(member v visited) visited] ; seen -> backtrack
+          ; vertex has no neighbor -> return as is/backtrack
+          ; vertex has multiple neighbor -> visit each one
+          [else (let ((curr-neighbor (get-neighbors v graph)))
+                  ; mark v as visited, hand list of neighor and visited
+                  ; to visit neighbors
+                  (visit-neighbors curr-neighbor (cons v visited))
+                  )]
+          )
+    )
+  (visit-vertex vertex '())
+  
+  )
+(dfs-recursive 'A dfs-sample-graph)
+
+; =======================================================
+
+#|
+DFS RUNNING TIME
+- never stops till it reaches 'dead end'
+- O(m+n)
+- n -> vertices. Initialze all rooms to unvisited and marks once
+- m -> edges. looks atmost twice in undirected
+
+|#
+
+; =======================================================
+
+; TOPOLOGICAL SORT
+; cannot start some of the tasks until you have completed the others
+; course in university degree program
+
+#|
+Quiz 8.3
+Howmanydifferenttopologicalorderingsdoesthefollowing
+graphhave?Useonlythelabels{1,2,3,4}.
+
+a.0
+b.1
+c.2
+d.3
+
+answer:
+so we have 2 path here
+s -> v -> t
+so the top path itmust first take s, v, then go to t
+and the bottom path
+s -> w -> t
+must take s,w,t
+
+so theres 2 orderingsr right??
+
+; THE RULE
+; goes from left to right ->
+; A -> B -> C -> A
+; is mathematically impossible
+; points back to A again, breaks the '<' rule
+
+; DAG
+; is a graph that doesn't 'point back' at the beginning
+- must have a source vertex (task with 0 prereq, at the beginning),
+aka the origin
+- find source -> rmove and delete outgoing arrow. next vertex
+is the new source vertex.
+- every step removes its 'source vertex'
+
+example:
+A -> B
+C -> B
+
+step 1: remove a
+step 2: remove c
+step 3: b
+
+|#
+
+; outer loop -> single dfs pass
+; a label that keeps track where we are
+; example: A -> B. a visits b. b has no neighbor. b finishes dfs first
+; whoever finish first, cons into result
+
+; Sample DAG representation
+(define sample-dag
+  '((s (v w))
+    (v (t ))
+    (w (t))
+    (t ())))
+
+; A graph with two completely disconnected parts:
+; Component 1: A -> B
+; Component 2: C -> D
+(define sample-dag-2
+  '((a (b))
+    (b ())
+    (c (d))
+    (d ())))
+
+
+; dfs-topo:: Vertex Graph Listof Vertex Listof Vertex -> ???
+(define (dfs-topo vertex graph visited finished)
+  
+  ; listof Vertex listof Vertex -> listof Vertex
+  ; explores each neighbor one by one,
+  ; udpates visited from each 'deep dive'
+  (define (visit-neighbors neighbors visited finished)
+    (cond [(null? neighbors) (list visited finished)]
+          [else (let* ((fst (car neighbors))
+                       (res (visit-vertex fst visited finished))
+                       (updated-visited (car res))
+                       (updated-finished (cadr res)))
+                  (visit-neighbors (cdr neighbors)
+                                   updated-visited
+                                   updated-finished)
+                  )]
+          )
+    )
+  
+  ; Vertex Listof Vertex -> listof Vertex
+  ; marks one vertex and gets its neighbor list
+  (define (visit-vertex v visited finished)
+    (cond [(member v visited) (list visited finished)]
+          [else (let* ((curr-neighbor (get-neighbors v graph))
+                       (res (visit-neighbors curr-neighbor
+                                             (cons v visited)
+                                             finished))
+                       (new-finished (cadr res))
+                       (new-visited (car res))
+                       )
     
+                  (list new-visited (cons v new-finished))
+                  
+                  )]
+          )
     )
+  (visit-vertex vertex visited finished)
   )
-(m-get-neighbors 1 sample-matrix)
+(dfs-topo 's sample-dag '() '())
+(dfs-topo 'a sample-dag-2 '() '())
 
-;; m-add-edge: Integer Integer Graph -> Graph
-(define (m-add-edge u v graph)
-  (let ((row (list-ref graph u)))
+; X -> Z
+; Y -> Z
+(define sample-dag-3
+  '((x (z))
+    (y (z))
+    (z ())))
 
-    row
-    
+(dfs-topo 'x sample-dag-3 '() '())
+
+; toposort:: Graph -> Listof Vertex
+; Given a DAG, returns a list of vertices in valid topological order.
+(define (toposort graph)
+  (define (toposort-helper remaining visited ordering)
+    (cond [(null? remaining) ordering]
+          [else (let ((fst (car remaining))
+                      (rst (cdr remaining)))
+                  (if (member fst visited)
+                      (toposort-helper rst
+                                       visited
+                                       ordering)
+                      ; call
+                      (let* ((res (dfs-topo fst graph visited ordering))
+                             (new-visited (car res))
+                             (new-ordering (cadr res)))
+                        (toposort-helper rst new-visited new-ordering)
+                        )
+                      )
+                  
+                  )]
+          )
     )
+  (toposort-helper (map car graph) '() '())
   )
-(m-add-edge 2 0 sample-matrix)
+(toposort sample-dag-2)
 
+; ===============================================
 
 #|
-Quiz 7.3
-Howmuchspacedoes theadjacencymatrixof agraph
-require,asafunctionofthenumbernofverticesandthe
-numbermofedges?
+quiz 8.4
 
-a. big theta (n)
-b. big theta (m)
-c. big theta (m+n)
-d. big theta (n^2)
+WhathappenswhentheTopoSortalgorithmisrunona
+graphwithadirectedcycle?
+a)Thealgorithmmightormightnotloopforever.
+b)Thealgorithmalwaysloopsforever.
+c)The algorithmalways halts, andmayormaynot
+successfullycomputeatopologicalordering.
+d)Thealgorithmalwayshalts, andnever successfully
+computesatopologicalordering.
+(SeeSection8.5.7forthesolutionanddiscussion.)
 
 answer:
-lets say we have n=3 and m=3
-for the adjancency matrix we'd have to construct
-the rows and columns first right?
+since we store visited if we see the same vertex again
+it wont be visited right? so maybe it stops? not sure
 
-so thats 3.3 = 3^2 = 9 cells
-and fill the cells
+DFS -> post-order processing
+; on compleition (after all neighbors finish) (cons v new-finished)
 
-so thats like n^2? whichis more demanding than adjanceny list
+d. algorithm always halts and never sucesfully computte
+topological ordering
 
 |#
 
-; =============================================
-
-#|
-problem 7.1
-(S)LetG=(V,E)beanundirectedgraph. Bythe
-degreeofavertex v E V,wemeanthenumberof edges inEthat
-areincidenttov(i.e., thathavevasanendpoint).15Foreachofthe
-followingconditionsonthegraphG, istheconditionsatisfiedonly
-bydensegraphs,onlybysparsegraphs,orbybothsomesparseand
-somedensegraphs?Asusual,n=|V|denotesthenumberofvertices.
-Assumethatnislarge(say,atleast10,000).
-
-a. at least one vertex of G has adegree at most 10
-b. every vertex of g has degree at most 10
-c. at least one vertex of G has degree n-1
-d. every vertex of G has degree n-1
-
-answer:
-ok so we have a undirected graph G
-and assume n is a large (10000)
-
-letscheck one by one
-a. at least one vertex of G has degree at most 10
-if n is large then for sparse the minimum is n-1 right?
-so 10000 - 1 = 9999
-
-and atmost its like n(n-1) / 2 = 10000(9999) / 2 = 49,995,000
-im not sure if this is even relevant
-
-so we wanna find the degree thing
-degree is number of edges that have v as the same endpoint
-
-sparse test: pass
-dense test: pass
-
-b. only sparse
-c. satisfies both
-d. only dense graphs
-
-__________________________________
-
-Problem 7.2
-
-(S)ConsideranundirectedgraphG=(V,E)thatis
-representedasanadjacencymatrix.Givenavertexv2V,howmany
-operationsarerequiredtoidentifytheedges incidenttov? (Letk
-denotethenumberof suchedges. Asusual, nandmdenotethe
-numberofverticesandedges, respectively.)
-
-a. big theta(1)
-b. big theta(k)
-c. big theta(n)
-d. big theta(m)
-
-answer:
-ok so we have an adjacency matrix
-we wanna find the degree thing again
-let k = total number of edges
-n = vertex, m = edges
-
-lets start simple, 2 vertices and 1 edge
-total number edge is 1 -> k = 1
-so if we have 2x2 adjacency matrix
-the space is like 2^2
-
-we wanna find the degree
-walk through each col
-check (0,0) -> true/false?
-check (0,1)...
-
-walk through each row
-(1,0) -> ...
-(1,1) -> ...
-
-so thatslike.. just check that vertex (row)'s colun
-so just do big theta(n)
-
-__________________________________
+; ===============================================
 
 
-Problem 7.3
-Consider a directed graph G =(V,E) represented
-with adjacency lists, with each vertex storing an array of its outgoing
-edges (but not its incoming edges). Given a vertex v 2 V ,howmany
-operations are required to identify the incoming edges of v? (Let k
-denote the number of such edges. As usual, n and m denote the
-number of vertices and edges, respectively).
-
-a. big theta(1)
-b. big theta(k)
-c. big theta(n)
-d. big theta(m)
-
-answer:
-ok so we have directed graph
-each vertex stores array of outgoing edgess
-so no duplicate like the one in directed graph
-
-we wanna know how many operations requried to identify incoming
-edges of v, where k = number of edges
-
-n = vertices, m = edges
-
-so if we have
-'((A (B C)) (B (A C)) (C (A B)))
-the neighbor only store outgoing edges instead of incoming
-we wanne find incoming edges of A
-thatmeans we have to travel to each vertex a -> b -> c
-and check its neighbour, and for each of those check if
-does it point back to a? something likethat maybe, notsure
-
-O(m) -> check all of the edges 
-
-
-|#
+; STRONGLY CONNECTED COMPONENTS (SCC)
+; scc is not acyclic - has a cyclic structure
+; inside scc -> cyclic
+; outside scc (zoom out) -> acyclic. shrink down scc = create DAG
