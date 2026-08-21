@@ -767,3 +767,249 @@ how it works
   )
 (second-pass k-small-graph)
 (kosaraju k-sample-graph)
+
+; RUNNING TIME
+; is a linear time O(m+n)
+; first pass + reversal pass
+
+; ==================================================
+
+; THE WEB GRAPH
+; 200 million vertices, 1.5 billion edges
+; 28% percent composed of SCC
+
+; ==================================================
+
+#|
+; TEST YOUR UNDERSTANDING
+; PROBLEM 8.1
+ (S) Which of the following statements hold? As
+usual, n and m denote the number of vertices and edges, respec
+tively, of a graph. (Choose all that apply.)
+
+a) Breadth-first search can be used to compute the connected
+components of an undirected graph in O(m+n) time.
+b) Breadth-first search can be used to compute the lengths of
+shortest paths from a starting vertex to every other vertex in
+O(m+n)time, where “shortest” means having the fewest number
+of edges.
+c) Depth-first search can be used to compute the strongly connected
+components of a directed graph in O(m+n) time.
+d) Depth-first search can be used to compute a topological ordering
+of a directed acyclic graph in O(m + n) time
+
+answer:
+lets analyze one by one
+a. yeahim not sure about the running time here but bfs
+checks each layers/neighbors first bu im gonna say its true
+b. true
+c. true
+d. true
+
+; ===================================================
+Problem 8.2 (S) What is the running time of depth-first search, as
+a function of n and m (the number of vertices and edges), if the input
+graph is represented by an adjacency matrix (and NOT adjacency
+lists)? You may assume the graph does not have parallel edges.
+
+note: ⇥ is big theta
+a) ⇥(m+n)
+b) ⇥(m+nlogn)
+c) ⇥(n2)
+d) ⇥(m·n)
+
+answer:
+ok so we have a adjacency matrix data structure
+
+since we are running dfs
+it chcecks a vertex -> go in deep into its neighbor until empty
+since its a matrix you have to like lookup the row and column
+
+if we have
+(define sample-matrix
+  '((0 1 0)   ; Row 0: connects to 1
+    (0 0 1)   ; Row 1: connects to 2
+    (0 0 0)))
+
+and run with dfs row 0 then it would just check
+the columns right then move on to next one -> check other columns
+
+for single row/vertex -> inspect all n columns if an edge exists
+regardless of how many edges that vertex has
+since dfs visits n vertices (rows), scanning all n column for eacch
+n row means n . n = n^2
+
+; ===================================================
+
+8.3
+This problem explores the relationship between two
+definitions concerning graph distances. In this problem, we consider
+only graphs that are undirected and connected. The diameter of
+a graph is the maximum, over all choices of vertices v and w, of
+
+the shortest-path distance between v and w.48 Next, for a vertex v,
+let l(v) denote the maximum, over all vertices w, of the shortest-path
+distance between v and w. The radius of a graph is the minimum
+value of l(v), over all choices of the vertex v.
+
+Which of the following inequalities relating the radius r to the
+diameter d hold in every undirected connected graph? (Choose all
+that apply.)
+
+a.) r <= d/2
+b) r <= d
+c) r ≥ d/2
+d) r ≥ d
+
+answer:
+
+; ===================================================
+
+Problem 8.4 When does a directed graph have a unique topological
+ordering?
+
+a) Whenever it is directed acyclic.
+b) Whenever it has a unique cycle.
+c) Whenever it contains a directed path that visits every vertex
+exactly once.
+d) None of the other options are correct.
+
+answer:
+ok so we wanna find out when
+directed graph have unique topological ordering
+
+if iremmebr topoligcal is like based on orders
+so something needs to be completed first in certain order left to right thing
+and cannot go 'back' to the left
+
+im not sure what unique topological ordering meanshere
+they always have to make thing so clusterfuckingly complicated question
+not sure
+
+
+a. false
+b. false i think a cycle breaks the topological meaning thing
+c. true
+d. false
+
+; ===================================================
+
+Problem 8.5 Consider running the TopoSort algorithm (Section 8.5)
+on a directed graph G that is not directed acyclic. The algorithm will
+not compute a topological ordering (as none exist). Does it compute
+an ordering that minimizes the number of edges that travel backward
+(Figure 8.20)? (Choose all that apply.)
+
+a) The TopoSort algorithm always computes an ordering of the
+vertices that minimizes the number of backward edges.
+b) The TopoSort algorithm never computes an ordering of the
+vertices that minimizes the number of backward edges.
+
+c) There are examples in which the TopoSort algorithm computes
+an ordering of the vertices that minimizes the number of back
+ward edges, and also examples in which it doesn’t.
+d) The TopoSort algorithm computes an ordering of the vertices
+that minimizes the number of backward edges if and only if the
+input graph is a directed cycle.
+v 
+s 
+w 
+t 
+Figure 8.20: A graph with no topological ordering. In the ordering s, v,
+w, t,theonlybackwardedgeis(t,s).
+
+
+s = (v,w)
+v = (t,w)
+t = (s)
+w = (t)
+
+answer:
+dfs choooses which neighbor arbitraryily
+when it works -> 1 backward edge
+when it fails -> unecessary backward edge
+
+; ===================================================
+
+8.6
+Problem 8.6 If you add one new edge to a directed graph G,then
+the number of strongly connected components...(Choose all that
+apply.)
+
+a) ...might or might not remain the same (depending on G and
+the new edge).
+b) ...cannot decrease.
+c) ...cannot increase.
+d) ...cannot decrease by more than 1.
+
+answer:
+
+if the vertices are like 1 way then
+1 node is just counted as 1 scc right? depending on the edge
+
+lets start simple example
+if we have G =  (A -> B,  C)
+so a points to b and c is island
+all 3 is basically scc
+and we wanna add 1 edge lets say B now poins to (A -> B -> C)
+the scc count is still 3
+
+A -> B -> C -> A
+SCC = 1 so decrease of 2
+
+a. true
+b. false
+c. true
+d. false
+
+
+; ===================================================
+
+Problem 8.7 (S) Recall the Kosaraju algorithm from Section 8.6,
+which uses two passes of depth-first search to compute the strongly
+connected components of a directed graph. Which of the following
+statements are true? (Choose all that apply.)
+
+a) The algorithm would remain correct if it used breadth-first
+search instead of depth-first search in both its passes.
+b) The algorithm would remain correct if we used breadth-first
+search instead of depth-first search in its first pass.
+c) The algorithm would remain correct if we used breadth-first
+search instead of depth-first search in its second pass.
+d) The algorithm is not correct unless it uses depth-first search in
+both its passes.
+
+answer:
+1st pass -> tracks finishing time
+DFS can do this, with BFS the ordering is messed up
+
+2nd pass ->  can be bfs or dfs
+since the goal is to collect all reachable vertices
+starting from top vertex of the pass 1 ordering
+
+; ===================================================
+
+Problem 8.8 (S) Recall that in the Kosaraju algorithm, the first
+pass of depth-first search operates on the reversed version of the input
+graph and the second on the original input graph. Which of the
+following statements are true? (Choose all that apply.)
+
+a) Thealgorithm would remain correct if in the first pass it assigned
+vertex positions in increasing (rather than decreasing) order and
+in the second pass considered the vertices in decreasing (rather
+than increasing) order of vertex position.
+b) The algorithm would remain correct if it used the original input
+graph in its first pass and the reversed graph in its second pass.
+c) The algorithm would remain correct if it used the original input
+graph in both passes, provided in the first pass it assigned vertex
+positions in increasing (rather than decreasing) order.
+d) The algorithm would remain correct if it used the original input
+graph in both passes, provided in the second pass it considered
+the vertices in decreasing (rather than increasing) order of vertex
+position.
+
+answer:
+
+
+
+|#
